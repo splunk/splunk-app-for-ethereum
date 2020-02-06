@@ -1,0 +1,17 @@
+[app/ui]
+version = 8.0.1
+modtime = 1581006186.140862000
+
+[app/launcher]
+version = 8.0.1
+modtime = 1581006186.142388000
+
+[views/multichain_stats]
+owner = admin
+version = 8.0.1
+modtime = 1581006783.218607000
+
+[views/ethereum_starter_searches]
+owner = admin
+version = 8.0.1
+modtime = 1581008567.499248000
