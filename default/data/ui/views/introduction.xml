@@ -1,0 +1,222 @@
+<dashboard>
+  <label>Introduction</label>
+  <row>
+    <panel>
+      <html>
+        <center>
+          <h1>
+          Welcome to the Splunk App for Ethereum Basics! This introduction page will help you start Splunking any Ethereum 1.0 JSON-RPC compatible blockchain or sidechain including Quorum.  Follow each step to equip yourself with all of the right Splunk tools to <strong>
+              <i>BUIDL</i>
+            </strong> your own analytics!
+        </h1>
+        <h2>Question? Email us at <a href="mailto:blockchain@splunk.com">blockchain@splunk.com</a></h2>
+        </center>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <center>
+          <h1>Step 1:</h1> <h2>
+            <strong>Getting Data In</strong> - Set up <a href="https://github.com/splunk/splunk-connect-for-ethereum" target="_blank">Splunk Connect for Ethereum</a>.  Once complete you should see data flowing in the chart below. </h2> 
+        </center>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Data Flowing from Connect for Ethereum (by Sourcetype)</title>
+        <search>
+          <query>index=* sourcetype=ethereum* 
+| timechart count by sourcetype</query>
+          <earliest>-60m@m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>7s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">1</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">none</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <table>
+        <title>Event Count by Chain in the past 1 Hour (you can have multiple!)</title>
+        <search>
+          <query>index=* sourcetype=ethereum* 
+| stats count sparkline(count) as sparkline values(sourcetype) as sourcetypes by network 
+| rename network AS Chains count AS eventCount</query>
+          <earliest>-60m@m</earliest>
+          <latest>@m</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <center>
+          <h1>Step 2:</h1> <h2>
+            <strong>Download Some Apps</strong> - Why <strong>
+              <i>BUIDL</i>
+            </strong> from scratch? <a href="https://splunkbase.splunk.com/" target="_blank">Splunkbase</a> has 1000s of free Apps containing out of the box searchs, dashboards and <a href="https://splunkbase.splunk.com/apps/#/app_content/visualizations" target="_blank">custom visualizations</a>. Try downloading and <a href="https://docs.splunk.com/Documentation/AddOns/released/Overview/Singleserverinstall" target="_blank">installing</a> the ones below as a starting point.  Save yourself some time and use the Dashboard Examples App to copy pasta the example code snippets! </h2> 
+        </center>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <center>
+          <strong>
+            <a href="https://splunkbase.splunk.com/app/1603/" target="_blank">Splunk Dashboard Examples:</a>
+          </strong> Tons of examples to help you learn how to build compelling dashboards.
+        </center>
+        <img src="/static/app/ethereum-basics/dashboard_examples.png" width="100%"/>
+      </html>
+    </panel>
+    <panel>
+      <html>
+        <center>
+          <strong>
+            <a href="https://splunkbase.splunk.com/app/3112/" target="_blank">Custom Visualization Example</a>
+          </strong>: Try adding a new custom visualization. Like it? <a href="https://splunkbase.splunk.com/apps/#/app_content/visualizations" target="_blank">Get more!</a>
+        </center>
+        <img src="/static/app/ethereum-basics/sankey_example.png" width="100%"/>
+      </html>
+    </panel>
+    <panel>
+      <html>
+        <center>
+          <strong>
+            <a href="https://splunkbase.splunk.com/app/4866" target="_blank">Using Quorum? Try our Splunk App for Quorum!</a>
+          </strong> It contains several out of the box dashboards to get you journey to observability started.
+        </center>
+        <img src="/static/app/ethereum-basics/qstats_latest.png" width="100%"/>
+      </html>
+    </panel>
+  </row>
+   <row>
+    <panel>
+      <html>
+        <center>
+          <h1>Step 3:</h1> <h2>
+            <strong>Checkout the reference guides</strong> for using Splunk's Search Processing Language (SPL) and building dashboards. </h2> 
+        </center>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <center>
+          <strong><a href="https://www.splunk.com/pdfs/solution-guides/splunk-quick-reference-guide.pdf" target="_blank">Splunk Search Reference Guide</a></strong>
+        </center>
+        <center><img src="/static/app/ethereum-basics/search_reference_guide.png" width="50%"/></center>
+      </html>
+    </panel>
+    <panel>
+      <html>
+        <center>
+          <strong><a href="https://www.splunk.com/pdfs/solution-guides/splunk-dashboards-quick-reference-guide.pdf" target="_blank">Splunk Dashboard Reference Guide</a></strong>
+        </center>
+        <center><img src="/static/app/ethereum-basics/dashboards_reference_guide.png" width="50%"/></center>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <center>
+          <h1>Step 4:</h1> <h2>
+            <strong>Start <i>BUIDLing</i> !</strong> Below are some pre-built searches and dashboards just for you!</h2> 
+        </center>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <center>
+          <strong>
+            <a href="/app/ethereum-basics/search?earliest=-60m%40m&amp;latest=now&amp;q=search%20index%3D*%20sourcetype%3D%22ethereum%3Atransaction%22" target="_blank">Splunk Search</a>
+          </strong> This is where it all starts. Start searching through your data!
+        </center>
+        <img src="/static/app/ethereum-basics/search_example.png" width="100%"/>
+      </html>
+    </panel>
+    <panel>
+      <html>
+        <center>
+          <strong>
+            <a href="/app/ethereum-basics/multichain_stats" target="_blank">Basic Block Stats by Chain</a>
+          </strong> - Simple charts and graphs around block info.
+        </center>
+        <img src="/static/app/ethereum-basics/multichain_stats.png" width="100%"/>
+      </html>
+    </panel>
+    <panel>
+      <html>
+        <center>
+          <strong>
+            <a href="/app/ethereum-basics/ethereum_starter_searches" target="_blank">Ingesting Eth Mainnet? Start here.</a> 
+          </strong> - You can modify this dashboard to work with other chains such as xDai.
+        </center>
+        <img src="/static/app/ethereum-basics/ethereum_starter_searches.png" width="100%"/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <center>
+          <h1>Step 5:</h1> <h2>
+            <strong>Enrich Your Data!</strong> Lookup Tables allow you to identify contracts, addresses and more. TBD TBD TBD</h2> 
+        </center>
+      </html>
+    </panel>
+  </row>
+</dashboard>
