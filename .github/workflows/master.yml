@@ -1,0 +1,24 @@
+name: MasterDeployCI
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Build Release
+      run: |
+        touch ethereum-basics.tgz
+        tar --transform 's,^\.,ethereum-basics,' --exclude='.git*' --exclude='ethereum-basics.tgz' -cvzf ethereum-basics.tgz ./
+    - name: Release
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        automatic_release_tag: latest
+        prerelease: false
+        files: |
+          ethereum-basics.tgz
