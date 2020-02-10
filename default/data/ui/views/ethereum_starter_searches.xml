@@ -15,7 +15,7 @@
       <single>
         <title>Latest Block</title>
         <search>
-          <query>index=* sourcetype=ethereum:block | stats latest(number) as blockNum</query>
+          <query>index=ethereum sourcetype=ethereum:block | stats latest(number) as blockNum</query>
           <earliest>-5m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
@@ -46,7 +46,7 @@
       <single>
         <title>Average Block Time</title>
         <search>
-          <query>index=* sourcetype=ethereum:block 
+          <query>index=ethereum sourcetype=ethereum:block
 | table _time number 
 | sort - _time 
 | delta p=1 _time as diff 
@@ -75,7 +75,7 @@
       <chart>
         <title>Txns Per Block (Last 50 Blocks)</title>
         <search>
-          <query>index=* sourcetype=ethereum:block 
+          <query>index=ethereum sourcetype=ethereum:block 
 | chart sum(transactionCount) as sumTxns by number 
 | sort - number 
 | head 50 

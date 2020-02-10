@@ -1,4 +1,4 @@
-<dashboard>
+<dashboard theme="dark">
   <label>Multichain Stats</label>
   <description>Over the past 1 Hour</description>
   <row>
@@ -11,6 +11,8 @@
           <earliest>-60m@m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
@@ -19,6 +21,7 @@
         <option name="numberPrecision">0</option>
         <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
         <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">none</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
         <option name="trellis.enabled">1</option>
@@ -40,6 +43,8 @@
           <earliest>-60m@m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
@@ -48,6 +53,7 @@
         <option name="numberPrecision">0</option>
         <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
         <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">none</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
         <option name="trellis.enabled">1</option>
@@ -67,15 +73,17 @@
         <title>Blockheight by Chain over time</title>
         <search>
           <query>index=* sourcetype="ethereum:block" 
-| timechart latest(number) as block by network</query>
+| timechart partial=f latest(number) as block by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
-        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.abbreviation">none</option>
         <option name="charting.axisX.scale">linear</option>
@@ -100,6 +108,7 @@
         <option name="charting.legend.mode">standard</option>
         <option name="charting.legend.placement">right</option>
         <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">none</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
@@ -110,15 +119,17 @@
         <title>Transaction Count by Chain over time</title>
         <search>
           <query>index=* sourcetype="ethereum:transaction" 
-| timechart dc(hash) by network</query>
+| timechart partial=f dc(hash) by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
-        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.abbreviation">none</option>
         <option name="charting.axisX.scale">linear</option>
@@ -143,10 +154,32 @@
         <option name="charting.legend.mode">standard</option>
         <option name="charting.legend.placement">right</option>
         <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">none</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
       </chart>
     </panel>
   </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Miners by Network</title>
+        <search>
+          <query>index=* | top miner by network</query>
+          <earliest>-60m@m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
 </dashboard>
+
