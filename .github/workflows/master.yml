@@ -10,11 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Archive Release
-      uses: thedoctor0/zip-release@master
-      with:
-        filename: 'ethereum-basics.zip'
-        exclusions: '*.git*'
+    - name: Build Release
+      run: |
+        touch ethereum-basics.tgz
+        tar --transform 's,^\.,ethereum-basics,' --exclude='.git*' --exclude='ethereum-basics.tgz' -cvzf ethereum-basics.tgz ./
     - name: Release
       uses: marvinpinto/action-automatic-releases@latest
       with:
@@ -22,4 +21,4 @@ jobs:
         automatic_release_tag: latest
         prerelease: false
         files: |
-          ethereum-basics.zip
+          ethereum-basics.tgz
