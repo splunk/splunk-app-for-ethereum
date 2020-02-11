@@ -9,7 +9,7 @@
               <i>BUIDL</i>
             </strong> your own analytics!
         </h1>
-        <h2>Question? Email us at <a href="mailto:blockchain@splunk.com">blockchain@splunk.com</a></h2>
+        <h2>Questions? Email us at <a href="mailto:blockchain@splunk.com">blockchain@splunk.com</a></h2>
         </center>
       </html>
     </panel>
@@ -244,7 +244,7 @@
       <html>
         <center>
           <strong>
-            We've already configured the lookups for you but can learn more <a href="https://splunkbase.splunk.com/app/4866" target="_blank">here</a>.  Now that you've updated the spreadsheet, look for the new fields in your search! Notice how these fields (from_type, to_description, etc.) don't exist in the raw data but now appear for every event in real-time!
+            We've already configured the lookups for you but can learn more <a href="https://docs.splunk.com/Documentation/Splunk/latest/Knowledge/Aboutlookupsandfieldactions" target="_blank">here</a>.  Now that you've updated the spreadsheet, look for the new fields in your search! Notice how these fields (from_type, to_description, etc.) don't exist in the raw data but now appear for every event in real-time!
           </strong> 
         </center>
         <img src="/static/app/ethereum-basics/search_lookup_example.png" width="100%"/>
