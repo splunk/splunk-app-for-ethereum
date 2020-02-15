@@ -15,7 +15,7 @@
       <single>
         <title>Latest Block</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:block | stats latest(number) as blockNum</query>
+          <query>index=* sourcetype=ethereum:block network::mainnet | stats latest(number) as blockNum</query>
           <earliest>-5m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
@@ -46,7 +46,7 @@
       <single>
         <title>Average Block Time</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:block
+          <query>index=* sourcetype=ethereum:block network::mainnet
 | table _time number 
 | sort - _time 
 | delta p=1 _time as diff 
@@ -75,7 +75,7 @@
       <chart>
         <title>Txns Per Block (Last 50 Blocks)</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:block 
+          <query>index=* sourcetype=ethereum:block network::mainnet 
 | chart sum(transactionCount) as sumTxns by number 
 | sort - number 
 | head 50 
@@ -148,7 +148,7 @@
       <single>
         <title>Total Transactions</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction | stats dc(hash) as count</query>
+          <query>index=* sourcetype=ethereum:transaction network::mainnet | stats dc(hash) as count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -166,7 +166,7 @@
       <chart>
         <title>Transaction Count Timechart</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction | timechart dc(hash) as count</query>
+          <query>index=* sourcetype=ethereum:transaction network::mainnet | timechart dc(hash) as count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -212,7 +212,7 @@
       <single>
         <title>Distinct From Addresses</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction | stats dc(from) as count</query>
+          <query>index=* sourcetype=ethereum:transaction network::mainnet | stats dc(from) as count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -241,7 +241,7 @@
       <single>
         <title>Total ETH Transferred</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction 
+          <query>index=* sourcetype=ethereum:transaction network::mainnet 
 | stats sum(value) as ethTransferred 
 | eval ethTransferred=round(ethTransferred/1000000000000000000,3)</query>
           <earliest>$field1.earliest$</earliest>
@@ -273,7 +273,7 @@
       <single>
         <title>Distinct To Addresses</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction | stats dc(to) as count</query>
+          <query>index=* sourcetype=ethereum:transaction network::mainnet | stats dc(to) as count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -304,7 +304,7 @@
       <table>
         <title>Top 10 "From" Activity (try the dilldown below!)</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction | top from</query>
+          <query>index=* sourcetype=ethereum:transaction network::mainnet | top from</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -332,7 +332,7 @@
       <table>
         <title>Top 10 ETH Sent (now try enabling drilldown by copying settings)</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction 
+          <query>index=* sourcetype=ethereum:transaction network::mainnet 
 | eval ethValue=round(value/1000000000000000000,3) 
 | stats sum(ethValue) as ethSent by from 
 | sort - ethSent 
@@ -359,7 +359,7 @@
       <table>
         <title>Top 10 ETH Received</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction 
+          <query>index=* sourcetype=ethereum:transaction network::mainnet 
 | eval ethValue=round(value/1000000000000000000,3) 
 | stats sum(ethValue) as ethReceived by to 
 | sort - ethReceived
@@ -386,7 +386,7 @@
       <table>
         <title>Top 10 "To" Activity</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction | top to</query>
+          <query>index=* sourcetype=ethereum:transaction network::mainnet | top to</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -409,3 +409,4 @@
     </panel>
   </row>
 </form>
+
