@@ -1,0 +1,6 @@
+address,chain,type,description
+0x06012c8cf97bead5deae237070f9587f8e7a266d,ethereum,Contract,CryptoKitties
+0x17d38b18d646dc00479b89baaeaaaeb8a0c5ea4d,xdai,Store,Maker Booth Swag Store
+0x4b78a47532d9e966574d30189b3de734a232a78a,xdai,Contract,Buttercup Bucks
+0x5ffec48e3fb8d2a9dd0a46f2565f61fcc964894a,xdai,PersonalWallet,Stephens BCB Wallet (Phone)
+0xfb3f831edf675409defeccadc60636224abf8746,xdai,PersonalWallet,Stephens BCB Wallet (Laptop)
