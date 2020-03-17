@@ -1,11 +1,12 @@
 <dashboard theme="dark">
   <label>CryptoKitties</label>
+  <description>Note: If you just starting ingesting ethereum mainnet data you will need to wait until a transaction happens before seeing the dashboard fill out.  To obtain historical data you can change the "latest_block" parameter in the docker-compose file.</description>
   <row>
     <panel>
       <single>
         <title>Unique Kitties</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | stats latest(kittyId)</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
@@ -34,9 +35,9 @@
     </panel>
     <panel>
       <single>
-        <title>Kitties created in 1 hr</title>
+        <title>Kitties "birthed" in 1 hr</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d call.name="giveBirth" 
+          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d call.name="giveBirth" 
 | stats count</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -67,7 +68,7 @@
       <single>
         <title>Total Txns in 1 hr</title>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d | stats count</query>
+          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d | stats count</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
@@ -99,7 +100,7 @@
       <title>Transactions by Function Call</title>
       <chart>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d 
+          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d 
 | timechart count by call.name</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
@@ -147,7 +148,7 @@
       <title>Latest Transactions</title>
       <table>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | table _time from to abi_to call.name kittyId sireId matronId auction* value gas 
 | eval from=substr(from,0,10)."..." 
 | eval to=substr(to,0,10)."..." 
@@ -192,14 +193,14 @@
       <title>Most Active Kitties in the Past Week</title>
       <table>
         <search>
-          <query>index=ethereum sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | stats count by kittyId 
 | append 
-    [ search index=ethereum sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+    [ search index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
     | stats count by sireId 
     | rename sireId AS kittyId] 
 | append 
-    [ search index=ethereum sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+    [ search index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
     | stats count by matronId 
     | rename matronId AS kittyId] 
 | stats sum(count) as count by kittyId 
@@ -216,7 +217,7 @@
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
         <drilldown>
-          <link target="_blank">/app/ethereum-basics/crypto__kitties__search?kitty_token=$click.value$</link>
+          <link target="_blank">/app/ethereum-basics/crypto_kitties_search?kitty_token=$click.value$</link>
         </drilldown>
       </table>
     </panel>

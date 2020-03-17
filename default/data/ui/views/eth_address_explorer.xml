@@ -4,14 +4,14 @@
     <input type="time" token="field1">
       <label>Select a time range:</label>
       <default>
-        <earliest>-30d@d</earliest>
+        <earliest>-24h@h</earliest>
         <latest>now</latest>
       </default>
     </input>
     <input type="text" token="address_token">
       <label>Enter an Address</label>
-      <default>0x2393341C27038E14646F2531E88eF40B00764F37</default>
-      <initialValue>0x2393341C27038E14646F2531E88eF40B00764F37</initialValue>
+      <default>0x06012c8cf97BEaD5deAe237070F9587f8E7A266d</default>
+      <initialValue>0x06012c8cf97BEaD5deAe237070F9587f8E7A266d</initialValue>
     </input>
     <input type="dropdown" token="sample_token" searchWhenChanged="true">
       <label>Sample Ratio (for force graph)</label>
@@ -27,10 +27,12 @@
       <single>
         <title>Total Transactions</title>
         <search>
-          <query>index="ethereum" network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | stats count</query>
+          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | stats count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
@@ -38,7 +40,7 @@
         <option name="numberPrecision">0</option>
         <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
         <option name="rangeValues">[0,30,70,100]</option>
-        <option name="refresh.display">progressbar</option>
+        <option name="refresh.display">none</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
         <option name="trellis.enabled">0</option>
@@ -55,10 +57,12 @@
       <chart>
         <title>Transaction History</title>
         <search>
-          <query>index="ethereum" network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | timechart count</query>
+          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | timechart count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -89,7 +93,7 @@
         <option name="charting.legend.placement">none</option>
         <option name="charting.lineWidth">2</option>
         <option name="height">115</option>
-        <option name="refresh.display">progressbar</option>
+        <option name="refresh.display">none</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
@@ -99,12 +103,14 @@
       <single>
         <title>Sum ETH Transferred</title>
         <search>
-          <query>index="ethereum" network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
+          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
 | eval value=value/1000000000000000000 
 | stats sum(value)</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
@@ -112,7 +118,7 @@
         <option name="numberPrecision">0.000</option>
         <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
         <option name="rangeValues">[0,30,70,100]</option>
-        <option name="refresh.display">progressbar</option>
+        <option name="refresh.display">none</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
         <option name="trellis.enabled">0</option>
@@ -132,24 +138,26 @@
       <table>
         <title>Transaction Table for $address_token$</title>
         <search>
-          <query>index="ethereum" network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
+          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
 | eval value=value/1000000000000000000 
 | eval from=lower(from) 
 | eval to=lower(to) 
-| lookup crypto_addresses.csv address AS from OUTPUTNEW owner AS from_owner 
-| lookup crypto_addresses.csv address AS to OUTPUTNEW owner AS to_owner 
+| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
 | table _time from from_owner to to_owner value gas toInfo.isContract
 | rename toInfo.isContract AS toContract 
 | sort - _time</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
+          <refresh>45s</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
-        <option name="refresh.display">progressbar</option>
+        <option name="refresh.display">none</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -173,23 +181,34 @@
   </row>
   <row>
     <panel>
+      <html>
+        <center>
+          Note: If you see "No matching visualization" below - download the and install the viz from Splunkbase <a href="https://splunkbase.splunk.com/app/3767/" target="_blank">viz from Splunkbase.</a>  Then you can delete this chart panel by editing the dashboard.
+        </center>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
       <title>Direct Relationships for $address_token$</title>
       <viz type="force_directed_viz.force_directed">
         <title>Thicker the line, more txns between each node</title>
         <search>
-          <query>index="ethereum" network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
+          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
 | eval value=value/1000000000000000000 
 | stats count by to from 
 | eval from=lower(from) 
 | eval to=lower(to) 
-| lookup crypto_addresses.csv address AS from OUTPUTNEW owner AS from_owner 
-| lookup crypto_addresses.csv address AS to OUTPUTNEW owner AS to_owner 
+| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
 | eval from=if(isnull(from_owner),substr(lower(from),0,10)."...",from_owner) 
 | eval to=if(isnull(to_owner),substr(lower(to),0,10)."...",to_owner) 
 | fields - *owner</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
+          <refresh>2m</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="drilldown">none</option>
         <option name="force_directed_viz.force_directed.AttractDistanceMax">200</option>
@@ -226,7 +245,7 @@
         <option name="force_directed_viz.force_directed.theme">dark</option>
         <option name="force_directed_viz.force_directed.upperRange">5</option>
         <option name="height">639</option>
-        <option name="refresh.display">progressbar</option>
+        <option name="refresh.display">none</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
@@ -237,14 +256,14 @@
       <viz type="force_directed_viz.force_directed">
         <title>Thicker the line, more txns between each node</title>
         <search>
-          <query>index="ethereum" sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) OR 
-    [ search index="ethereum" sourcetype="ethereum:transaction" $address_token$ 
+          <query>index=* sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) OR 
+    [ search index=* sourcetype="ethereum:transaction" $address_token$ 
     | eval from=lower(from) 
     | eval to=lower(to) 
     | eval addr = if(from == "$address_token$", to, from) 
     | dedup addr 
     | return 100 from=$addr] OR 
-    [ search index="ethereum" sourcetype="ethereum:transaction" $address_token$ 
+    [ search index=* sourcetype="ethereum:transaction" $address_token$ 
     | eval from=lower(from) 
     | eval to=lower(to) 
     | eval addr = if(from == "$address_token$", to, from) 
@@ -253,13 +272,15 @@
 | eval from=lower(from) 
 | eval to=lower(to) 
 | stats count by to from 
-| lookup crypto_addresses.csv address AS from OUTPUTNEW owner AS from_owner 
-| lookup crypto_addresses.csv address AS to OUTPUTNEW owner AS to_owner 
+| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
 | eval from=if(isnull(from_owner),substr(lower(from),0,10)."...",from_owner) 
 | eval to=if(isnull(to_owner),substr(lower(to),0,10)."...",to_owner)</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
-          <sampleRatio>$sample_token$</sampleRatio>
+          <sampleRatio>1</sampleRatio>
+          <refresh>2m</refresh>
+          <refreshType>delay</refreshType>
         </search>
         <option name="drilldown">none</option>
         <option name="force_directed_viz.force_directed.AttractDistanceMax">200</option>
@@ -296,7 +317,7 @@
         <option name="force_directed_viz.force_directed.theme">dark</option>
         <option name="force_directed_viz.force_directed.upperRange">5</option>
         <option name="height">612</option>
-        <option name="refresh.display">progressbar</option>
+        <option name="refresh.display">none</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
