@@ -9,7 +9,8 @@
               <i>BUIDL</i>
             </strong> your own analytics!
         </h1>
-        <h2>Questions? Email us at <a href="mailto:blockchain@splunk.com">blockchain@splunk.com</a></h2>
+        <h2>Questions? Email us at <a href="mailto:blockchain@splunk.com">blockchain@splunk.com</a>
+          </h2>
         </center>
       </html>
     </panel>
@@ -19,7 +20,7 @@
       <html>
         <center>
           <h1>Step 1:</h1> <h2>
-            <strong>Getting Data In</strong> - Set up <a href="https://github.com/splunk/splunk-connect-for-ethereum" target="_blank">Splunk Connect for Ethereum</a>.  Once complete you should see data flowing in the chart below. </h2> 
+            <strong>Getting Data In</strong> - Set up <a href="https://github.com/splunk/splunk-connect-for-ethereum" target="_blank">Splunk Connect for Ethereum</a>.  *Note the easiest way to get started is using the docker-compose example. By default the example will ingest xdai.  If you would like to ingest ethereum mainnet you will need to comment out xdai and uncomment the mainnet section.  You can use your own endpoint, Infura, Alchemy etc. Once complete you should see data flowing in the chart below. </h2> 
         </center>
       </html>
     </panel>
@@ -137,7 +138,7 @@
       </html>
     </panel>
   </row>
-   <row>
+  <row>
     <panel>
       <html>
         <center>
@@ -151,17 +152,25 @@
     <panel>
       <html>
         <center>
-          <strong><a href="https://www.splunk.com/pdfs/solution-guides/splunk-quick-reference-guide.pdf" target="_blank">Splunk Search Reference Guide</a></strong>
+          <strong>
+            <a href="https://www.splunk.com/pdfs/solution-guides/splunk-quick-reference-guide.pdf" target="_blank">Splunk Search Reference Guide</a>
+          </strong>
         </center>
-        <center><img src="/static/app/ethereum-basics/search_reference_guide.png" width="50%"/></center>
+        <center>
+          <img src="/static/app/ethereum-basics/search_reference_guide.png" width="50%"/>
+        </center>
       </html>
     </panel>
     <panel>
       <html>
         <center>
-          <strong><a href="https://www.splunk.com/pdfs/solution-guides/splunk-dashboards-quick-reference-guide.pdf" target="_blank">Splunk Dashboard Reference Guide</a></strong>
+          <strong>
+            <a href="https://www.splunk.com/pdfs/solution-guides/splunk-dashboards-quick-reference-guide.pdf" target="_blank">Splunk Dashboard Reference Guide</a>
+          </strong>
         </center>
-        <center><img src="/static/app/ethereum-basics/dashboards_reference_guide.png" width="50%"/></center>
+        <center>
+          <img src="/static/app/ethereum-basics/dashboards_reference_guide.png" width="50%"/>
+        </center>
       </html>
     </panel>
   </row>
@@ -214,30 +223,20 @@
       <html>
         <center>
           <h1>Step 5:</h1> <h2>
-            <strong>Enrich Your Data!</strong> Lookup Tables allow you to identify contracts, addresses and more to make blockchain data more human readable. Follow the steps below if you want to be able to know which addresses belong to which <strong>stores, wallets and more</strong>.</h2> 
+            <strong>Enrich Your Data!</strong> Lookup Tables allow you to identify contracts, addresses and more to make blockchain data more human readable. Follow the steps below if you want to be able to know which addresses belong to which <strong>contracts, wallets and more</strong>.</h2> 
         </center>
       </html>
     </panel>
   </row>
   <row>
-  <panel>
-      <html>
-        <center>
-          <strong>
-            Download and Install the <a href="https://splunkbase.splunk.com/app/1724/" target="_blank">Lookup Editor</a> which will allow you to edit CSVs from the GUI. Go to the App and find "ethdenver_addresses.csv" 
-          </strong> 
-        </center>
-        <img src="/static/app/ethereum-basics/lookup_editor.png" width="100%"/>
-      </html>
-    </panel>
     <panel>
       <html>
         <center>
           <strong>
-            Copy and paste the information from this <a href="https://splunkbase.splunk.com/app/4866" target="_blank">online spreadsheet</a> relative to ETHDenver and the MakerDAO happy hour into the "ethdenver_addresses.csv" in the Lookup Editor and hit Save Lookup. We will continually add more information as we get it throughout the event. 
+            Download and Install the <a href="https://splunkbase.splunk.com/app/1724/" target="_blank">Lookup Editor</a> which will allow you to edit CSVs from the GUI. Go to the Lookup Editor App once installed and find "crypto_addresses.csv" 
           </strong> 
         </center>
-        <img src="/static/app/ethereum-basics/ethdenver_address_sheet.png" width="100%"/>
+        <img src="/static/app/ethereum-basics/lookup_editor.png" width="100%"/>
       </html>
     </panel>
     <panel>
