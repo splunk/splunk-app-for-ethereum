@@ -30,7 +30,7 @@
       <chart>
         <title>Data Flowing from Connect for Ethereum (by Sourcetype)</title>
         <search>
-          <query>index=* sourcetype=ethereum* 
+          <query>`ethereum_index` sourcetype=ethereum* 
 | timechart count by sourcetype</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -76,7 +76,7 @@
       <table>
         <title>Event Count by Chain in the past 1 Hour (you can have multiple!)</title>
         <search>
-          <query>index=* sourcetype=ethereum* 
+          <query>`ethereum_index` sourcetype=ethereum* 
 | stats count sparkline(count) as sparkline values(sourcetype) as sourcetypes by network 
 | rename network AS Chains count AS eventCount</query>
           <earliest>-60m@m</earliest>
@@ -111,7 +111,7 @@
       <html>
         <center>
           <strong>
-            <a href="/app/ethereum-basics/search?earliest=-60m%40m&amp;latest=now&amp;q=search%20index%3D*%20sourcetype%3D%22ethereum%3Atransaction%22" target="_blank">Splunk Search</a>
+            <a href="/app/ethereum-basics/search?earliest=-60m%40m&amp;latest=now&amp;q=search `ethereum_index` sourcetype%3D%22ethereum%3Atransaction%22" target="_blank">Splunk Search</a>
           </strong> This is where it all starts. Start searching through your data!
         </center>
         <img src="/static/app/ethereum-basics/search_example.png" width="100%"/>
@@ -233,7 +233,7 @@
       <html>
         <center>
           <strong>
-            Download and Install the <a href="https://splunkbase.splunk.com/app/1724/" target="_blank">Lookup Editor</a> which will allow you to edit CSVs from the GUI. Go to the Lookup Editor App once installed and find "crypto_addresses.csv" 
+            Download and Install the <a href="https://splunkbase.splunk.com/app/1724/" target="_blank">Lookup Editor</a> which will allow you to edit CSVs from the GUI. Go to the Lookup Editor App once installed and find <a href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=ethereum-basics&amp;lookup=crypto_addresses.csv&amp;type=csv" target="_blank">"crypto_addresses.csv"</a> 
           </strong> 
         </center>
         <img src="/static/app/ethereum-basics/lookup_editor.png" width="100%"/>

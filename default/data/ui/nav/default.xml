@@ -2,6 +2,7 @@
   <view name="introduction" default='true' />
   <view name="multichain_stats" />
   <view name="ethereum_starter_searches" />
+  <view name="gas_analytics" />
   <view name="eth_address_explorer" />
   <view name="crypto_kitties" />
   <view name="search" />

@@ -27,7 +27,7 @@
       <single>
         <title>Total Transactions</title>
         <search>
-          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | stats count</query>
+          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | stats count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -57,7 +57,7 @@
       <chart>
         <title>Transaction History</title>
         <search>
-          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | timechart count</query>
+          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | timechart count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -103,7 +103,7 @@
       <single>
         <title>Sum ETH Transferred</title>
         <search>
-          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
+          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
 | eval value=value/1000000000000000000 
 | stats sum(value)</query>
           <earliest>$field1.earliest$</earliest>
@@ -138,7 +138,7 @@
       <table>
         <title>Transaction Table for $address_token$</title>
         <search>
-          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
+          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
 | eval value=value/1000000000000000000 
 | eval from=lower(from) 
 | eval to=lower(to) 
@@ -194,7 +194,7 @@
       <viz type="force_directed_viz.force_directed">
         <title>Thicker the line, more txns between each node</title>
         <search>
-          <query>index=* network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
+          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
 | eval value=value/1000000000000000000 
 | stats count by to from 
 | eval from=lower(from) 
@@ -245,78 +245,6 @@
         <option name="force_directed_viz.force_directed.theme">dark</option>
         <option name="force_directed_viz.force_directed.upperRange">5</option>
         <option name="height">639</option>
-        <option name="refresh.display">none</option>
-        <option name="trellis.enabled">0</option>
-        <option name="trellis.scales.shared">1</option>
-        <option name="trellis.size">medium</option>
-      </viz>
-    </panel>
-    <panel>
-      <title>Level 2 Relationships for $address_token$ - Note: While possible, this search is currently just looking for relationships between from/to and not ABI decoded addresses.</title>
-      <viz type="force_directed_viz.force_directed">
-        <title>Thicker the line, more txns between each node</title>
-        <search>
-          <query>index=* sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) OR 
-    [ search index=* sourcetype="ethereum:transaction" $address_token$ 
-    | eval from=lower(from) 
-    | eval to=lower(to) 
-    | eval addr = if(from == "$address_token$", to, from) 
-    | dedup addr 
-    | return 100 from=$addr] OR 
-    [ search index=* sourcetype="ethereum:transaction" $address_token$ 
-    | eval from=lower(from) 
-    | eval to=lower(to) 
-    | eval addr = if(from == "$address_token$", to, from) 
-    | dedup addr 
-    | return 100 to=$addr]
-| eval from=lower(from) 
-| eval to=lower(to) 
-| stats count by to from 
-| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
-| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
-| eval from=if(isnull(from_owner),substr(lower(from),0,10)."...",from_owner) 
-| eval to=if(isnull(to_owner),substr(lower(to),0,10)."...",to_owner)</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
-          <refresh>2m</refresh>
-          <refreshType>delay</refreshType>
-        </search>
-        <option name="drilldown">none</option>
-        <option name="force_directed_viz.force_directed.AttractDistanceMax">200</option>
-        <option name="force_directed_viz.force_directed.AttractDistanceMin">60</option>
-        <option name="force_directed_viz.force_directed.AttractForceStrength">-300</option>
-        <option name="force_directed_viz.force_directed.CollisionIterations">1</option>
-        <option name="force_directed_viz.force_directed.CollisionRadius">30</option>
-        <option name="force_directed_viz.force_directed.CollisionStrength">0.7</option>
-        <option name="force_directed_viz.force_directed.ColorRange1">3</option>
-        <option name="force_directed_viz.force_directed.ColorRange1Code">#006d9c</option>
-        <option name="force_directed_viz.force_directed.ColorRange2">5</option>
-        <option name="force_directed_viz.force_directed.ColorRange2Code">#f1813f</option>
-        <option name="force_directed_viz.force_directed.ColorRange3">10</option>
-        <option name="force_directed_viz.force_directed.ColorRange3Code">#dc4e41</option>
-        <option name="force_directed_viz.force_directed.ColorRange4">1000</option>
-        <option name="force_directed_viz.force_directed.ColorRange4Code">#f58f39</option>
-        <option name="force_directed_viz.force_directed.ColorRange5">10000</option>
-        <option name="force_directed_viz.force_directed.ColorRange5Code">#d93f3c</option>
-        <option name="force_directed_viz.force_directed.ForceCollision">20</option>
-        <option name="force_directed_viz.force_directed.LineColor">enabled</option>
-        <option name="force_directed_viz.force_directed.LinkDistance">100</option>
-        <option name="force_directed_viz.force_directed.LinkLength">1</option>
-        <option name="force_directed_viz.force_directed.PanZoom">disabled</option>
-        <option name="force_directed_viz.force_directed.RepelDistanceMax">50</option>
-        <option name="force_directed_viz.force_directed.RepelDistanceMin">10</option>
-        <option name="force_directed_viz.force_directed.RepelForceStrength">-140</option>
-        <option name="force_directed_viz.force_directed.SWRange1">1</option>
-        <option name="force_directed_viz.force_directed.SWRange2">2</option>
-        <option name="force_directed_viz.force_directed.SWRange3">3</option>
-        <option name="force_directed_viz.force_directed.SWRange4">1</option>
-        <option name="force_directed_viz.force_directed.SWRange5">1</option>
-        <option name="force_directed_viz.force_directed.arrows">enabled</option>
-        <option name="force_directed_viz.force_directed.lowerRange">5</option>
-        <option name="force_directed_viz.force_directed.theme">dark</option>
-        <option name="force_directed_viz.force_directed.upperRange">5</option>
-        <option name="height">612</option>
         <option name="refresh.display">none</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>

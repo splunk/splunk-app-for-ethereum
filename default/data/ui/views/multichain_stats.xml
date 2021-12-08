@@ -6,7 +6,7 @@
       <single>
         <title>Latest Blockheight</title>
         <search>
-          <query>index=* sourcetype="ethereum:block" 
+          <query>`ethereum_index` sourcetype="ethereum:block" 
 | stats latest(number) as block by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -38,7 +38,7 @@
       <single>
         <title>Total Transactions Per Hour</title>
         <search>
-          <query>index=* sourcetype="ethereum:transaction" 
+          <query>`ethereum_index` sourcetype="ethereum:transaction" 
 | stats dc(hash) as txns by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -72,7 +72,7 @@
       <chart>
         <title>Blockheight by Chain over time</title>
         <search>
-          <query>index=* sourcetype="ethereum:block" 
+          <query>`ethereum_index` sourcetype="ethereum:block" 
 | timechart partial=f latest(number) as block by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -118,7 +118,7 @@
       <chart>
         <title>Transaction Count by Chain over time</title>
         <search>
-          <query>index=* sourcetype="ethereum:transaction" 
+          <query>`ethereum_index` sourcetype="ethereum:transaction" 
 | timechart partial=f dc(hash) by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -166,7 +166,7 @@
       <table>
         <title>Top Miners by Network</title>
         <search>
-          <query>index=* | top miner by network</query>
+          <query>`ethereum_index` | top miner by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
@@ -175,6 +175,7 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -182,4 +183,3 @@
     </panel>
   </row>
 </dashboard>
-
