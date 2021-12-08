@@ -6,7 +6,7 @@
       <single>
         <title>Unique Kitties</title>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | stats latest(kittyId)</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
@@ -37,7 +37,7 @@
       <single>
         <title>Kitties "birthed" in 1 hr</title>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d call.name="giveBirth" 
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d call.name="giveBirth" 
 | stats count</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -68,7 +68,7 @@
       <single>
         <title>Total Txns in 1 hr</title>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d | stats count</query>
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d | stats count</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
@@ -100,7 +100,7 @@
       <title>Transactions by Function Call</title>
       <chart>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d 
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d 
 | timechart count by call.name</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
@@ -148,7 +148,7 @@
       <title>Latest Transactions</title>
       <table>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | table _time from to abi_to call.name kittyId sireId matronId auction* value gas 
 | eval from=substr(from,0,10)."..." 
 | eval to=substr(to,0,10)."..." 
@@ -193,7 +193,7 @@
       <title>Most Active Kitties in the Past Week</title>
       <table>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | stats count by kittyId 
 | append 
     [ search index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
@@ -213,6 +213,7 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>

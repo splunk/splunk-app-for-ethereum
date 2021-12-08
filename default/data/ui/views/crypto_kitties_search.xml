@@ -14,7 +14,7 @@
       <single>
         <title>Top Activity</title>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction $kitty_token$ 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d 
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction $kitty_token$ 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d 
 | top call.name</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
@@ -45,7 +45,7 @@
       <single>
         <title>Total Txns</title>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction $kitty_token$ 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d 
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction $kitty_token$ 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d 
 | stats count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
@@ -78,7 +78,7 @@
       <title>Transactions by Function Call</title>
       <chart>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction $kitty_token$ 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction $kitty_token$ 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | timechart count by call.name</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
@@ -126,7 +126,7 @@
       <title>Transaction Table</title>
       <table>
         <search>
-          <query>index=* network::mainnet sourcetype=ethereum:transaction $kitty_token$ 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+          <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction $kitty_token$ 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | table _time from to abi_to call.name kittyId sireId matronId auction* value gas 
 | eval from=substr(from,0,10)."..." 
 | eval to=substr(to,0,10)."..." 
