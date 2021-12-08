@@ -1,6 +1,47 @@
-address,chain,type,description
-0x06012c8cf97bead5deae237070f9587f8e7a266d,ethereum,Contract,CryptoKitties
-0x17d38b18d646dc00479b89baaeaaaeb8a0c5ea4d,xdai,Store,Maker Booth Swag Store
-0x4b78a47532d9e966574d30189b3de734a232a78a,xdai,Contract,Buttercup Bucks
-0x5ffec48e3fb8d2a9dd0a46f2565f61fcc964894a,xdai,PersonalWallet,Stephens BCB Wallet (Phone)
-0xfb3f831edf675409defeccadc60636224abf8746,xdai,PersonalWallet,Stephens BCB Wallet (Laptop)
+address,chain,description,type
+0x59ecf48345a221e0731e785ed79ed40d0a94e2a5,ethereum,"Thorsten Hot Wallet",PersonalWallet
+0x11111112542d85b3ef69ae05771c2dccff4faa26,ethereum,"1Inch V3",Contract
+0x514910771af9ca656af840dff83e8264ecf986ca,ethereum,"Chainlink TOKEN",Contract
+0x06012c8cf97bead5deae237070f9587f8e7a266d,ethereum,CryptoKitties,Contract
+0x17d38b18d646dc00479b89baaeaaaeb8a0c5ea4d,xdai,"Maker Booth Swag Store",Store
+0x4b78a47532d9e966574d30189b3de734a232a78a,xdai,"Buttercup Bucks",Contract
+0x5ffec48e3fb8d2a9dd0a46f2565f61fcc964894a,xdai,"Stephens BCB Wallet (Phone)",PersonalWallet
+0xfb3f831edf675409defeccadc60636224abf8746,xdai,"Stephens BCB Wallet (Laptop)",PersonalWallet
+0xe91d153e0b41518a2ce8dd3d7944fa863463a97d,xdai,"Wrapped XDAI (WXDAI)",Contract
+0x7f90122bf0700f9e7e1f688fe926940e8839f353,xdai,"Vyper_contract",Contract
+0x8c0c36c85192204c8d782f763ff5a30f5ba0192f,xdai,"SushiSwap LP Token (SLP)",Contract
+0xa227c72a4055a9dc949cae24f54535fe890d3663,xdai,"SushiSwap LP Token (SLP)",Contract
+0x1865d5445010e0baf8be2eb410d3eae4a68683c2,xdai,"DXswap (DXS)",Contract
+0x6685c047eab042297e659bfaa7423e94b4a14b9e,xdai,"SushiSwap LP Token (SLP)",Contract
+0xa76fbe83c5b6d03438d82cf1ba4bcd6e30d06b0e,xdai,"DXswap (DXS)",Contract
+0x01b9ae223e71b215209a0b6873ef63d7925862cc,ethereum,"Budverse Cans - Heritage Edition","NFT Contract"
+0x7be8076f4ea4a4ad08075c2508e481d6c946d12b,ethereum,OpenSea,Contract
+0x6b3595068778dd592e39a122f4f5a5cf09c90fe2,ethereum,"SushiToken (SUSHI)",Contract
+0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f,ethereum,"SushiSwap Router",Contract
+0xdac17f958d2ee523a2206206994597c13d831ec7,ethereum,"Tether USD",Contract
+0x7a250d5630b4cf539739df2c5dacb4c659f2488d,ethereum,"Uniswap V2",Contract
+0xe592427a0aece92de3edee1f18e0157c05861564,ethereum,"Uniswap V3",Contract
+0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48,ethereum,"USD Coin (USDC)",Contract
+0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce,ethereum,"SHIBA INU",Contract
+0x881d40237659c251811cec9c364ef91dc08d300c,ethereum,"Metamask Swap Router",Contract
+0x47e312d99c09ce61a866c83cbbbbed5a4b9d33e7,ethereum,"Art Blocks",Contract
+0xc729ce9bf1030fbb639849a96fa8bbd013680b64,ethereum,Monarchs,Contract
+0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2,ethereum,"Wrapped Ether",Contract
+0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0,ethereum,"Matic Token (MATIC)",Contract
+0x0000000000000000000000000000000000000000,ethereum,BlackHole,BlackHole
+0xb3295e739380bd68de96802f7c4dba4e54477206,Ethereum,"ELF Wrapped steth",Token
+0xdcd90c7f6324cfa40d7169ef80b12031770b4325,Ethereum,"stecrv yearn vault",Token
+0x53b1aeaa018da00b4f458cc13d40eb3e8d1b85d6,Ethereum,"Element Wrapped Yearn Curve LUSD",Token
+0x5fa5b62c8af877cb37031e0a3b2f34a78e3c56a6,Ethereum,"Curve LUSD Pool yVault",Token
+0x97278ce17d4860f8f49afc6e4c1c5acbf2584ce5,Ethereum,"ELF Wrapped tricrypto",Token
+0x3d980e50508cfd41a13837a60149927a11c03731,Ethereum,"crvtricrypto yearn",Token
+0x4f424b26c7c659f198797bd87282bf602f543521,Ethereum,"ELF Wrapped tricrypto2",Token
+0xe537b5cc158eb71037d4125bdd7538421981e6aa,Ethereum,"crvtricrypto2 yearn vault",Token
+0x21bbc083362022ab8d7e42c18c47d484cc95c193,Ethereum,"ELF Wrapped dai",Token
+0xda816459f1ab5631232fe5e97a05bbbb94970c95,Ethereum,"dai yearn vault",Token
+0xdea04ffc66ecd7bf35782c70255852b34102c3b0,Ethereum,"ELF Wrapped USDC",Token
+0x5f18c75abdae578b483e5f43f12a39cf75b973a9,Ethereum,"USDC yearn vault",Token
+0xbabd64a87881d8df7680907fcde176ff11fa0292,Ethereum,"Element Yield Token yvCurveLUSD-28SEP21",Token
+0xed279fdd11ca84beef15af5d39bb4d4bee23f0ca,Ethereum,"Curve.fi Factory USD Metapool: Liquity",Token
+0x9b44ed798a10df31dee52c5256dcb4754bcf097e,Ethereum,"Element Principal Token yvCurveLUSD-28SEP21",Token
+0xba12222222228d8ba445958a75a0704d566bf2c8,Ethereum,"Balancer: Vault",Token
