@@ -1,0 +1,319 @@
+<form theme="dark">
+  <label>Wrapped xDai Balance Analytics</label>
+  <description>Currently for Wrapped xDAI (wxDAI) - 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d</description>
+  <fieldset submitButton="false">
+    <input type="text" token="address_token">
+      <label>Address</label>
+      <default>0xe91d153e0b41518a2ce8dd3d7944fa863463a97d</default>
+      <initialValue>0xe91d153e0b41518a2ce8dd3d7944fa863463a97d</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Unique Accounts</title>
+        <search>
+          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+| stats latest(balance) as latest_balance by account | stats dc(account) as unique_accounts</query>
+          <earliest>0</earliest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Unique Accounts w/ Balance &gt; 0</title>
+        <search>
+          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+| stats latest(balance) as latest_balance by account 
+| search latest_balance&gt;0 
+| stats dc(account) as unique_accounts</query>
+          <earliest>0</earliest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Latest BlockNumber</title>
+        <search>
+          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+| stats latest(blockNumber) as block</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>11s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title># Accounts Actively Trading</title>
+        <search>
+          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d | timechart partial=f span=1h dc(account) as "Unique Accts"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Accounts for $address_token$</title>
+        <search>
+          <query>index="federated:xdai" sourcetype="ethereum:balance" $address_token$ 
+| stats min(balance) as minBalance max(balance) as maxBalance latest(balance) as curBalance by account 
+| eventstats sum(curBalance) as totalBalance 
+| eval percent=round(curBalance/totalBalance,4)*100 
+| sort - percent 
+| fields - totalBalance 
+| eval account=lower(account) 
+| lookup crypto_addresses.csv address AS account OUTPUT description AS account_owner 
+| table account account_owner percent *Balance percent 
+| head 10</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="curBalance">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="minBalance"></format>
+        <format type="number" field="maxBalance"></format>
+        <format type="number" field="curBalance"></format>
+        <format type="color" field="percent">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent">
+          <option name="unit">%</option>
+        </format>
+        <drilldown>
+          <set token="account_token">$click.value$</set>
+        </drilldown>
+      </table>
+      <table>
+        <search>
+          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+| stats min(balance) as minBalance max(balance) as maxBalance latest(balance) as curBalance by account 
+| eventstats sum(curBalance) as totalBalance 
+| eval percent=round(curBalance/totalBalance,4)*100 
+| sort - percent 
+| fields - totalBalance 
+| eval account=lower(account) 
+| lookup crypto_addresses.csv address AS account OUTPUT description AS account_owner 
+| table account account_owner percent *Balance percent 
+| head 10 
+| addcoltotals 
+| streamstats count 
+| search count=11 
+| fields - count | eval account="               Top 10 Token Holders"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="curBalance">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="minBalance"></format>
+        <format type="number" field="maxBalance"></format>
+        <format type="number" field="curBalance"></format>
+        <format type="color" field="percent">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent">
+          <option name="unit">%</option>
+        </format>
+        <drilldown>
+          <set token="account_token">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <search>
+          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+| stats latest(balance) as latest_balance by account 
+| top latest_balance by account 
+| eval account=lower(account) 
+| lookup crypto_addresses.csv address AS account OUTPUT description AS account_found 
+| eval account=if(isnull(account_found),account,account_found)</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">467</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="time" token="field1">
+        <label>Select a Time Range:</label>
+        <default>
+          <earliest>0</earliest>
+          <latest></latest>
+        </default>
+      </input>
+      <input type="dropdown" token="span_token">
+        <label>Select a Chart Span:</label>
+      </input>
+      <html>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Balance Timeline for $account_token$</title>
+        <search>
+          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d $account_token$ 
+| timechart avg(balance) as balance</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <single>
+        <title>Activity (Count of transfers) for $account_token$</title>
+        <search>
+          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d $account_token$ 
+| stats count</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">223</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+  </row>
+</form>
