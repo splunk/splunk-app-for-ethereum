@@ -31,6 +31,7 @@
         <title>Data Flowing from Connect for Ethereum (by Sourcetype)</title>
         <search>
           <query>`ethereum_index` sourcetype=ethereum* 
+| append [ search index=federated:xdai sourcetype="ethereum*" ]
 | timechart count by sourcetype</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -77,6 +78,7 @@
         <title>Event Count by Chain in the past 1 Hour (you can have multiple!)</title>
         <search>
           <query>`ethereum_index` sourcetype=ethereum* 
+| append [ search index=federated:xdai sourcetype="ethereum*" ]
 | stats count sparkline(count) as sparkline values(sourcetype) as sourcetypes by network 
 | rename network AS Chains count AS eventCount</query>
           <earliest>-60m@m</earliest>

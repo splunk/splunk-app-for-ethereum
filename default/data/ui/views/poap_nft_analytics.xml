@@ -12,10 +12,127 @@
   </fieldset>
   <row>
     <panel>
+      <title>POAP - XDAI</title>
       <single>
-        <title>Unique NFTs Minted</title>
         <search>
-          <query>index=federated:xdai 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+| eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
+| eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
+| eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
+| eval nft_city=mvindex('metadata.attributes{}.value',3) 
+| eval nft_country=mvindex('metadata.attributes{}.value',4) 
+| eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint","transfer") 
+| table _time metadata.name nft* from to metadata.description txn_type
+| stats c(eval(txn_type="mint")) as Mints</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">150</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Minted</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+      <single>
+        <search>
+          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+| eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
+| eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
+| eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
+| eval nft_city=mvindex('metadata.attributes{}.value',3) 
+| eval nft_country=mvindex('metadata.attributes{}.value',4) 
+| eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint","transfer") 
+| table _time metadata.name nft* from to metadata.description txn_type
+| stats c(eval(txn_type="transfer")) as Transfers</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">150</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Transfers</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+      <single>
+        <search>
+          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+| eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
+| eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
+| eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
+| eval nft_city=mvindex('metadata.attributes{}.value',3) 
+| eval nft_country=mvindex('metadata.attributes{}.value',4) 
+| eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint","transfer") 
+| table _time metadata.name nft* from to metadata.description txn_type
+| stats c(eval(txn_type="burn")) as Burns</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">150</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Burned</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>POAP - ETHEREUM</title>
+        <search>
+          <query>`ethereum_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -54,15 +171,9 @@
       <chart>
         <title>Minting Timeline</title>
         <search>
-          <query>index=federated:xdai 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
-| eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
-| eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
-| eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
-| eval nft_city=mvindex('metadata.attributes{}.value',3) 
-| eval nft_country=mvindex('metadata.attributes{}.value',4) 
-| eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
-| table _time metadata.name nft* from to metadata.description 
-| timechart count as minting</query>
+          <query>`ethereum_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
+| append [search index=federated:xdai  0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"]
+| timechart span=1d count as minting by index</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -95,7 +206,7 @@
         <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.mode">standard</option>
-        <option name="charting.legend.placement">none</option>
+        <option name="charting.legend.placement">right</option>
         <option name="charting.lineWidth">2</option>
         <option name="height">150</option>
         <option name="refresh.display">progressbar</option>
@@ -107,20 +218,29 @@
   </row>
   <row>
     <panel>
+      <input type="dropdown" token="chain_token" searchWhenChanged="true">
+        <label>Select Chain:</label>
+        <choice value="`ethereum_index`">ethereum</choice>
+        <choice value="index=federated:xdai">xdai</choice>
+        <default>index=federated:xdai</default>
+        <initialValue>index=federated:xdai</initialValue>
+      </input>
       <table>
         <title>Leaderboard - Click for More Detail</title>
         <search>
-          <query>index=federated:xdai 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+          <query>$chain_token$ 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
 | eval nft_city=mvindex('metadata.attributes{}.value',3) 
 | eval nft_country=mvindex('metadata.attributes{}.value',4) 
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
-| table _time metadata.name nft* from to metadata.description 
-| stats count as mints values(nft*) as nft* by metadata.name metadata.description
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint","transfer") 
+| table _time index metadata.name nft* from to metadata.description txn_type
+| stats c(eval(txn_type="mint")) as mints c(eval(txn_type="transfer")) as transfers latest(index) as index values(nft*) as nft* by metadata.name metadata.description 
 | sort - mints 
-| rename "metadata.name" AS name "metadata.description" as nft_description | table name mints nft_startDate nft_endDate nft_city nft_country nft_virtualEvent nft_description</query>
+| rename "metadata.name" AS name "metadata.description" as nft_description 
+| table name index mints transfers nft_startDate nft_endDate nft_city nft_country nft_virtualEvent nft_description</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -142,6 +262,13 @@
           <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
           <scale type="minMidMax"></scale>
         </format>
+        <format type="color" field="index">
+          <colorPalette type="map">{"ethereum":#708794,"xdai":#CCCCCC}</colorPalette>
+        </format>
+        <format type="color" field="transfers">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
         <drilldown>
           <set token="nft_name">$click.value$</set>
         </drilldown>
@@ -152,7 +279,8 @@
     <panel>
       <table depends="$nft_name$">
         <search>
-          <query>index=federated:xdai 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
+          <query>`ethereum_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
+| append [search index=federated:xdai  0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"]
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -182,7 +310,8 @@
     <panel>
       <table depends="$nft_name$">
         <search>
-          <query>index=federated:xdai 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
+          <query>`ethereum_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
+| append [search index=federated:xdai  0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"]
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -212,7 +341,8 @@
     <panel>
       <table depends="$nft_name$">
         <search>
-          <query>index=federated:xdai 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
+          <query>`ethereum_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
+| append [search index=federated:xdai  0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"]
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -245,7 +375,8 @@
       <table>
         <title>Top To</title>
         <search>
-          <query>index=federated:xdai 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+          <query>`ethereum_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
+| append [search index=federated:xdai  0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"]
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -253,14 +384,18 @@
 | eval nft_country=mvindex('metadata.attributes{}.value',4) 
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
 | table _time metadata.name nft* from to metadata.description 
-| top to</query>
+| eventstats count as total 
+| stats dc(metadata.name) as unique_NFTs count by to total 
+| eval perc=round(count/total*100,2) 
+| sort - count 
+| table to unique_NFTs count perc</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>2m</refresh>
           <refreshType>delay</refreshType>
         </search>
-        <option name="count">20</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
@@ -272,13 +407,17 @@
           <colorPalette type="minMidMax" maxColor="#006D9C" minColor="#3C444D"></colorPalette>
           <scale type="minMidMax"></scale>
         </format>
+        <format type="color" field="unique_NFTs">
+          <colorPalette type="minMidMax" maxColor="#5A4575" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
       </table>
     </panel>
     <panel>
       <table>
         <title>Top From</title>
         <search>
-          <query>index=federated:xdai 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -286,14 +425,18 @@
 | eval nft_country=mvindex('metadata.attributes{}.value',4) 
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
 | table _time metadata.name nft* from to metadata.description 
-| top from</query>
+| eventstats count as total 
+| stats dc(metadata.name) as unique_NFTs count by from total 
+| eval perc=round(count/total*100,2) 
+| sort - count 
+| table from unique_NFTs count perc</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>2m</refresh>
           <refreshType>delay</refreshType>
         </search>
-        <option name="count">20</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
@@ -309,13 +452,17 @@
           <colorPalette type="minMidMax" maxColor="#006D9C" minColor="#3C444D"></colorPalette>
           <scale type="minMidMax"></scale>
         </format>
+        <format type="color" field="unique_NFTs">
+          <colorPalette type="minMidMax" maxColor="#5A4575" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
       </table>
     </panel>
     <panel>
       <table>
         <title>Top City w/ NFT Count</title>
         <search>
-          <query>index=federated:xdai 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
