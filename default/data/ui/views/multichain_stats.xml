@@ -6,7 +6,8 @@
       <single>
         <title>Latest Blockheight</title>
         <search>
-          <query>`ethereum_index` sourcetype="ethereum:block" 
+          <query>`ethereum_index` sourcetype="ethereum:block"
+| append [search index=federated:xdai sourcetype="ethereum:block" ]
 | stats latest(number) as block by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -39,6 +40,7 @@
         <title>Total Transactions Per Hour</title>
         <search>
           <query>`ethereum_index` sourcetype="ethereum:transaction" 
+| append [search index=federated:xdai sourcetype="ethereum:transaction" ]
 | stats dc(hash) as txns by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -73,6 +75,7 @@
         <title>Blockheight by Chain over time</title>
         <search>
           <query>`ethereum_index` sourcetype="ethereum:block" 
+| append [search index=federated:xdai sourcetype="ethereum:block" ]
 | timechart partial=f latest(number) as block by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -119,6 +122,7 @@
         <title>Transaction Count by Chain over time</title>
         <search>
           <query>`ethereum_index` sourcetype="ethereum:transaction" 
+| append [search index=federated:xdai sourcetype="ethereum:block" ]
 | timechart partial=f dc(hash) by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
@@ -166,7 +170,9 @@
       <table>
         <title>Top Miners by Network</title>
         <search>
-          <query>`ethereum_index` | top miner by network</query>
+          <query>`ethereum_index` 
+| append [search index=federated:xdai ]
+| top miner by network</query>
           <earliest>-60m@m</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
