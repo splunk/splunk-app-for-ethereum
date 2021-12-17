@@ -1,0 +1,232 @@
+<form theme="dark">
+  <label>ABI Decoding</label>
+    <description>Note:  This is an Experimental Prototype and requires the installation of additional libraries and lookup files.  Please contact blockchain@splunk.com for additional details and instructions .     Once installed and properly configured, this dashboard demonstrates how to use ABI Decoding to unpack the data in the ledger and then use some SPL to parse the JSON and Lookups to combine the on-chain ledger data with off-chain descriptive data for a better understanding of the overall transactions.  This functionality may or may not be delivered as implemented here.</description>
+  <init>
+    <set token="contract_addr">0x5f18c75abdae578b483e5f43f12a39cf75b973a9</set>
+  </init>
+  <search id="base_search">
+    <query>
+index=ethereum sourcetype="ethereum:transaction:event" address="$contract_addr$"
+| eval abiContractAddress="$contract_addr$" 
+| lookup abis.csv address AS abiContractAddress 
+| fields *  
+    </query>
+    <earliest>$myTime.earliest$</earliest>
+    <latest>$myTime.latest$</latest>
+  </search>
+  <search id="base_search_decoded" base="base_search">
+    <query>
+| decode logs
+| spath input=decoded 
+| spath input={} 
+| rename "{}.name" AS eventName 
+| rename "{}.events{}.*" AS eventsArray* 
+| eval abiFrom=if(mvindex(eventsArrayname,0)="sender",mvindex(eventsArrayvalue,0),"") 
+| eval abiTo=if(mvindex(eventsArrayname,1)="receiver",mvindex(eventsArrayvalue,1),"") 
+| eval abiValue=(tonumber(if(mvindex(eventsArrayname,2)="value",mvindex(eventsArrayvalue,2),"")))/1000000 
+| lookup crypto_addresses.csv address AS abiContractAddress OUTPUT description AS abiContractAddress_Description 
+| lookup crypto_addresses.csv address AS abiFrom OUTPUT description AS abiFrom_Description 
+| lookup crypto_addresses.csv address AS abiTo OUTPUT description AS abiTo_Description
+    </query>
+    <earliest>$myTime.earliest$</earliest>
+    <latest>$myTime.latest$</latest>
+  </search>
+  <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="contract_addr" searchWhenChanged="true">
+      <label>Available ABI Contracts</label>
+      <fieldForLabel>contract_name</fieldForLabel>
+      <fieldForValue>address</fieldForValue>
+      <search>
+        <query>| inputlookup append=t abis.csv | table contract_name address</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <default>0x5f18c75abdae578b483e5f43f12a39cf75b973a9</default>
+      <initialValue>0x5f18c75abdae578b483e5f43f12a39cf75b973a9</initialValue>
+      <change>
+        <set token="contract_name">$label$</set>
+      </change>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+        <style> 
+          .panel-body.html { color: white; background: seagreen !important;  text-align: center } 
+          h1 h2 { color:white; background: seagreen !important;  text-align: center }
+        </style>
+        <h1>Analyzing Ethereum Transactions with ABI Decoding and Off-Chain Data</h1>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Events for Contract: $contract_name$</title>
+      <chart>
+        <title>Events</title>
+        <search base="base_search_decoded">
+          <query>| stats count(eventName) by eventName</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Event Parameter Distribution for Contract:  $contract_name$</title>
+      <input type="dropdown" token="keyName" searchWhenChanged="true">
+        <label>Event Parameters</label>
+        <fieldForLabel>key</fieldForLabel>
+        <fieldForValue>key</fieldForValue>
+        <search base="base_search_decoded">
+          <query>| eval params=mvzip(eventsArrayname,eventsArrayvalue,"=")
+| mvexpand params
+| rex field=params "(?i)^(?&lt;key&gt;[^=]+)=(?&lt;value&gt;.*)$"
+| eval {key} = value
+| stats count by key | sort key</query>
+        </search>
+        <default>spender</default>
+        <initialValue>sender</initialValue>
+      </input>
+      <chart>
+        <search base="base_search_decoded">
+          <query>| eval params=mvzip(eventsArrayname,eventsArrayvalue,"=")
+| mvexpand params
+| rex field=params "(?i)^(?&lt;key&gt;[^=]+)=(?&lt;value&gt;.*)$"
+| eval {key} = value
+| search key = "$keyName$"
+| stats count by value</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Values from Known Accounts for Contract: $contract_name$</title>
+      <chart>
+        <title>Senders</title>
+        <search base="base_search_decoded">
+          <query>| stats sum(abiValue) by abiFrom_Description</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Values to Known Accounts for Contract:  $contract_name$</title>
+      <chart>
+        <title>Receivers</title>
+        <search base="base_search_decoded">
+          <query>| stats sum(abiValue) by abiTo_Description</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <h1>How did we get there?</h1>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>1. Select the Raw Transaction Events</title>
+      <table>
+        <title>index=ethereum sourcetype="ethereum:transaction:event" address="$contract_addr$" | table ...</title>
+        <search base="base_search">
+          <query>| table address logIndex transactionIndex data</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html/>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>2. Enhance the Transaction Events with ABI Decoding</title>
+      <table>
+        <title>base search ... | decode logs | table ...</title>
+        <search base="base_search">
+          <query>
+| decode logs
+| table address logIndex transactionIndex  decoded</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html/>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>3. Parse the decoded JSON from the ABI Decoding</title>
+      <table>
+        <title>base search ... | decode logs | spath ... |  eval ... |  rename ... |  table ...</title>
+        <search base="base_search">
+          <query>
+| decode logs
+| spath input=decoded 
+| spath input={} 
+| rename "{}.name" AS eventName 
+| rename "{}.events{}.*" AS eventsArray* 
+| eval abiFrom=if(mvindex(eventsArrayname,0)="sender",mvindex(eventsArrayvalue,0),"") 
+| eval abiTo=if(mvindex(eventsArrayname,1)="receiver",mvindex(eventsArrayvalue,1),"") 
+| eval abiValue=(tonumber(if(mvindex(eventsArrayname,2)="value",mvindex(eventsArrayvalue,2),"")))/1000000 
+| table address logIndex transactionIndex eventName eventsArrayname eventsArrayvalue</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html/>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>4. Use  Lookups to assign off-chain knowledge to on-chain data     -   i.e. human readable names and descriptions</title>
+      <table>
+        <title>base search ... | decode logs | spath ... |  eval ... |  rename ... |  table ...</title>
+        <search base="base_search_decoded">
+          <query>
+| table address logIndex transactionIndex abiContractAddress_Description eventName abiFrom_Description abiTo_Description abiValue abiFrom abiTo</query>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html/>
+    </panel>
+  </row>
+</form>
