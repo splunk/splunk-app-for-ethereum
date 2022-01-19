@@ -218,6 +218,7 @@
 | spath status 
 | spath toContract 
 | spath gasUsed 
+| spath call.name 
 | eval txn_type=if(contractCreated="true","Contract Creation",if(toContract="true" AND chainId="null","Contract Call",if(toContract="true","Token Transfer","Transaction"))) 
 | eval abi_to=coalesce('method.args.recipient','method.args._to') 
 | eval abi_value=mvindex('call.params{}.value',1) 
@@ -225,8 +226,12 @@
 | eval amount=round(value/1000000000000000000,4) 
 | eval from=lower(from) 
 | eval to=lower(to) 
-| lookup crypto_addresses address AS from OUTPUT description AS from_owner 
-| lookup crypto_addresses address AS to OUTPUT description AS to_owner 
+| join type=left to 
+    [| inputlookup crypto_addresses.csv 
+    | rename address AS to, description AS to_owner] 
+| join type=left from 
+    [| inputlookup crypto_addresses.csv 
+    | rename address AS from, description AS from_owner] 
 | eval from=substr(lower(from),0,8)."..." 
 | eval to=if(contractCreated="true",contractAddress,to) 
 | eval to=substr(lower(to),0,8)."..." 
@@ -326,6 +331,7 @@
 | table from numTxns sum(gasUsed) eth abi_value toContract 
 | eval abi_value=if(abi_value&gt;1000000000000000,1,abi_value) 
 | table from numTxns sum(gasUsed) eth abi_value toContract
+| noop search_optimization.replace_table_with_fields=f
 | sort - numTxns 
 | head 15</query>
           <earliest>$selection.earliest$</earliest>
@@ -410,7 +416,7 @@
       <title>Top Addresses over the past 7 Days</title>
       <table>
         <search>
-          <query>index=federated:xdai sourcetype=ethereum:transaction $addy_token$
+          <query>index=federated:xdai sourcetype=ethereum:transaction $addy_token$ 
 | fillnull from_fname value="N/A" 
 | stats c(from) as numTxns sum(gas) as gas sum(gasUsed) as gasUsed by from from_fname 
 | rename from AS address from_fname AS name 
@@ -420,13 +426,17 @@
     | stats c(to) as numTxns sum(gas) as gas sum(gasUsed) as gasUsed by to to_fname 
     | rename to AS address to_fname AS name ] 
 | stats sum(numTxns) as total_txns sum(gas) as total_gas sum(gasUsed) as total_gasUsed by name address 
+| eval address=lower(address) 
+| join type=left address 
+    [| inputlookup crypto_addresses.csv 
+    | rename description AS owner] 
 | sort - total_txns 
 | head 20</query>
           <earliest>-7d@h</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
+        <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>

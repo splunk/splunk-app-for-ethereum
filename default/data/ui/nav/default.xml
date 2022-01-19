@@ -6,10 +6,12 @@
   <view name="eth_address_explorer" />
   <view name="crypto_kitties" />
    <collection label="NFT / xDai">
+    <view name="buttercup_nft_analytics" />
     <view name="poap_nft_analytics" /> 
     <view name="xdai_address_explorer" /> 
     <view name="wrapped_xdai_balance_analytics" />    
   </collection>
+  <view name="resources" />
   <view name="search" />
   <view name="alerts" />
   <view name="dashboards" />

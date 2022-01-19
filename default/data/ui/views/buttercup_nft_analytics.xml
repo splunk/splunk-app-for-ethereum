@@ -1,0 +1,326 @@
+<form theme="dark">
+  <label>Buttercup NFT Analytics</label>
+  <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>0</earliest>
+        <latest></latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Minted</title>
+      <single>
+        <search>
+          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+| spath input=metadata | search NOT errorTokenURI.code=3 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) | search txn_type=mint | stats count</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">125</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Latest Mint!</title>
+      <html>
+        <center>
+         <img src="$tok_wimg$" width="15%" height="15%"/>
+        </center>
+       </html>
+    </panel>
+    <panel>
+      <title>Transfers</title>
+      <single>
+        <search>
+          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+| spath input=metadata | search NOT errorTokenURI.code=3 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) | search txn_type=transfer | stats count</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">125</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Activity Timeline</title>
+        <search>
+          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+| spath input=metadata | search NOT errorTokenURI.code=3 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
+| timechart span=1h count by txn_type</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">207</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Who Minted the Most - Table</title>
+        <search>
+          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+| spath input=metadata | search NOT errorTokenURI.code=3 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
+| search txn_type=mint 
+| top to 
+| eval to=lower(to) 
+| lookup buttercup_nft.csv address AS to 
+| rename to as address 
+| table address owner count percent | head 7</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">7</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="percent">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">https://testnets.opensea.io/$row.address$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Who Minted the Most - Pie</title>
+        <search>
+          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+| spath input=metadata | search NOT errorTokenURI.code=3 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
+| search txn_type=mint 
+| top to 
+| eval to=lower(to) 
+| lookup buttercup_nft.csv address AS to OUTPUT owner as to_owner
+| eval from=if(isnull(from_owner),substr(from,0,10)."...",from_owner) 
+| eval to=if(isnull(to_owner),substr(to,0,10)."...",to_owner) | fields -  to_owner</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <table>
+        <title>Transfers</title>
+        <search>
+          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+| spath input=metadata | search NOT errorTokenURI.code=3 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
+| search txn_type=transfer 
+| lookup buttercup_nft.csv address AS to OUTPUT owner AS to_owner 
+| lookup buttercup_nft.csv address AS from OUTPUT owner AS from_owner 
+| eval from=if(isnull(from_owner),substr(from,0,10)."...",from_owner) 
+| eval to=if(isnull(to_owner),substr(to,0,10)."...",to_owner)
+| table _time from to name</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">7</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="percent">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Buttercup NFT Table</title>
+        <search>
+          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI="" 
+| spath input=metadata 
+| search NOT errorTokenURI.code=3 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
+| eval from=lower(from), to=lower(to) 
+| lookup buttercup_nft.csv address AS to OUTPUT owner AS to_owner 
+| lookup buttercup_nft.csv address AS from OUTPUT owner AS from_owner 
+| eval from=if(isnull(from_owner),substr(from,0,10)."...",from_owner) 
+| eval to=if(isnull(to_owner),substr(to,0,10)."...",to_owner) 
+| rename "attributes{}.trait_type" AS trait_type "attributes{}.value" AS trait_value 
+| eval trait_value=lower(trait_value) 
+| rex field=trait_value mode=sed "s/ /_/g" 
+| table _time txn_type from to name trait* 
+    `buttercup_traits_extract` 
+| sort - _time 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tBackground OUTPUT Rarity AS tBackground_R Rarity_Score AS tBackground_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tBodyColor OUTPUT Rarity AS tBodyColor_R Rarity_Score AS tBodyColor_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tBodyOutline OUTPUT Rarity AS tBodyOutline_R Rarity_Score AS tBodyOutline_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tEyes OUTPUT Rarity AS tEyes_R Rarity_Score AS tEyes_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tGlasses OUTPUT Rarity AS tGlasses_R Rarity_Score AS tGlasses_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tHat OUTPUT Rarity AS tHat_R Rarity_Score AS tHat_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tHoofColor OUTPUT Rarity AS tHoofColor_R Rarity_Score AS tHoofColor_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tIrisColor OUTPUT Rarity AS tIrisColor_R Rarity_Score AS tIrisColor_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tMane OUTPUT Rarity AS tMane_R Rarity_Score AS tMane_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tMouth OUTPUT Rarity AS tMouth_R Rarity_Score AS tMouth_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tPatchColor OUTPUT Rarity AS tPatchColor_R Rarity_Score AS tPatchColor_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tWingColor OUTPUT Rarity AS tWingColor_R Rarity_Score AS tWingColor_RS 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tWingOutline OUTPUT Rarity AS tWingOutline_R Rarity_Score AS tWingOutline_RS 
+| fields - trait* 
+| eval RS=tBackground_RS+tBodyColor_RS+tBodyOutline_RS+tEyes_RS+tGlasses_RS+tHat_RS+tHoofColor_RS+tIrisColor_RS+tMane_RS+tMouth_RS+tPatchColor_RS+tWingColor_RS+tWingOutline_RS 
+| convert ctime(_time) as test 
+| lookup ButtercupNFT_rarity_lookup.csv Trait_Name AS tIrisColor OUTPUT Rarity AS tIrisColor_R</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="rare_score">
+          <colorPalette type="minMidMax" maxColor="#5A4575" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="RS">
+          <colorPalette type="minMidMax" maxColor="#62B3B2" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <drilldown>
+          <set token="image_token">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <finalized>
+            <condition match=" 'job.resultCount' != 0">
+              <set token="tok_wimg">$result.image$</set>
+            </condition>
+            <condition>
+              <set token="tok_wimg">No result found</set>
+            </condition>
+          </finalized>
+          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf 
+| spath input=metadata 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
+| search txn_type=mint 
+| stats latest(image) as image</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>
