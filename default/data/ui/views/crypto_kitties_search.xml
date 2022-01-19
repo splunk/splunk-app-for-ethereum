@@ -11,6 +11,7 @@
   </fieldset>
   <row>
     <panel>
+      <title>Kitty ID: $kitty_token$</title>
       <single>
         <title>Top Activity</title>
         <search>
@@ -42,6 +43,7 @@
       </single>
     </panel>
     <panel>
+      <title>Kitty ID: $kitty_token$</title>
       <single>
         <title>Total Txns</title>
         <search>

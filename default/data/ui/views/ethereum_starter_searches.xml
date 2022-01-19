@@ -1,6 +1,14 @@
 <form theme="dark">
   <label>Ethereum Starter Searches</label>
-  <fieldset submitButton="false"></fieldset>
+  <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <html>
@@ -16,8 +24,8 @@
         <title>Latest Block</title>
         <search>
           <query>`ethereum_index` sourcetype=ethereum:block network::mainnet | stats latest(number) as blockNum</query>
-          <earliest>-5m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>11s</refresh>
           <refreshType>delay</refreshType>
@@ -51,9 +59,10 @@
 | sort - _time 
 | delta p=1 _time as diff 
 | eval diff=abs(diff) 
-| timechart span=10m partial=f avg(diff) as avgBlockTime</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+| timechart span=10m partial=f avg(diff) as avgBlockTime
+| noop search_optimization.replace_table_with_fields=f</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>13s</refresh>
           <refreshType>delay</refreshType>
@@ -81,8 +90,8 @@
 | head 50 
 | sort + number
 | trendline sma5(sumTxns)</query>
-          <earliest>-15m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>1m</refresh>
           <refreshType>delay</refreshType>
@@ -338,8 +347,8 @@
 | stats sum(ethValue) as ethSent by from 
 | sort - ethSent 
 | head 10</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">10</option>
@@ -365,8 +374,8 @@
 | stats sum(ethValue) as ethReceived by to 
 | sort - ethReceived
 | head 10</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">10</option>

@@ -110,7 +110,7 @@
 | sort - percent 
 | fields - totalBalance 
 | eval account=lower(account) 
-| lookup crypto_addresses.csv address AS account OUTPUT description AS account_owner 
+
 | table account account_owner percent *Balance percent 
 | head 10</query>
           <earliest>0</earliest>
@@ -152,8 +152,9 @@
 | sort - percent 
 | fields - totalBalance 
 | eval account=lower(account) 
-| lookup crypto_addresses.csv address AS account OUTPUT description AS account_owner 
+
 | table account account_owner percent *Balance percent 
+| noop search_optimization.replace_table_with_fields=f 
 | head 10 
 | addcoltotals 
 | streamstats count 
@@ -197,7 +198,7 @@
 | stats latest(balance) as latest_balance by account 
 | top latest_balance by account 
 | eval account=lower(account) 
-| lookup crypto_addresses.csv address AS account OUTPUT description AS account_found 
+
 | eval account=if(isnull(account_found),account,account_found)</query>
           <earliest>0</earliest>
           <latest></latest>

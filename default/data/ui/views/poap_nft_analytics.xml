@@ -31,7 +31,7 @@
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint","transfer") 
 | table _time metadata.name nft* from to metadata.description txn_type
-| stats c(eval(txn_type="mint")) as Mints</query>
+| stats c(eval(txn_type="mint")) as Mints `fix_ifields_issue`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -69,7 +69,7 @@
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint","transfer") 
 | table _time metadata.name nft* from to metadata.description txn_type
-| stats c(eval(txn_type="transfer")) as Transfers</query>
+| stats c(eval(txn_type="transfer")) as Transfers `fix_ifields_issue`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -107,7 +107,7 @@
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
 | table _time metadata.name nft* from to metadata.description txn_type
-| stats c(eval(txn_type="burn")) as Burns</query>
+| stats c(eval(txn_type="burn")) as Burns `fix_ifields_issue`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -148,7 +148,7 @@
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint","transfer") 
 | table _time metadata.name nft* from to metadata.description txn_type
-| stats c(eval(txn_type="mint")) as Mints</query>
+| stats c(eval(txn_type="mint")) as Mints `fix_ifields_issue`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -186,7 +186,7 @@
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint","transfer") 
 | table _time metadata.name nft* from to metadata.description txn_type
-| stats c(eval(txn_type="transfer")) as Transfers</query>
+| stats c(eval(txn_type="transfer")) as Transfers `fix_ifields_issue`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -224,7 +224,7 @@
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
 | table _time metadata.name nft* from to metadata.description txn_type
-| stats c(eval(txn_type="burn")) as Burns</query>
+| stats c(eval(txn_type="burn")) as Burns `fix_ifields_issue`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -455,7 +455,7 @@
 | stats dc(metadata.name) as unique_NFTs count by from total 
 | eval perc=round(count/total*100,2) 
 | sort - count 
-| table from unique_NFTs count perc</query>
+| table from unique_NFTs count perc `fix_ifields_issue`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -497,7 +497,7 @@
 | eval nft_eventURL=mvindex('metadata.attributes{}.value',5) 
 | table _time metadata.name nft* from to metadata.description 
 | search nft_city&gt;0 
-| stats dc(metadata.name) as unique_NFTs count by nft_city | sort - count</query>
+| stats dc(metadata.name) as unique_NFTs count by nft_city | sort - count `fix_ifields_issue`</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>

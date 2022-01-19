@@ -1,8 +1,8 @@
 <form theme="dark">
   <label>Ethereum GAS Analytics</label>
   <fieldset submitButton="false">
-    <input type="time" token="field1">
-      <label></label>
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
       <default>
         <earliest>-60m@m</earliest>
         <latest>now</latest>
@@ -15,8 +15,8 @@
         <title>gasUsed vs gasLimit</title>
         <search>
           <query>`ethereum_index` sourcetype="ethereum:block" | timechart sum(gasUsed) as gasUsed sum(gasLimit) as gasLimit</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>1m</refresh>
           <refreshType>delay</refreshType>
@@ -61,8 +61,8 @@
         <title>gasUsed and txnCount</title>
         <search>
           <query>`ethereum_index` sourcetype="ethereum:block" | timechart sum(gasUsed) as gasUsed sum(transactionCount) as txnCount</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>1m</refresh>
           <refreshType>delay</refreshType>
@@ -110,8 +110,8 @@
           <query>`ethereum_index` sourcetype="ethereum:block" 
 | rename number as block_number 
 | chart sum(gasUsed) as gasUsed by block_number</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>1m</refresh>
           <refreshType>delay</refreshType>
@@ -160,8 +160,8 @@
           <query>`ethereum_index` sourcetype="ethereum:transaction" 
 | stats avg(gasPrice) as gasPrice 
 | eval gasPrice=gasPrice/1000000000</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>17s</refresh>
           <refreshType>delay</refreshType>
@@ -194,13 +194,13 @@
           <query>`ethereum_index` sourcetype="ethereum:transaction" | head 10
 | stats latest(gasPrice) as gasPrice 
 | eval gasPrice=gasPrice/1000000000</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>3s</refresh>
           <refreshType>delay</refreshType>
         </search>
-         <option name="height">100</option>
+        <option name="height">100</option>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
         <option name="drilldown">none</option>
@@ -229,8 +229,8 @@
         <search>
           <query>`ethereum_index` sourcetype="ethereum:transaction" | timechart avg(gasPrice) as gasPrice dc(hash) as txnCount
 | eval gasPrice=gasPrice/1000000000</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -262,10 +262,11 @@
         <option name="charting.legend.mode">standard</option>
         <option name="charting.legend.placement">right</option>
         <option name="charting.lineWidth">2</option>
+        <option name="height">175</option>
+        <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
-        <option name="height">175</option>
       </chart>
     </panel>
   </row>
@@ -280,10 +281,12 @@
 | stats dc(hash) as txnCount sum(gasUsed) as gasUsed avg(gasFee) as avg_gasFee avg(gasPrice) as avg_gasPrice min(gasPrice) as min_gasPrice max(gasPrice) as max_gasPrice sparkline(avg(gasPrice)) as gasPriceTrend by to 
 | sort - gasUsed 
 | eval to=lower(to) 
-| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
+| join type=left to 
+    [| inputlookup crypto_addresses.csv 
+    | rename address AS to, description AS to_owner]  
 | table to to_owner txnCount gasUsed avg_gasFee avg_gasPrice min_gasPrice max_gasPrice gasPriceTrend</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>30s</refresh>
           <refreshType>delay</refreshType>
@@ -292,6 +295,7 @@
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -332,8 +336,8 @@
           <query>`ethereum_index` sourcetype="ethereum:transaction" to=$addr_token$ 
 | eval gasPrice=gasPrice/1000000000 
 | timechart avg(gasPrice) as avg_gasPrice min(gasPrice) as min_gasPrice max(gasPrice) as max_gasPrice dc(hash) as txnCount</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -379,8 +383,8 @@
           <query>`ethereum_index` sourcetype="ethereum:transaction" to=$addr_token$ 
 | eval gasPrice=gasPrice/1000000000 
 | timechart avg(gasPrice) by call.name</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -430,8 +434,8 @@
 | eval gasFee=(gasUsed*gasPrice)/1000000000 
 | table _time hash from to call.name gas gasPrice gasUsed gasFee status 
 | sort - _time</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>1m</refresh>
           <refreshType>delay</refreshType>
@@ -470,8 +474,8 @@
       <event>
         <search>
           <query>`ethereum_index` sourcetype="ethereum:transaction" $hash_token$</query>
-          <earliest>0</earliest>
-          <latest></latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">20</option>

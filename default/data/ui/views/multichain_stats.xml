@@ -1,16 +1,27 @@
-<dashboard theme="dark">
+<form theme="dark">
   <label>Multichain Stats</label>
-  <description>Over the past 1 Hour</description>
+  <description>Visulaizing multiple blockchains from a single dashboard.</description>
+  <init>
+    <set token="base_search">`ethereum_index` sourcetype="ethereum:block" | append [search index=federated:xdai sourcetype="ethereum:block" ]</set>
+  </init>
+  <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <single>
         <title>Latest Blockheight</title>
         <search>
-          <query>`ethereum_index` sourcetype="ethereum:block"
-| append [search index=federated:xdai sourcetype="ethereum:block" ]
+          <query>$base_search$  
 | stats latest(number) as block by network</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>30s</refresh>
           <refreshType>delay</refreshType>
@@ -39,11 +50,10 @@
       <single>
         <title>Total Transactions Per Hour</title>
         <search>
-          <query>`ethereum_index` sourcetype="ethereum:transaction" 
-| append [search index=federated:xdai sourcetype="ethereum:transaction" ]
+          <query>$base_search$ 
 | stats dc(hash) as txns by network</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>30s</refresh>
           <refreshType>delay</refreshType>
@@ -74,11 +84,10 @@
       <chart>
         <title>Blockheight by Chain over time</title>
         <search>
-          <query>`ethereum_index` sourcetype="ethereum:block" 
-| append [search index=federated:xdai sourcetype="ethereum:block" ]
+          <query>$base_search$ 
 | timechart partial=f latest(number) as block by network</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>30s</refresh>
           <refreshType>delay</refreshType>
@@ -121,11 +130,10 @@
       <chart>
         <title>Transaction Count by Chain over time</title>
         <search>
-          <query>`ethereum_index` sourcetype="ethereum:transaction" 
-| append [search index=federated:xdai sourcetype="ethereum:block" ]
+          <query>$base_search$ 
 | timechart partial=f dc(hash) by network</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>30s</refresh>
           <refreshType>delay</refreshType>
@@ -170,14 +178,13 @@
       <table>
         <title>Top Miners by Network</title>
         <search>
-          <query>`ethereum_index` 
-| append [search index=federated:xdai ]
+          <query>$base_search$ 
 | top miner by network</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">20</option>
+        <option name="count">15</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
         <option name="percentagesRow">false</option>
@@ -188,4 +195,4 @@
       </table>
     </panel>
   </row>
-</dashboard>
+</form>

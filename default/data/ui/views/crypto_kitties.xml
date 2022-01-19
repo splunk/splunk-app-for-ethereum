@@ -1,6 +1,15 @@
-<dashboard theme="dark">
+<form theme="dark">
   <label>CryptoKitties</label>
   <description>Note: If you just starting ingesting ethereum mainnet data you will need to wait until a transaction happens before seeing the dashboard fill out.  To obtain historical data you can change the "latest_block" parameter in the docker-compose file.</description>
+  <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <single>
@@ -8,8 +17,8 @@
         <search>
           <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | stats latest(kittyId)</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>17s</refresh>
           <refreshType>delay</refreshType>
@@ -39,8 +48,8 @@
         <search>
           <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d call.name="giveBirth" 
 | stats count</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>1m</refresh>
           <refreshType>delay</refreshType>
@@ -69,8 +78,8 @@
         <title>Total Txns in 1 hr</title>
         <search>
           <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d | stats count</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>1m</refresh>
           <refreshType>delay</refreshType>
@@ -102,8 +111,8 @@
         <search>
           <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d 
 | timechart count by call.name</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>1m</refresh>
           <refreshType>delay</refreshType>
@@ -155,8 +164,8 @@
 | eval abi_to=substr(abi_to,0,10)."..." 
 | sort - _time 
 | rename auction_* AS *</query>
-          <earliest>-4h@m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>1m</refresh>
           <refreshType>delay</refreshType>
@@ -190,7 +199,7 @@
   </row>
   <row>
     <panel>
-      <title>Most Active Kitties in the Past Week</title>
+      <title>Most Active Kitties</title>
       <table>
         <search>
           <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
@@ -204,15 +213,17 @@
     | stats count by matronId 
     | rename matronId AS kittyId] 
 | stats sum(count) as count by kittyId 
-| sort - count</query>
-          <earliest>-7d@h</earliest>
-          <latest>now</latest>
+| sort - count
+| head 25</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
-        <option name="count">10</option>
+        <option name="count">15</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">cell</option>
         <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">true</option>
@@ -222,4 +233,4 @@
       </table>
     </panel>
   </row>
-</dashboard>
+</form>

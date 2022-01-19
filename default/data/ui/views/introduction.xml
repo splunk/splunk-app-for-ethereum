@@ -1,5 +1,17 @@
-<dashboard>
+<form>
   <label>Introduction</label>
+  <init>
+    <set token="base_search">`ethereum_index` sourcetype=ethereum* | append [ search index=federated:xdai sourcetype="ethereum*" ]</set>
+  </init>
+  <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <html>
@@ -30,14 +42,10 @@
       <chart>
         <title>Data Flowing from Connect for Ethereum (by Sourcetype)</title>
         <search>
-          <query>`ethereum_index` sourcetype=ethereum* 
-| append [ search index=federated:xdai sourcetype="ethereum*" ]
+          <query>$base_search$
 | timechart count by sourcetype</query>
-          <earliest>-60m@m</earliest>
-          <latest>now</latest>
-          <sampleRatio>1</sampleRatio>
-          <refresh>7s</refresh>
-          <refreshType>delay</refreshType>
+    <earliest>$myTime.earliest$</earliest>
+    <latest>$myTime.latest$</latest>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -77,15 +85,12 @@
       <table>
         <title>Event Count by Chain in the past 1 Hour (you can have multiple!)</title>
         <search>
-          <query>`ethereum_index` sourcetype=ethereum* 
-| append [ search index=federated:xdai sourcetype="ethereum*" ]
+          <query>$base_search$
 | stats count sparkline(count) as sparkline values(sourcetype) as sourcetypes by network 
-| rename network AS Chains count AS eventCount</query>
-          <earliest>-60m@m</earliest>
-          <latest>@m</latest>
-          <sampleRatio>1</sampleRatio>
-          <refresh>1m</refresh>
-          <refreshType>delay</refreshType>
+| rename network AS Chains count AS eventCount
+</query>
+    <earliest>$myTime.earliest$</earliest>
+    <latest>$myTime.latest$</latest>
         </search>
         <option name="count">20</option>
         <option name="dataOverlayMode">none</option>
@@ -252,4 +257,4 @@
       </html>
     </panel>
   </row>
-</dashboard>
+</form>
