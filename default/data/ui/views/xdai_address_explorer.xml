@@ -331,7 +331,7 @@
 | table from numTxns sum(gasUsed) eth abi_value toContract 
 | eval abi_value=if(abi_value&gt;1000000000000000,1,abi_value) 
 | table from numTxns sum(gasUsed) eth abi_value toContract
-| noop search_optimization.replace_table_with_fields=f
+`fix_ifields_issue`
 | sort - numTxns 
 | head 15</query>
           <earliest>$selection.earliest$</earliest>

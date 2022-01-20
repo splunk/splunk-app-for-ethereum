@@ -59,8 +59,8 @@
 | sort - _time 
 | delta p=1 _time as diff 
 | eval diff=abs(diff) 
-| timechart span=10m partial=f avg(diff) as avgBlockTime
-| noop search_optimization.replace_table_with_fields=f</query>
+| timechart partial=f avg(diff) as avgBlockTime
+`fix_ifields_issue`</query>
           <earliest>$myTime.earliest$</earliest>
           <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
