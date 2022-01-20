@@ -154,7 +154,7 @@
 | eval account=lower(account) 
 
 | table account account_owner percent *Balance percent 
-| noop search_optimization.replace_table_with_fields=f 
+`fix_ifields_issue`
 | head 10 
 | addcoltotals 
 | streamstats count 
