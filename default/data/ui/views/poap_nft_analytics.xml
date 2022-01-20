@@ -22,7 +22,7 @@
       <title>POAP - XDAI</title>
       <single>
         <search>
-          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+          <query>`xdai_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -60,7 +60,7 @@
       </single>
       <single>
         <search>
-          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+          <query>`xdai_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -98,7 +98,7 @@
       </single>
       <single>
         <search>
-          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+          <query>`xdai_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -259,7 +259,7 @@
         <title>Minting Timeline</title>
         <search>
           <query>`ethereum_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
-| append [search index=federated:xdai  0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"]
+| append [search `xdai_index`  0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"]
 | timechart count as minting by index</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
@@ -443,7 +443,7 @@
       <table>
         <title>Top From</title>
         <search>
-          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
+          <query>`xdai_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
@@ -488,7 +488,7 @@
       <table>
         <title>Top City w/ NFT Count</title>
         <search>
-          <query>index="federated:xdai" 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
+          <query>`xdai_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft" 
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
