@@ -13,7 +13,7 @@
       <single>
         <title>Unique Accounts</title>
         <search>
-          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+          <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
 | stats latest(balance) as latest_balance by account | stats dc(account) as unique_accounts</query>
           <earliest>0</earliest>
           <sampleRatio>1</sampleRatio>
@@ -25,7 +25,7 @@
       <single>
         <title>Unique Accounts w/ Balance &gt; 0</title>
         <search>
-          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+          <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
 | stats latest(balance) as latest_balance by account 
 | search latest_balance&gt;0 
 | stats dc(account) as unique_accounts</query>
@@ -39,7 +39,7 @@
       <single>
         <title>Latest BlockNumber</title>
         <search>
-          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+          <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
 | stats latest(blockNumber) as block</query>
           <earliest>-15m</earliest>
           <latest>now</latest>
@@ -58,7 +58,7 @@
       <chart>
         <title># Accounts Actively Trading</title>
         <search>
-          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d | timechart partial=f span=1h dc(account) as "Unique Accts"</query>
+          <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d | timechart partial=f span=1h dc(account) as "Unique Accts"</query>
           <earliest>-7d@h</earliest>
           <latest>now</latest>
           <sampleRatio>1</sampleRatio>
@@ -103,7 +103,7 @@
       <table>
         <title>Top Accounts for $address_token$</title>
         <search>
-          <query>index="federated:xdai" sourcetype="ethereum:balance" $address_token$ 
+          <query>`xdai_index` sourcetype="ethereum:balance" $address_token$ 
 | stats min(balance) as minBalance max(balance) as maxBalance latest(balance) as curBalance by account 
 | eventstats sum(curBalance) as totalBalance 
 | eval percent=round(curBalance/totalBalance,4)*100 
@@ -145,7 +145,7 @@
       </table>
       <table>
         <search>
-          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+          <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
 | stats min(balance) as minBalance max(balance) as maxBalance latest(balance) as curBalance by account 
 | eventstats sum(curBalance) as totalBalance 
 | eval percent=round(curBalance/totalBalance,4)*100 
@@ -194,7 +194,7 @@
     <panel>
       <chart>
         <search>
-          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
+          <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
 | stats latest(balance) as latest_balance by account 
 | top latest_balance by account 
 | eval account=lower(account) 
@@ -261,7 +261,7 @@
       <chart>
         <title>Balance Timeline for $account_token$</title>
         <search>
-          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d $account_token$ 
+          <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d $account_token$ 
 | timechart avg(balance) as balance</query>
           <earliest>-7d@h</earliest>
           <latest>now</latest>
@@ -305,7 +305,7 @@
       <single>
         <title>Activity (Count of transfers) for $account_token$</title>
         <search>
-          <query>index="federated:xdai" sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d $account_token$ 
+          <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d $account_token$ 
 | stats count</query>
           <earliest>-7d@h</earliest>
           <latest>now</latest>

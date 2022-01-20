@@ -14,7 +14,7 @@
       <title>Minted</title>
       <single>
         <search>
-          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+          <query>`rinkeby_index` sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
 | spath input=metadata | search NOT errorTokenURI.code=3 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) | search txn_type=mint | stats count</query>
           <earliest>$myTime.earliest$</earliest>
@@ -53,7 +53,7 @@
       <title>Transfers</title>
       <single>
         <search>
-          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+          <query>`rinkeby_index` sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
 | spath input=metadata | search NOT errorTokenURI.code=3 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) | search txn_type=transfer | stats count</query>
           <earliest>$myTime.earliest$</earliest>
@@ -86,7 +86,7 @@
       <chart>
         <title>Activity Timeline</title>
         <search>
-          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+          <query>`rinkeby_index` sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
 | spath input=metadata | search NOT errorTokenURI.code=3 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
 | timechart span=1h count by txn_type</query>
@@ -135,7 +135,7 @@
       <table>
         <title>Who Minted the Most - Table</title>
         <search>
-          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+          <query>`rinkeby_index` sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
 | spath input=metadata | search NOT errorTokenURI.code=3 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
 | search txn_type=mint 
@@ -173,7 +173,7 @@
       <chart>
         <title>Who Minted the Most - Pie</title>
         <search>
-          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+          <query>`rinkeby_index` sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
 | spath input=metadata | search NOT errorTokenURI.code=3 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
 | search txn_type=mint 
@@ -199,7 +199,7 @@
       <table>
         <title>Transfers</title>
         <search>
-          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
+          <query>`rinkeby_index` sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI=""
 | spath input=metadata | search NOT errorTokenURI.code=3 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
 | search txn_type=transfer 
@@ -236,7 +236,7 @@
       <table>
         <title>Buttercup NFT Table</title>
         <search>
-          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI="" 
+          <query>`rinkeby_index` sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf NOT tokenURI="" 
 | spath input=metadata 
 | search NOT errorTokenURI.code=3 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
@@ -306,7 +306,7 @@
               <set token="tok_wimg">No result found</set>
             </condition>
           </finalized>
-          <query>index="rinkeby2" sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf 
+          <query>`rinkeby_index` sourcetype="ethereum:nft" 0xbee13ba31178b6a92c8e8d54de64512bc4f52adf 
 | spath input=metadata 
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
 | search txn_type=mint 
