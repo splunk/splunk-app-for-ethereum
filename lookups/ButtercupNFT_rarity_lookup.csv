@@ -1,0 +1,84 @@
+"Layer_Name",Rarity,"Rarity_Score","Trait_Name"
+"10-Mouth",common,0,mouth3
+"10-Mouth",legendary,2,mouth
+"10-Mouth",rare,1,mouth2
+"11-Glasses",common,0,glasses9
+"11-Glasses",legendary,2,glasses7
+"11-Glasses",rare,1,glasses1
+"11-Glasses",rare,1,glasses2
+"11-Glasses",rare,1,glasses3
+"11-Glasses",rare,1,glasses4
+"11-Glasses",rare,1,glasses5
+"11-Glasses",rare,1,glasses6
+"11-Glasses",rare,1,glasses8
+"12-Hat",common,0,hat7
+"12-Hat",legendary,2,hat3
+"12-Hat",rare,1,hat
+"12-Hat",rare,1,hat2
+"12-Hat",rare,1,hat4
+"12-Hat",rare,1,hat5
+"12-Hat",rare,1,hat6
+"1_Background",common,0,background
+"1_Background",common,0,background2
+"1_Background",common,0,background3
+"1_Background",common,0,background4
+"1_Background",common,0,background5
+"1_Background",common,0,background6
+"1_Background",common,0,background7
+"1_Background",common,0,background8
+"1_Background",common,0,background9
+"1_Background",legendary,2,"bg_clouds"
+"1_Background",legendary,2,"bg_space"
+"1_Background",rare,1,"bg_rare1"
+"1_Background",rare,1,"bg_rare2"
+"1_Background",rare,1,"bg_rare3"
+"1_Background",rare,1,"bg_rare4"
+"1_Background",rare,1,"bg_rare5"
+"1_Background",rare,1,"bg_rare6"
+"1_Background",rare,1,"bg_rare7"
+"2-Wing_Color",common,0,"wing_color"
+"2-Wing_Color",common,0,"wing_color2"
+"2-Wing_Color",common,0,"wing_color3"
+"2-Wing_Color",legendary,2,"wing_legendary"
+"2-Wing_Color",rare,1,"wing_rare"
+"2.5-Wing_Outline",common,0,"wing_outline"
+"2.5-Wing_Outline",legendary,2,"wing_outline2"
+"2.5-Wing_Outline",rare,1,"wing_outline3"
+"3-Body_Outline",common,0,"body_outline"
+"3-Body_Outline",legendary,2,"body_outline2"
+"3-Body_Outline",rare,1,"body_outline3"
+"4-Mane",common,0,mane
+"4-Mane",legendary,2,"mane_legendary"
+"4-Mane",rare,1,mane2
+"4-Mane",rare,1,mane3
+"4-Mane",rare,1,mane4
+"5-Body Color",common,0,"body_color"
+"5-Body Color",legendary,2,"body_color_black"
+"5-Body Color",rare,1,body1
+"5-Body Color",rare,1,body2
+"6-Patch Color",common,0,"patch_color"
+"6-Patch Color",common,0,"patch_color2"
+"6-Patch Color",common,0,"patch_color3"
+"6-Patch Color",common,0,"patch_color4"
+"6-Patch Color",common,0,"patch_color5"
+"6-Patch Color",common,0,"patch_color6"
+"6-Patch Color",legendary,2,"patch_color7"
+"6-Patch Color",rare,1,"patch_rare"
+"6-Patch Color",rare,1,"patch_rare2"
+"7-Hoof Color",common,0,"hoof_color"
+"7-Hoof Color",common,0,"hoof_color2"
+"7-Hoof Color",common,0,"hoof_color3"
+"7-Hoof Color",common,0,"hoof_color4"
+"7-Hoof Color",legendary,2,"hoof_legendary"
+"7-Hoof Color",rare,1,"hoof_rare"
+"8-Iris Color",common,0,iris
+"8-Iris Color",legendary,2,iris2
+"8-Iris Color",rare,1,iris1
+"9-Eyes",common,0,eyes7
+"9-Eyes",legendary,2,"eyes_heterochromatic"
+"9-Eyes",rare,1,eyes
+"9-Eyes",rare,1,eyes2
+"9-Eyes",rare,1,eyes3
+"9-Eyes",rare,1,eyes4
+"9-Eyes",rare,1,eyes5
+"9-Eyes",rare,1,eyes6
