@@ -142,13 +142,8 @@
 | eval value=value/1000000000000000000 
 | eval from=lower(from) 
 | eval to=lower(to) 
-| join type=left to 
-    [| inputlookup crypto_addresses.csv 
-    | rename address AS to, description AS to_owner]  
-| join type=left from 
-    [| inputlookup crypto_addresses.csv 
-    | rename address AS from, description AS from_owner]  
-    
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner
+| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner
 | table _time from from_owner to to_owner value gas toInfo.isContract
 | rename toInfo.isContract AS toContract 
 | sort - _time</query>
@@ -204,13 +199,8 @@
 | stats count by to from 
 | eval from=lower(from) 
 | eval to=lower(to) 
-| join type=left to 
-    [| inputlookup crypto_addresses.csv 
-    | rename address AS to, description AS to_owner]  
-| join type=left from 
-    [| inputlookup crypto_addresses.csv 
-    | rename address AS from, description AS from_owner]  
-    
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner
+| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner
 | eval from=if(isnull(from_owner),substr(lower(from),0,10)."...",from_owner) 
 | eval to=if(isnull(to_owner),substr(lower(to),0,10)."...",to_owner) 
 | fields - *owner</query>

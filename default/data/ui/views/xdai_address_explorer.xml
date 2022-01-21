@@ -226,12 +226,8 @@
 | eval amount=round(value/1000000000000000000,4) 
 | eval from=lower(from) 
 | eval to=lower(to) 
-| join type=left to 
-    [| inputlookup crypto_addresses.csv 
-    | rename address AS to, description AS to_owner] 
-| join type=left from 
-    [| inputlookup crypto_addresses.csv 
-    | rename address AS from, description AS from_owner] 
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner
+| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner
 | eval from=substr(lower(from),0,8)."..." 
 | eval to=if(contractCreated="true",contractAddress,to) 
 | eval to=substr(lower(to),0,8)."..." 
@@ -427,9 +423,7 @@
     | rename to AS address to_fname AS name ] 
 | stats sum(numTxns) as total_txns sum(gas) as total_gas sum(gasUsed) as total_gasUsed by name address 
 | eval address=lower(address) 
-| join type=left address 
-    [| inputlookup crypto_addresses.csv 
-    | rename description AS owner] 
+| lookup crypto_addresses.csv address OUTPUTNEW description AS owner
 | sort - total_txns 
 | head 20</query>
           <earliest>-7d@h</earliest>
