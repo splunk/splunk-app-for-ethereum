@@ -12,9 +12,7 @@
     <input type="dropdown" token="chain_token" searchWhenChanged="true">
       <label>Select Chain:</label>
       <choice value="`ethereum_index`">ethereum</choice>
-      <choice value="index=federated:xdai">xdai</choice>
-      <default>index=federated:xdai</default>
-      <initialValue>index=federated:xdai</initialValue>
+      <choice value="`xdai_index`">xdai</choice>
     </input>
   </fieldset>
   <row>
