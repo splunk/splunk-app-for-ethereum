@@ -417,7 +417,7 @@
 | stats c(from) as numTxns sum(gas) as gas sum(gasUsed) as gasUsed by from from_fname 
 | rename from AS address from_fname AS name 
 | append 
-    [ search index=federated:xdai sourcetype=ethereum:transaction 
+    [ search `xdai_index` sourcetype=ethereum:transaction 
     | fillnull to_fname value="N/A" 
     | stats c(to) as numTxns sum(gas) as gas sum(gasUsed) as gasUsed by to to_fname 
     | rename to AS address to_fname AS name ] 

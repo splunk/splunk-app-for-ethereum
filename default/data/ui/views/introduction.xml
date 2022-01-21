@@ -1,7 +1,7 @@
 <form>
   <label>Introduction</label>
   <init>
-    <set token="base_search">`ethereum_index` sourcetype=ethereum* | append [ search index=federated:xdai sourcetype="ethereum*" ]</set>
+    <set token="base_search">`ethereum_index` sourcetype=ethereum* | append [ search `xdai_index` sourcetype="ethereum*" ] | append [ search `rinkeby_index` sourcetype="ethereum*" ]</set>
   </init>
   <fieldset submitButton="false">
     <input type="time" token="myTime" searchWhenChanged="true">
