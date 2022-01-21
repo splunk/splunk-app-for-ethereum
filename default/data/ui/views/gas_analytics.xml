@@ -281,9 +281,7 @@
 | stats dc(hash) as txnCount sum(gasUsed) as gasUsed avg(gasFee) as avg_gasFee avg(gasPrice) as avg_gasPrice min(gasPrice) as min_gasPrice max(gasPrice) as max_gasPrice sparkline(avg(gasPrice)) as gasPriceTrend by to 
 | sort - gasUsed 
 | eval to=lower(to) 
-| join type=left to 
-    [| inputlookup crypto_addresses.csv 
-    | rename address AS to, description AS to_owner]  
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner
 | table to to_owner txnCount gasUsed avg_gasFee avg_gasPrice min_gasPrice max_gasPrice gasPriceTrend</query>
           <earliest>$myTime.earliest$</earliest>
           <latest>$myTime.latest$</latest>
