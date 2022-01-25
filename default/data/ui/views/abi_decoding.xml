@@ -6,7 +6,7 @@
   </init>
   <search id="base_search">
     <query>
-index=ethereum sourcetype="ethereum:transaction:event" address="$contract_addr$"
+`ethereum_index` sourcetype="ethereum:transaction:event" address="$contract_addr$"
 | eval abiContractAddress="$contract_addr$" 
 | lookup abis.csv address AS abiContractAddress 
 | fields *  
