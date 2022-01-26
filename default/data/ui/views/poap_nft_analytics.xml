@@ -13,6 +13,8 @@
       <label>Select Chain:</label>
       <choice value="`ethereum_index`">ethereum</choice>
       <choice value="`xdai_index`">xdai</choice>
+      <default>`xdai_index`</default>
+      <initialValue>`xdai_index`</initialValue>
     </input>
   </fieldset>
   <row>
@@ -400,7 +402,7 @@
         <title>Top To</title>
         <search>
           <query>`ethereum_index` 0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"
-| append [search index=federated:xdai  0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"]
+| append [search `xdai_index`  0x22C1f6050E56d2876009903609a2cC3fEf83B415 sourcetype="ethereum:nft"]
 | eval nft_startDate=mvindex('metadata.attributes{}.value',0) 
 | eval nft_endDate=mvindex('metadata.attributes{}.value',1) 
 | eval nft_virtualEvent=mvindex('metadata.attributes{}.value',2) 
