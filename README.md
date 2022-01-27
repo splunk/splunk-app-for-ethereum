@@ -1,1 +1,2 @@
-# ethereum-basics
+# Ethereum Basics
+This Splunk app provides a set of starter dashboards for Ethereum and Ethereum-based blockchain networks like xDai or Rinkeby.  There are a number of starter searches and dashboards that can be leveraged to provide ledger analytics for any Ethereum blockchain.  

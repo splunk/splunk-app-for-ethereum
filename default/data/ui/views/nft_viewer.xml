@@ -25,10 +25,12 @@
         <condition label="Buttercup NFT">
           <set token="form.chain_token">`rinkeby_index`</set>
           <set token="form.contract_id">0xbee13ba31178b6a92c8e8d54de64512bc4f52adf</set>
+          <set token="form.myTime.earliest">0</set>
         </condition>
         <condition>
           <set token="form.chain_token">`xdai_index`</set>
           <set token="form.contract_id">0x22C1f6050E56d2876009903609a2cC3fEf83B415</set>
+          <set token="form.myTime.earliest">-1h@h</set>
         </condition>
       </change>
     </input>
