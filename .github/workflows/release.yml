@@ -20,7 +20,9 @@ jobs:
         run: echo "::set-output name=version::$(cat default/app.conf | grep version | head -1 | awk '{split($0,a," "); print a[3]}')"
         id: version
       - name: package
-        run: tar --transform 's,^\.,${{env.appName}},' --exclude='.git*' --exclude='${{env.appName}}.tgz' -cvzf ${{env.appName}}.tgz ./
+        run: |
+        touch ethereum-basics.tgz
+        tar --transform 's,^\.,${{env.appName}},' --exclude='.git*' --exclude='${{env.appName}}.tgz' -cvzf ${{env.appName}}.tgz ./
       - name: release
         uses: actions/create-release@v1
         id: create_release
