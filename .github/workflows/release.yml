@@ -21,8 +21,8 @@ jobs:
         id: version
       - name: package
         run: |
-        touch ethereum-basics.tgz
-        tar --transform 's,^\.,${{env.appName}},' --exclude='.git*' --exclude='${{env.appName}}.tgz' -cvzf ${{env.appName}}.tgz ./
+          touch ethereum-basics.tgz
+          tar --transform 's,^\.,${{env.appName}},' --exclude='.git*' --exclude='${{env.appName}}.tgz' -cvzf ${{env.appName}}.tgz ./
       - name: release
         uses: actions/create-release@v1
         id: create_release
