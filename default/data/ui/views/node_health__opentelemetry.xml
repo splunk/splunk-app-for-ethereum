@@ -1,5 +1,6 @@
 <form theme="dark">
   <label>Node Health - OpenTelemetry</label>
+  <description>Infrastructure monitoring metrics from an open telemetry based agent</description>  
   <init>
     <set token="my_css">
       <style>.panel-body.html { color: white; background: seagreen !important;  text-align: center } 
@@ -39,7 +40,7 @@
       <fieldForLabel>host</fieldForLabel>
       <fieldForValue>host</fieldForValue>
       <search>
-        <query>| mstats count where index="metrics" metric_name="ethlogger.internal.system.uptime" BY host</query>
+        <query>| mstats count where `eth_metrics_index` metric_name="ethlogger.internal.system.uptime" BY host</query>
         <earliest>$global_time_tok.earliest$</earliest>
         <latest>$global_time_tok.latest$</latest>
       </search>
@@ -57,7 +58,7 @@
       <single>
         <title>OpenTelemetry 'Up' metric  (red = has had down time)</title>
         <search>
-          <query>| mstats min("up") prestats=true WHERE "index"="metrics" host="$my_host$" $mstats_span$ BY host
+          <query>| mstats min("up") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
 | timechart min("up") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
           <earliest>$global_time_tok.earliest$</earliest>
@@ -113,7 +114,7 @@
       <chart>
         <title>system.cpu.load_average.1m</title>
         <search>
-          <query>| mstats max("system.cpu.load_average.1m") prestats=true WHERE "index"="metrics" host="$my_host$" $mstats_span$ BY host
+          <query>| mstats max("system.cpu.load_average.1m") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
 | timechart max("system.cpu.load_average.1m") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
           <earliest>$global_time_tok.earliest$</earliest>
@@ -134,7 +135,7 @@
       <chart>
         <title>system.memory.usage</title>
         <search>
-          <query>| mstats max("system.memory.usage") prestats=true WHERE "index"="metrics" host="$my_host$" $mstats_span$ BY host
+          <query>| mstats max("system.memory.usage") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
 | timechart max("system.memory.usage") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
           <earliest>$global_time_tok.earliest$</earliest>
@@ -155,7 +156,7 @@
       <chart>
         <title>system_memory_used</title>
         <search>
-          <query>| mstats max("system_memory_used") prestats=true WHERE "index"="metrics" host="$my_host$" $mstats_span$ BY host
+          <query>| mstats max("system_memory_used") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
 | timechart max("system_memory_used") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
           <earliest>$global_time_tok.earliest$</earliest>
@@ -189,7 +190,7 @@
       <chart>
         <title>system.network.dropped</title>
         <search>
-          <query>| mstats max("system.network.dropped") prestats=true WHERE "index"="metrics" AND host="$my_host$" $mstats_span$ BY host
+          <query>| mstats max("system.network.dropped") prestats=true WHERE `eth_metrics_index` AND host="$my_host$" $mstats_span$ BY host
 | timechart max("system.network.dropped") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
           <earliest>$global_time_tok.earliest$</earliest>
@@ -209,7 +210,7 @@
       <chart>
         <title>system.network.errors</title>
         <search>
-          <query>| mstats max("system.network.errors") prestats=true WHERE "index"="metrics" AND  host="$my_host$" $mstats_span$ BY host
+          <query>| mstats max("system.network.errors") prestats=true WHERE `eth_metrics_index` AND  host="$my_host$" $mstats_span$ BY host
 | timechart max("system.network.errors") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
           <earliest>$global_time_tok.earliest$</earliest>
@@ -229,7 +230,7 @@
       <chart>
         <title>system.filesystem.usage  ("mountpoint"="/gethdata")</title>
         <search>
-          <query>| mstats avg("system.filesystem.usage") prestats=true WHERE "index"="metrics" AND "mountpoint"="/gethdata" host="$my_host$" $mstats_span$ BY host
+          <query>| mstats avg("system.filesystem.usage") prestats=true WHERE `eth_metrics_index` AND "mountpoint"="/gethdata" host="$my_host$" $mstats_span$ BY host
 | timechart avg("system.filesystem.usage") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
           <earliest>$global_time_tok.earliest$</earliest>
@@ -249,7 +250,7 @@
       <chart>
         <title>system.filesystem.inodes.usage  ("mountpoint"="/gethdata")</title>
         <search>
-          <query>| mstats avg("system.filesystem.inodes.usage") prestats=true WHERE "index"="metrics" AND "mountpoint"="/gethdata" host="$my_host$" $mstats_span$ BY host
+          <query>| mstats avg("system.filesystem.inodes.usage") prestats=true WHERE `eth_metrics_index` AND "mountpoint"="/gethdata" host="$my_host$" $mstats_span$ BY host
 | timechart avg("system.filesystem.inodes.usage") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
           <earliest>$global_time_tok.earliest$</earliest>

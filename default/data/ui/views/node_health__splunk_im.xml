@@ -1,6 +1,6 @@
 <form theme="dark">
   <label>Node Health - Splunk IM</label>
-  <description>This dashboard will display metrics from Splunk Infrastructure Manager.</description>
+  <description>Infrastructure monitoring metrics from Splunk Infrastructure Manager</description>
   <init>
     <set token="my_css">
       <style>.panel-body.html { color: white; background: seagreen !important;  text-align: center }  h1 h2 { color:white; background: seagreen !important;  text-align: center }</style>
