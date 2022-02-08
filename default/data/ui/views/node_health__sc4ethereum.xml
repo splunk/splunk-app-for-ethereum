@@ -1,0 +1,338 @@
+<form theme="dark">
+  <label>Node Health - SC4Ethereum</label>
+  <description>Infrastructure monitoring metrics from Splunk Connect for Ethereum</description>
+
+  <init>
+    <set token="my_css">
+      <style>.panel-body.html { color: white; background: seagreen !important;  text-align: center } 
+          h1 h2 { color:white; background: seagreen !important;  text-align: center }</style>
+    </set>
+  </init>
+  <fieldset submitButton="false">
+    <input type="time" searchWhenChanged="true" token="global_time_tok">
+      <label>Time Range</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown">
+      <label>Time Span</label>
+      <choice value="auto">auto</choice>
+      <choice value="5s">5s</choice>
+      <choice value="10s">10s</choice>
+      <choice value="30s">30s</choice>
+      <choice value="1m">1m</choice>
+      <choice value="5m">5m</choice>
+      <choice value="10m">10m</choice>
+      <choice value="30m">30m</choice>
+      <choice value="1h">1h</choice>
+      <default>auto</default>
+      <change>
+        <eval token="timechart_span">if($value$ == "auto", "", "span=".$value$)</eval>
+        <eval token="mstats_span">"span=".$value$</eval>
+      </change>
+    </input>
+    <input type="dropdown" token="my_host" searchWhenChanged="true">
+      <label>Hosts</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>host</fieldForLabel>
+      <fieldForValue>host</fieldForValue>
+      <search>
+        <query>| mstats count where `eth_metrics_index` metric_name="ethlogger.internal.system.uptime" BY host</query>
+        <earliest>$global_time_tok.earliest$</earliest>
+        <latest>$global_time_tok.latest$</latest>
+      </search>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+        $my_css$<h1>Uptime</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>ethlogger.internal.system.uptime   (red = has had down time)</title>
+        <search>
+          <query>| mstats avg("ethlogger.internal.system.uptime") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("ethlogger.internal.system.uptime") $timechart_span$ useother=false BY host WHERE max in top5
+| fillnull value=0
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">218</option>
+        <option name="rangeColors">["0xdc4e41","0x53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+        <option name="trellis.size">small</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$ <h1>Processing</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Blocks</title>
+      <chart>
+        <title>ethlogger.internal.blockWatcher.blocksProcessed</title>
+        <search>
+          <query>| mstats max("ethlogger.internal.blockWatcher.blocksProcessed") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart max("ethlogger.internal.blockWatcher.blocksProcessed") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Transactions</title>
+      <chart>
+        <title>ethlogger.internal.blockWatcher.transactionsProcessed</title>
+        <search>
+          <query>| mstats max("ethlogger.internal.blockWatcher.transactionsProcessed") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart max("ethlogger.internal.blockWatcher.transactionsProcessed") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Events</title>
+      <chart>
+        <title>ethlogger.internal.blockWatcher.transactionLogEventsProcessed</title>
+        <search>
+          <query>| mstats max("ethlogger.internal.blockWatcher.transactionLogEventsProcessed") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart max("ethlogger.internal.blockWatcher.transactionLogEventsProcessed") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>ethlogger.internal.blockWatcher.blockProcessTime.avg</title>
+        <search>
+          <query>| mstats avg("ethlogger.internal.blockWatcher.blockProcessTime.avg") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("ethlogger.internal.blockWatcher.blockProcessTime.avg") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>ethlogger.internal.blockWatcher.txProcessTime.avg</title>
+        <search>
+          <query>| mstats avg("ethlogger.internal.blockWatcher.txProcessTime.avg") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("ethlogger.internal.blockWatcher.txProcessTime.avg") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>ethlogger.internal.blockWatcher.eventProcessTime.avg</title>
+        <search>
+          <query>| mstats avg("ethlogger.internal.blockWatcher.eventProcessTime.avg") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("ethlogger.internal.blockWatcher.eventProcessTime.avg") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$ <h1>CPU</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>ethlogger.internal.system.cpu.system</title>
+        <search>
+          <query>| mstats avg("ethlogger.internal.system.cpu.system") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("ethlogger.internal.system.cpu.system") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>ethlogger.internal.system.cpu.user</title>
+        <search>
+          <query>| mstats avg("ethlogger.internal.system.cpu.user") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("ethlogger.internal.system.cpu.user") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <style> 
+          .panel-body.html { color: white; background: seagreen !important;  text-align: center } 
+          h1 h2 { color:white; background: seagreen !important;  text-align: center }
+        </style>
+        <h1>Memory</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>ethlogger.internal.system.mem.heapTotal</title>
+        <search>
+          <query>| mstats avg("ethlogger.internal.system.mem.heapTotal") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("ethlogger.internal.system.mem.heapTotal") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>ethlogger.internal.system.mem.heapUsed</title>
+        <search>
+          <query>| mstats avg("ethlogger.internal.system.mem.heapUsed") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("ethlogger.internal.system.mem.heapUsed") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>ethlogger.internal.system.wasm.memorySize</title>
+        <search>
+          <query>| mstats avg("ethlogger.internal.system.wasm.memorySize") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("ethlogger.internal.system.wasm.memorySize") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

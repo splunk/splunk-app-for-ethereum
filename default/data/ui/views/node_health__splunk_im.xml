@@ -1,0 +1,530 @@
+<form theme="dark">
+  <label>Node Health - Splunk IM</label>
+  <description>Infrastructure monitoring metrics from Splunk Infrastructure Manager</description>
+  <init>
+    <set token="my_css">
+      <style>.panel-body.html { color: white; background: seagreen !important;  text-align: center }  h1 h2 { color:white; background: seagreen !important;  text-align: center }</style>
+    </set>
+    <set token="host_search">*</set>
+    <set token="infra_type">AWS EC2 Instances</set>
+    <set token="host_id_field_hosts">host</set>
+    <set token="host_id_field_aws">aws_instance_id</set>
+    <set token="host_id_field_gcp">gcp_id</set>
+    <set token="host_id_field_azure">azure_resource_name</set>
+    <set token="host_filter_hosts">filter('$host_id_field_hosts$', '*$host_search$*') and (not filter('cloud.provider', '*')) and (not filter('AWSUniqueId', '*')) and (not filter('gcp_id', '*')) and (not filter('azure_resource_id', '*')) and (not filter('kubernetes_node', '*'))</set>
+    <set token="host_filter_aws">filter('$host_id_field_aws$', '*$host_search$*')</set>
+    <set token="host_filter_gcp">filter('$host_id_field_gcp$', '*$host_search$*')</set>
+    <set token="host_filter_azure">filter('$host_id_field_azure$', '*$host_search$*')</set>
+    <set token="prefix"></set>
+    <set token="prefix_aws">^aws.ec2.</set>
+    <set token="prefix_gcp">^gcp.gce.</set>
+    <set token="prefix_azure">^azure.vm.</set>
+    <set token="metric_cpu_util">cpu.utilization</set>
+    <set token="metric_memory_util">memory.utilization</set>
+    <set token="metric_disk_util">disk.utilization</set>
+    <set token="metric_disk_read">disk.io.read.total</set>
+    <set token="metric_disk_write">disk.io.write.total</set>
+    <set token="metric_network_errors">system.network.errors</set>
+    <set token="metric_network_read">network.io.receive.total</set>
+    <set token="metric_network_write">network.io.transmit.total</set>
+    <set token="prefix_hosts">system.</set>
+    <set token="metric_disk_subtoken">summary_</set>
+    <set token="field_disk_util">disk.$field_disk_subtoken$utilization</set>
+    <set token="field_network_in">receive</set>
+    <set token="field_network_out">transmit</set>
+    <set token="field_network">network.io</set>
+  </init>
+  <fieldset submitButton="false">
+    <input type="time" searchWhenChanged="true" token="global_time_tok">
+      <label>Time Range</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown">
+      <label>Time Span</label>
+      <choice value="auto">auto</choice>
+      <choice value="5s">5s</choice>
+      <choice value="10s">10s</choice>
+      <choice value="30s">30s</choice>
+      <choice value="1m">1m</choice>
+      <choice value="5m">5m</choice>
+      <choice value="10m">10m</choice>
+      <choice value="30m">30m</choice>
+      <choice value="1h">1h</choice>
+      <default>auto</default>
+      <change>
+        <eval token="timechart_span">if($value$ == "auto", "", "span=".$value$)</eval>
+        <eval token="mstats_span">"span=".$value$</eval>
+      </change>
+    </input>
+    <input type="text" token="host_search" searchWhenChanged="true">
+      <label>Find Host(s)</label>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+          <style>.panel-body.html { color: white; background: seagreen !important;  text-align: center }  h1 h2 { color:white; background: seagreen !important;  text-align: center }</style>
+          <h1>Hosts (click to drill down)</h1>
+     </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Hosts</title>
+        <search>
+          <query>| sim flow query="data('$metric_cpu_util$', filter=$host_filter_hosts$).mean(by=['$host_id_field_hosts$']).count().publish(label='hosts')" | stats latest(_value) as "Hosts"
+          </query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="height">117</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="useColors">0</option>
+        <drilldown>
+          <set token="infra_type">Hosts</set>
+          <set token="prefix"></set>
+          <set token="host_id_field">$host_id_field_hosts$</set>
+          <set token="host_filter">$host_filter_hosts$</set>
+          <set token="metric_disk_read">system.disk.io</set>
+          <set token="metric_disk_write">system.disk.io</set>
+          <set token="disk_host_filter_read"> and filter('direction', 'read')</set>
+          <set token="disk_host_filter_write"> and filter('direction', 'write')</set>
+          <set token="metric_network_read">system.network.io</set>
+          <set token="metric_network_write">system.network.io</set>
+          <set token="network_host_filter_read"> and filter('direction', 'receive')</set>
+          <set token="network_host_filter_write"> and filter('direction', 'transmit')</set>
+        </drilldown>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>AWS Instances</title>
+        <search>
+          <query>| sim flow query="data('$prefix_aws$$metric_cpu_util$', filter=$host_filter_aws$).mean(by=['$host_id_field_aws$']).count().publish(label='hosts')" | stats latest(_value) as "Hosts"</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="height">122</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="useColors">0</option>
+        <drilldown>
+          <set token="infra_type">AWS EC2 Instances</set>
+          <set token="prefix">$prefix_aws$</set>
+          <set token="host_id_field">$host_id_field_aws$</set>
+          <set token="host_filter">$host_filter_aws$</set>
+          <set token="metric_disk_read">disk.io.read.total</set>
+          <set token="metric_disk_write">disk.io.write.total</set>
+          <set token="disk_host_filter_read"> </set>
+          <set token="disk_host_filter_write"> </set>
+          <set token="metric_network_read">network.io.receive.total</set>
+          <set token="metric_network_write">network.io.transmit.total</set>
+          <set token="network_host_filter_read"> </set>
+          <set token="network_host_filter_write"> </set>
+        </drilldown>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>GCP Compute Engines</title>
+        <search>
+          <query>| sim flow query="data('$prefix_gcp$$metric_cpu_util$', filter=$host_filter_gcp$).mean(by=['$host_id_field_gcp$']).count().publish(label='hosts')" | stats latest(_value) as "Hosts"</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="height">122</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="useColors">0</option>
+        <drilldown>
+          <set token="infra_type">GCP Compute Engines</set>
+          <set token="prefix">$prefix_gcp$</set>
+          <set token="host_id_field">$host_id_field_gcp$</set>
+          <set token="host_filter">$host_filter_gcp$</set>
+          <set token="metric_disk_read">disk.io.read.total</set>
+          <set token="metric_disk_write">disk.io.write.total</set>
+          <set token="disk_host_filter_read"> </set>
+          <set token="disk_host_filter_write"> </set>          
+          <set token="metric_network_read">network.io.receive.total</set>
+          <set token="metric_network_write">network.io.transmit.total</set>
+          <set token="network_host_filter_read"> </set>
+          <set token="network_host_filter_write"> </set>
+        </drilldown>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Azure Virtual Machines</title>
+        <search>
+          <query>| sim flow query="data('$prefix_azure$$metric_cpu_util$', filter=$host_filter_azure$).mean(by=['$host_id_field_azure$']).count().publish(label='hosts')" | stats latest(_value) as "Hosts"</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="height">108</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="useColors">0</option>
+        <drilldown>
+          <set token="infra_type">Azure Virtual Machines</set>
+          <set token="prefix">$prefix_azure$</set>
+          <set token="host_id_field">$host_id_field_azure$</set>
+          <set token="host_filter">$host_filter_azure$</set>
+          <set token="metric_disk_read">disk.io.read.total</set>
+          <set token="metric_disk_write">disk.io.write.total</set>
+          <set token="disk_host_filter_read"> </set>
+          <set token="disk_host_filter_write"> </set>          
+          <set token="metric_network_read">network.io.receive.total</set>
+          <set token="metric_network_write">network.io.transmit.total</set>
+          <set token="network_host_filter_read"> </set>
+          <set token="network_host_filter_write"> </set>
+        </drilldown>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$<h1>CPU : $infra_type$</h1>
+     </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Hosts : Average CPU Utilization</title>
+        <search>
+          <query>| sim flow query="data('$prefix$$metric_cpu_util$', filter=$host_filter$).mean(by=['$host_id_field$']).top(count=20).publish(label='A')" 
+| stats min(_value) as Min avg(_value) as Avg max(_value) as Max sparkline(avg(_value)) as Trend by $host_id_field$ 
+| sort Avg desc
+| makemv delim="£" setsv=true Trend 
+| eval Trend=replace((Trend),"0,","") 
+| makemv delim="," Trend</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">true</option>
+        <format type="number" field="Min">
+          <option name="precision">2</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Max">
+          <option name="precision">2</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Avg">
+          <option name="precision">2</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="Min">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="75" midValue="50"></scale>
+        </format>
+        <format type="color" field="Avg">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="75" midValue="50"></scale>
+        </format>
+        <format type="color" field="Max">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="75" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Top Hosts:  Average CPU Utilization</title>
+        <search>
+          <query>| sim flow query="data('$prefix$$metric_cpu_util$', filter=$host_filter$).mean(by=['$host_id_field$']).top(count=20).publish(label='A')"  |  timechart avg(_value) AS cpu.utilization BY $host_id_field$</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">361</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$<h1>Memory : $infra_type$</h1>
+     </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Hosts: Average Memory Utilization</title>
+        <search>
+          <query>| sim flow query="data('$metric_memory_util$', filter=$host_filter$).mean(by=['$host_id_field$']).top(count=20).publish(label='A')" 
+| stats min(_value) as Min avg(_value) as Avg max(_value) as Max sparkline(avg(_value)) as Trend by $host_id_field$ 
+| sort Avg desc
+| makemv delim="£" setsv=true Trend 
+| eval Trend=replace((Trend),"0,","") 
+| makemv delim="," Trend</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">true</option>
+        <format type="number" field="Min">
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Max">
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Avg">
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="Min">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="75" midValue="50"></scale>
+        </format>
+        <format type="color" field="Avg">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="75" midValue="50"></scale>
+        </format>
+        <format type="color" field="Max">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="75" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Top Hosts:  Average Memory Utilization</title>
+        <search>
+          <query>| sim flow query="data('$metric_memory_util$', filter=$host_filter$).mean(by=['$host_id_field$']).top(count=20).publish(label='A')"  |  timechart avg(_value) AS memory.utilization BY $host_id_field$</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">371</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$<h1>Disk : $infra_type$</h1>
+     </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Hosts : Average Disk Utilization</title>
+        <search>
+          <query>| sim flow query="data('$metric_disk_util$', filter=$host_filter$).mean(by=['$host_id_field$']).top(count=20).publish(label='A')" 
+| stats min(_value) as Min avg(_value) as Avg max(_value) as Max sparkline(avg(_value)) as Trend by $host_id_field$ 
+| sort Avg desc
+| makemv delim="£" setsv=true Trend 
+| eval Trend=replace((Trend),"0,","") 
+| makemv delim="," Trend</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">true</option>
+        <format type="number" field="Min">
+          <option name="precision">2</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Max">
+          <option name="precision">2</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="number" field="Avg">
+          <option name="precision">2</option>
+          <option name="unit">%</option>
+        </format>
+        <format type="color" field="Min">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="75" midValue="50"></scale>
+        </format>
+        <format type="color" field="Avg">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="75" midValue="50"></scale>
+        </format>
+        <format type="color" field="Max">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="75" midValue="50"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Top Hosts:  Disk Reads</title>
+        <search>
+          <query>| sim flow query="data('$prefix$$metric_disk_read$', filter=$host_filter$ $disk_host_filter_read$).mean(by=['$host_id_field$']).top(count=10).publish(label='A')"  
+| timechart avg(_value) AS system.memory.usage BY $host_id_field$</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">353</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Top Hosts:  Disk Writes</title>
+        <search>
+          <query>| sim flow query="data('$prefix$$metric_disk_write$', filter=$host_filter$ $disk_host_filter_write$).mean(by=['$host_id_field$']).top(count=10).publish(label='A')"  
+| timechart avg(_value) AS system.memory.usage BY $host_id_field$</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">352</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$<h1>Network : $infra_type$</h1>
+     </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Hosts:  Network Errors</title>
+        <search>
+          <query>| sim flow query="data('system.network.errors', filter=$host_filter$).mean(by=['$host_id_field$']).top(count=20).publish(label='A')"  
+| stats sum(_value) as "Errors" sparkline(max(_value)) as Trend BY $host_id_field$</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">true</option>
+        <format type="color" field="Errors">
+          <colorPalette type="minMidMax" maxColor="#AF575A" midColor="#EC9960" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="10" midValue="0"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Top Hosts:  Network Bytes In</title>
+        <search>
+          <query>| sim flow query="data('$prefix$$metric_network_read$', filter=$host_filter$ $network_host_filter_read$).mean(by=['$host_id_field$']).top(count=10).publish(label='A')"  
+| timechart avg(_value) AS system.memory.usage BY $host_id_field$</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">357</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Top Hosts:  Network Bytes Out</title>
+        <search>
+          <query>| sim flow query="data('$prefix$$metric_network_write$', filter=$host_filter$  $network_host_filter_write$).mean(by=['$host_id_field$']).top(count=10).publish(label='A')"  
+| timechart avg(_value) AS system.memory.usage BY $host_id_field$</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">350</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+</form>
