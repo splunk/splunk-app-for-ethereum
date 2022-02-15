@@ -1,11 +1,27 @@
 <form theme="dark">
   <label>Node Health - OpenTelemetry</label>
-  <description>Infrastructure monitoring metrics from an open telemetry based agent</description>  
+  <description>Infrastructure monitoring metrics from an open telemetry based agent</description>
+  <search id="metric_search">
+    <query>
+| mstats min(up), avg("p2p_peers"), avg("p2p_ingress") , avg("p2p_egress"),
+avg(system_cpu_sysload), avg("system_cpu_procload"), avg("system_cpu_syswait"), avg("system_cpu_threads"), avg("system_cpu_goroutines"),
+avg("system_memory_used"), avg("system_memory_held"), avg("system_memory_pauses"), avg("system_memory_allocs"), avg("system_memory_frees"), 
+max("chain_head_header"), max("chain_head_block"), max("chain_head_receipt"), avg("chain_reorg_drop"), avg("chain_reorg_add"),
+avg("rpc_requests"), avg("rpc_failure"), avg("rpc_success"),
+avg("txpool_local"), avg("txpool_pending"), avg("txpool_queued"), avg("txpool_overflowed") ,
+avg("trie_memcache_clean_hit"), avg("trie_memcache_clean_miss"), avg("trie_memcache_dirty_hit"), avg("trie_memcache_dirty_miss")
+
+prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+        </query>
+    <earliest>$global_time_tok.earliest$</earliest>
+    <latest>$global_time_tok.latest$</latest>
+  </search>
   <init>
     <set token="my_css">
       <style>.panel-body.html { color: white; background: seagreen !important;  text-align: center } 
           h1 h2 { color:white; background: seagreen !important;  text-align: center }</style>
     </set>
+    <set token="my_charts"></set>
   </init>
   <fieldset submitButton="false">
     <input type="time" searchWhenChanged="true" token="global_time_tok">
@@ -40,29 +56,43 @@
       <fieldForLabel>host</fieldForLabel>
       <fieldForValue>host</fieldForValue>
       <search>
-        <query>| mstats count where `eth_metrics_index` metric_name="ethlogger.internal.system.uptime" BY host</query>
+        <query>| mstats count where `eth_metrics_index` metric_name="up" BY host</query>
         <earliest>$global_time_tok.earliest$</earliest>
         <latest>$global_time_tok.latest$</latest>
       </search>
     </input>
   </fieldset>
+  <row depends="$nevergonnashowme$">
+    <panel>
+      <html>
+     <style>
+       #chainCol1{  width:40% !important;  }
+       #chainCol2{  width:30% !important;  }
+       #chainCol3{  width:30% !important;  }
+       #peersCol1{  width:40% !important;  }
+       #peersCol2{  width:30% !important;  }
+       #peersCol3{  width:30% !important;  }
+     </style>
+      <style>.panel-body.html { color: white; background: seagreen !important;  text-align: center } 
+          h1 h2 { color:white; background: seagreen !important;  text-align: center }</style>
+   </html>
+    </panel>
+  </row>
   <row>
     <panel>
       <html>
-        $my_css$<h1>Up Status</h1>
-     </html>
+        $my_css$ <h1>Uptime</h1>
+      </html>
     </panel>
   </row>
   <row>
     <panel>
       <single>
         <title>OpenTelemetry 'Up' metric  (red = has had down time)</title>
-        <search>
-          <query>| mstats min("up") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+        <search base="metric_search">
+          <query>
 | timechart min("up") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
-          <earliest>$global_time_tok.earliest$</earliest>
-          <latest>$global_time_tok.latest$</latest>
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">block</option>
@@ -72,53 +102,45 @@
         <option name="rangeValues">[0,1]</option>
         <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">1</option>
-        <option name="trellis.size">small</option>
+        <option name="trellis.size">medium</option>
         <option name="trendColorInterpretation">standard</option>
         <option name="useColors">1</option>
       </single>
     </panel>
   </row>
-  <row depends="$nevergonnashowme$">
+  <row>
     <panel>
       <html>
-     <style>
-       #Column1{
-         width:33% !important;
-       }
-       #Column2{
-         width:67% !important;
-       }
-     </style>
-   </html>
-    </panel>
-  </row>
-  <row>
-    <panel id="Column1">
-      <html>
-        $my_css$ <h1>CPU</h1>
-      </html>
-    </panel>
-    <panel id="Column2">
-      <html>
-        <style> 
-          .panel-body.html { color: white; background: seagreen !important;  text-align: center } 
-          h1 h2 { color:white; background: seagreen !important;  text-align: center }
-        </style>
-        <h1>Memory</h1>
+        $my_css$ <h1>Peers</h1>
       </html>
     </panel>
   </row>
   <row>
-    <panel>
-      <title></title>
-      <chart>
-        <title>system.cpu.load_average.1m</title>
-        <search>
-          <query>| mstats max("system.cpu.load_average.1m") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
-| timechart max("system.cpu.load_average.1m") $timechart_span$ useother=false BY host WHERE max in top5
+    <panel id="peersCol1">
+      <title>p2p_peers</title>
+      <single>
+        <title>The number of connected peers.  This should remain at a relatively steady level for proxy nodes and should remain at exactly 1 for a proxied validator.</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("p2p_peers") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
-          <earliest>$global_time_tok.earliest$</earliest>
-          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">133</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+        <option name="trellis.size">medium</option>
+      </single>
+    </panel>
+    <panel id="peersCol2">
+      <title>p2p_ingress</title>
+      <chart>
+        <title>Counter for total inbound traffic, measured in bytes.</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("p2p_ingress") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
         <option name="charting.chart">line</option>
@@ -126,20 +148,19 @@
         <option name="charting.chart.showDataLabels">none</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.mode">seriesCompare</option>
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel>
-      <title></title>
+    <panel id="peersCol3">
+      <title>p2p_egress</title>
       <chart>
-        <title>system.memory.usage</title>
-        <search>
-          <query>| mstats max("system.memory.usage") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
-| timechart max("system.memory.usage") $timechart_span$ useother=false BY host WHERE max in top5
+        <title>Counter for total ioutbound traffic, measured in bytes.</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("p2p_egress") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
-          <earliest>$global_time_tok.earliest$</earliest>
-          <latest>$global_time_tok.latest$</latest>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
         <option name="charting.chart">line</option>
@@ -147,27 +168,7 @@
         <option name="charting.chart.showDataLabels">none</option>
         <option name="charting.drilldown">none</option>
         <option name="charting.gridLinesX.showMajorLines">1</option>
-        <option name="charting.legend.mode">seriesCompare</option>
-        <option name="refresh.display">progressbar</option>
-      </chart>
-    </panel>
-    <panel>
-      <title></title>
-      <chart>
-        <title>system_memory_used</title>
-        <search>
-          <query>| mstats max("system_memory_used") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
-| timechart max("system_memory_used") $timechart_span$ useother=false BY host WHERE max in top5
-| fields - _span*</query>
-          <earliest>$global_time_tok.earliest$</earliest>
-          <latest>$global_time_tok.latest$</latest>
-        </search>
-        <option name="charting.axisY.abbreviation">auto</option>
-        <option name="charting.chart">line</option>
-        <option name="charting.chart.nullValueMode">connect</option>
-        <option name="charting.chart.showDataLabels">none</option>
-        <option name="charting.drilldown">none</option>
-        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.mode">seriesCompare</option>
         <option name="refresh.display">progressbar</option>
       </chart>
@@ -176,25 +177,359 @@
   <row>
     <panel>
       <html>
-        $my_css$ <h1>Network</h1>
+        $my_css$ <h1>Chain </h1>
       </html>
     </panel>
+  </row>
+  <row>
+    <panel id="chainCol1">
+      <title>Chains in synch?</title>
+      <table>
+        <title>Diff column should be zero.</title>
+        <search base="metric_search">
+          <query>| stats max("chain_head_header") as header_block,  max("chain_head_block") as current_block by host
+| eval header_block = round(header_block,0), current = round(current_block,0)
+| eval diff = header_block - current_block
+| table host header_block current_block diff</query>
+        </search>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <format type="number" field="header_block">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="current_block">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="diff">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+    <panel id="chainCol3">
+      <title>chain_reorg_drop</title>
+      <chart>
+        <title>Blocks dropped by reorg</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("chain_reorg_drop") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel id="chainCol2">
+      <title>chain_reorg_add</title>
+      <chart>
+        <title>Blocks added by reorg</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("chain_reorg_add") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
     <panel>
       <html>
-        $my_css$ <h1>Disk</h1>
+        $my_css$ <h1>Transaction Pool </h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>txpool_local</title>
+      <chart>
+        <title>Number of transactions sent from this node</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("txpool_local") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>txpool_pending</title>
+      <chart>
+        <title>Currently pending transactions</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("txpool_pending") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>txpool_queued</title>
+      <chart>
+        <title>Transactions sent with a nonce that is higher than the current transaction count.  These will be  promoted to the “pending” state when the gap in nonces is filled and the “queued” transaction nonce becomes the next one in sequence.</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("txpool_queued") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>txpool_overflowed</title>
+      <chart>
+        <title>The transaction pool is full and can't accept new transactions.  This should remain at a constant 0 value.</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("txpool_overflowed") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$ <h1>RPC</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>requests</title>
+      <chart>
+        <title>Number of RPC requests.  Sudden increases could indicate malicious activity</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("rpc_requests") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>success</title>
+      <chart>
+        <title>Number of successful RPC requests</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("rpc_success") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>failure</title>
+      <chart>
+        <title>Number of failed RPC requests</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("rpc_failure") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$ <h1>TRIE</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>trie.memcache.clean.hit</title>
+      <chart>
+        <title>Hits from the most up to date in-memory trie data structure</title>
+        <search base="metric_search">
+          <query>| timechart avg("trie_memcache_clean_hit") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>trie.memcache.clean.miss</title>
+      <chart>
+        <title>Misses from the most up to date in-memory trie data structure</title>
+        <search base="metric_search">
+          <query>| timechart avg("trie_memcache_clean_miss") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>trie.memcache.dirty.hit</title>
+      <chart>
+        <title>Hits from the in-memory trie data structure that are modified in the cache but not yet written to the permanent storage</title>
+        <search base="metric_search">
+          <query>| timechart avg("trie_memcache_dirty_hit") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>trie.memcache.dirty.miss</title>
+      <chart>
+        <title>Misses from the in-memory trie data structure where the cached data has changed</title>
+        <search base="metric_search">
+          <query>| timechart avg("trie_memcache_dirty_miss") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$ <h1>System Health</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$ <h1>CPU </h1>
       </html>
     </panel>
   </row>
   <row>
     <panel>
       <chart>
-        <title>system.network.dropped</title>
-        <search>
-          <query>| mstats max("system.network.dropped") prestats=true WHERE `eth_metrics_index` AND host="$my_host$" $mstats_span$ BY host
-| timechart max("system.network.dropped") $timechart_span$ useother=false BY host WHERE max in top5
+        <title>sysload: time spent by CPU on all processes</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_cpu_sysload") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
-          <earliest>$global_time_tok.earliest$</earliest>
-          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>procload: time spent by CPU on this processes</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_cpu_procload") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
         <option name="charting.chart">line</option>
@@ -208,13 +543,11 @@
     </panel>
     <panel>
       <chart>
-        <title>system.network.errors</title>
-        <search>
-          <query>| mstats max("system.network.errors") prestats=true WHERE `eth_metrics_index` AND  host="$my_host$" $mstats_span$ BY host
-| timechart max("system.network.errors") $timechart_span$ useother=false BY host WHERE max in top5
+        <title>syswait: time spent waiting on disk I/O</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_cpu_syswait") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
-          <earliest>$global_time_tok.earliest$</earliest>
-          <latest>$global_time_tok.latest$</latest>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
         <option name="charting.chart">line</option>
@@ -226,6 +559,150 @@
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
+    <panel>
+      <chart>
+        <title>threads: total threads across all CPUs</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_cpu_threads") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>goroutines: number of goroutines</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_cpu_goroutines") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$ <h1>Memory</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>used: amount of memory in use</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_memory_used") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>held: allocated memory on the heap</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_memory_held") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>pauses: garbage collector pauses</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_memory_pauses") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>allocs: number of memory allocs made</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_memory_allocs") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>frees: number of memory allocations freed</title>
+        <search base="metric_search">
+          <query>
+| timechart avg("system_memory_frees") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$ <h1>Disk </h1>
+      </html>
+    </panel>
+  </row>
+  <row>
     <panel>
       <chart>
         <title>system.filesystem.usage  ("mountpoint"="/gethdata")</title>
@@ -248,10 +725,119 @@
     </panel>
     <panel>
       <chart>
-        <title>system.filesystem.inodes.usage  ("mountpoint"="/gethdata")</title>
+        <title>read operations: number of disk operations</title>
         <search>
-          <query>| mstats avg("system.filesystem.inodes.usage") prestats=true WHERE `eth_metrics_index` AND "mountpoint"="/gethdata" host="$my_host$" $mstats_span$ BY host
-| timechart avg("system.filesystem.inodes.usage") $timechart_span$ useother=false BY host WHERE max in top5
+          <query>| mstats avg("system_disk_readcount") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("system_disk_readcount") as reads $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>write operations: number of disk operations</title>
+        <search>
+          <query>| mstats avg("system_disk_writecount") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("system_disk_writecount") as writes  $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>bytes read: number of bytes read</title>
+        <search>
+          <query>| mstats avg("system_disk_readdata") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("system_disk_readdata") as reads $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>bytes written: number of bytes written</title>
+        <search>
+          <query>| mstats avg("system_disk_writebytes") prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
+| timechart avg("system_disk_writebytes") as writes  $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        $my_css$ <h1>Network</h1>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>system.network.errors</title>
+        <search>
+          <query>| mstats max("system.network.errors") prestats=true WHERE `eth_metrics_index` AND  host="$my_host$" $mstats_span$ BY host
+| timechart max("system.network.errors") $timechart_span$ useother=false BY host WHERE max in top5
+| fields - _span*</query>
+          <earliest>$global_time_tok.earliest$</earliest>
+          <latest>$global_time_tok.latest$</latest>
+        </search>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.gridLinesX.showMajorLines">1</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>system.network.dropped</title>
+        <search>
+          <query>| mstats max("system.network.dropped") prestats=true WHERE `eth_metrics_index` AND host="$my_host$" $mstats_span$ BY host
+| timechart max("system.network.dropped") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
           <earliest>$global_time_tok.earliest$</earliest>
           <latest>$global_time_tok.latest$</latest>
