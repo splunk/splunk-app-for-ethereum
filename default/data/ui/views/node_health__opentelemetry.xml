@@ -117,8 +117,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
   </row>
   <row>
     <panel id="peersCol1">
+      <title>p2p_peers</title>
       <single>
-        <title>p2p_peers</title>
+        <title>The number of connected peers.  This should remain at a relatively steady level for proxy nodes and should remain at exactly 1 for a proxied validator.</title>
         <search base="metric_search">
           <query>
 | timechart avg("p2p_peers") $timechart_span$ useother=false BY host WHERE max in top5
@@ -133,8 +134,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </single>
     </panel>
     <panel id="peersCol2">
+      <title>p2p_ingress</title>
       <chart>
-        <title>p2p_ingress</title>
+        <title>Counter for total inbound traffic, measured in bytes.</title>
         <search base="metric_search">
           <query>
 | timechart avg("p2p_ingress") $timechart_span$ useother=false BY host WHERE max in top5
@@ -152,8 +154,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </chart>
     </panel>
     <panel id="peersCol3">
+      <title>p2p_egress</title>
       <chart>
-        <title>p2p_egress</title>
+        <title>Counter for total ioutbound traffic, measured in bytes.</title>
         <search base="metric_search">
           <query>
 | timechart avg("p2p_egress") $timechart_span$ useother=false BY host WHERE max in top5
@@ -180,8 +183,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
   </row>
   <row>
     <panel id="chainCol1">
+      <title>Chains in synch?</title>
       <table>
-        <title>Chains in synch?</title>
+        <title>Diff column should be zero.</title>
         <search base="metric_search">
           <query>| stats max("chain_head_header") as header_block,  max("chain_head_block") as current_block by host
 | eval header_block = round(header_block,0), current = round(current_block,0)
@@ -190,7 +194,6 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
         </search>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">none</option>
-        <option name="refresh.display">progressbar</option>
         <format type="number" field="header_block">
           <option name="precision">0</option>
         </format>
@@ -202,12 +205,13 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
         </format>
       </table>
     </panel>
-    <panel id="chainCol2">
+    <panel id="chainCol3">
+      <title>chain_reorg_drop</title>
       <chart>
-        <title>chain_reorg_add</title>
+        <title>Blocks dropped by reorg</title>
         <search base="metric_search">
           <query>
-| timechart avg("chain_reorg_add") $timechart_span$ useother=false BY host WHERE max in top5
+| timechart avg("chain_reorg_drop") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -221,12 +225,13 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
         <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
-    <panel id="chainCol3">
+    <panel id="chainCol2">
+      <title>chain_reorg_add</title>
       <chart>
-        <title>chain_reorg_drop</title>
+        <title>Blocks added by reorg</title>
         <search base="metric_search">
           <query>
-| timechart avg("chain_reorg_drop") $timechart_span$ useother=false BY host WHERE max in top5
+| timechart avg("chain_reorg_add") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -250,8 +255,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
   </row>
   <row>
     <panel>
+      <title>txpool_local</title>
       <chart>
-        <title>txpool_local</title>
+        <title>Number of transactions sent from this node</title>
         <search base="metric_search">
           <query>
 | timechart avg("txpool_local") $timechart_span$ useother=false BY host WHERE max in top5
@@ -269,8 +275,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </chart>
     </panel>
     <panel>
+      <title>txpool_pending</title>
       <chart>
-        <title>txpool_pending</title>
+        <title>Currently pending transactions</title>
         <search base="metric_search">
           <query>
 | timechart avg("txpool_pending") $timechart_span$ useother=false BY host WHERE max in top5
@@ -288,8 +295,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </chart>
     </panel>
     <panel>
+      <title>txpool_queued</title>
       <chart>
-        <title>txpool_queued</title>
+        <title>Transactions sent with a nonce that is higher than the current transaction count.  These will be  promoted to the “pending” state when the gap in nonces is filled and the “queued” transaction nonce becomes the next one in sequence.</title>
         <search base="metric_search">
           <query>
 | timechart avg("txpool_queued") $timechart_span$ useother=false BY host WHERE max in top5
@@ -307,8 +315,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </chart>
     </panel>
     <panel>
+      <title>txpool_overflowed</title>
       <chart>
-        <title>txpool_overflowed</title>
+        <title>The transaction pool is full and can't accept new transactions.  This should remain at a constant 0 value.</title>
         <search base="metric_search">
           <query>
 | timechart avg("txpool_overflowed") $timechart_span$ useother=false BY host WHERE max in top5
@@ -335,8 +344,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
   </row>
   <row>
     <panel>
+      <title>requests</title>
       <chart>
-        <title>requests: sudden increases could indicate malicious activity</title>
+        <title>Number of RPC requests.  Sudden increases could indicate malicious activity</title>
         <search base="metric_search">
           <query>
 | timechart avg("rpc_requests") $timechart_span$ useother=false BY host WHERE max in top5
@@ -354,11 +364,12 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </chart>
     </panel>
     <panel>
+      <title>success</title>
       <chart>
-        <title>failure: investigate failures</title>
+        <title>Number of successful RPC requests</title>
         <search base="metric_search">
           <query>
-| timechart avg("rpc_failure") $timechart_span$ useother=false BY host WHERE max in top5
+| timechart avg("rpc_success") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -373,11 +384,12 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </chart>
     </panel>
     <panel>
+      <title>failure</title>
       <chart>
-        <title>success:</title>
+        <title>Number of failed RPC requests</title>
         <search base="metric_search">
           <query>
-| timechart avg("rpc_success") $timechart_span$ useother=false BY host WHERE max in top5
+| timechart avg("rpc_failure") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
         </search>
         <option name="charting.axisY.abbreviation">auto</option>
@@ -401,8 +413,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
   </row>
   <row>
     <panel>
+      <title>trie.memcache.clean.hit</title>
       <chart>
-        <title>trie.memcache.clean.hit</title>
+        <title>Hits from the most up to date in-memory trie data structure</title>
         <search base="metric_search">
           <query>| timechart avg("trie_memcache_clean_hit") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
@@ -419,8 +432,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </chart>
     </panel>
     <panel>
+      <title>trie.memcache.clean.miss</title>
       <chart>
-        <title>trie.memcache.clean.miss</title>
+        <title>Misses from the most up to date in-memory trie data structure</title>
         <search base="metric_search">
           <query>| timechart avg("trie_memcache_clean_miss") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
@@ -437,8 +451,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </chart>
     </panel>
     <panel>
+      <title>trie.memcache.dirty.hit</title>
       <chart>
-        <title>trie.memcache.dirty.hit</title>
+        <title>Hits from the in-memory trie data structure that are modified in the cache but not yet written to the permanent storage</title>
         <search base="metric_search">
           <query>| timechart avg("trie_memcache_dirty_hit") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
@@ -455,8 +470,9 @@ prestats=true WHERE `eth_metrics_index` host="$my_host$" $mstats_span$ BY host
       </chart>
     </panel>
     <panel>
+      <title>trie.memcache.dirty.miss</title>
       <chart>
-        <title>trie.memcache.dirty.miss</title>
+        <title>Misses from the in-memory trie data structure where the cached data has changed</title>
         <search base="metric_search">
           <query>| timechart avg("trie_memcache_dirty_miss") $timechart_span$ useother=false BY host WHERE max in top5
 | fields - _span*</query>
