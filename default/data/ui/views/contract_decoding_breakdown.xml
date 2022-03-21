@@ -24,8 +24,6 @@
       <earliest>$field1.earliest$</earliest>
       <latest>$field1.latest$</latest>
       <sampleRatio>1</sampleRatio>
-      <refresh>30s</refresh>
-      <refreshType>delay</refreshType>
     </search>
   <label>Contract Decoding Breakdown</label>
   <fieldset submitButton="false">
