@@ -13,7 +13,10 @@
     <view name="buttercup_nft_analytics_vds" />
     <view name="crypto_kitties" />
   </collection>
-  <view name="abi_decoding" />
+  <collection label="Decoding">
+    <view name="contract_decoding_breakdown" />
+    <view name="abi_decoding" />
+  </collection>
   <collection label="Node Monitoring">
     <view name="node_health__sc4ethereum" />
     <view name="node_health__opentelemetry" />
