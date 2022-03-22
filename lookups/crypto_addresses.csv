@@ -1,47 +1,177 @@
-address,chain,description,type
-0x59ecf48345a221e0731e785ed79ed40d0a94e2a5,ethereum,"Thorsten Hot Wallet",PersonalWallet
-0x11111112542d85b3ef69ae05771c2dccff4faa26,ethereum,"1Inch V3",Contract
-0x514910771af9ca656af840dff83e8264ecf986ca,ethereum,"Chainlink TOKEN",Contract
-0x06012c8cf97bead5deae237070f9587f8e7a266d,ethereum,CryptoKitties,Contract
-0x17d38b18d646dc00479b89baaeaaaeb8a0c5ea4d,xdai,"Maker Booth Swag Store",Store
-0x4b78a47532d9e966574d30189b3de734a232a78a,xdai,"Buttercup Bucks",Contract
-0x5ffec48e3fb8d2a9dd0a46f2565f61fcc964894a,xdai,"Stephens BCB Wallet (Phone)",PersonalWallet
-0xfb3f831edf675409defeccadc60636224abf8746,xdai,"Stephens BCB Wallet (Laptop)",PersonalWallet
-0xe91d153e0b41518a2ce8dd3d7944fa863463a97d,xdai,"Wrapped XDAI (WXDAI)",Contract
-0x7f90122bf0700f9e7e1f688fe926940e8839f353,xdai,"Vyper_contract",Contract
-0x8c0c36c85192204c8d782f763ff5a30f5ba0192f,xdai,"SushiSwap LP Token (SLP)",Contract
-0xa227c72a4055a9dc949cae24f54535fe890d3663,xdai,"SushiSwap LP Token (SLP)",Contract
-0x1865d5445010e0baf8be2eb410d3eae4a68683c2,xdai,"DXswap (DXS)",Contract
-0x6685c047eab042297e659bfaa7423e94b4a14b9e,xdai,"SushiSwap LP Token (SLP)",Contract
-0xa76fbe83c5b6d03438d82cf1ba4bcd6e30d06b0e,xdai,"DXswap (DXS)",Contract
-0x01b9ae223e71b215209a0b6873ef63d7925862cc,ethereum,"Budverse Cans - Heritage Edition","NFT Contract"
-0x7be8076f4ea4a4ad08075c2508e481d6c946d12b,ethereum,OpenSea,Contract
-0x6b3595068778dd592e39a122f4f5a5cf09c90fe2,ethereum,"SushiToken (SUSHI)",Contract
-0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f,ethereum,"SushiSwap Router",Contract
-0xdac17f958d2ee523a2206206994597c13d831ec7,ethereum,"Tether USD",Contract
-0x7a250d5630b4cf539739df2c5dacb4c659f2488d,ethereum,"Uniswap V2",Contract
-0xe592427a0aece92de3edee1f18e0157c05861564,ethereum,"Uniswap V3",Contract
-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48,ethereum,"USD Coin (USDC)",Contract
-0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce,ethereum,"SHIBA INU",Contract
-0x881d40237659c251811cec9c364ef91dc08d300c,ethereum,"Metamask Swap Router",Contract
-0x47e312d99c09ce61a866c83cbbbbed5a4b9d33e7,ethereum,"Art Blocks",Contract
-0xc729ce9bf1030fbb639849a96fa8bbd013680b64,ethereum,Monarchs,Contract
-0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2,ethereum,"Wrapped Ether",Contract
-0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0,ethereum,"Matic Token (MATIC)",Contract
-0x0000000000000000000000000000000000000000,ethereum,BlackHole,BlackHole
-0xb3295e739380bd68de96802f7c4dba4e54477206,Ethereum,"ELF Wrapped steth",Token
-0xdcd90c7f6324cfa40d7169ef80b12031770b4325,Ethereum,"stecrv yearn vault",Token
-0x53b1aeaa018da00b4f458cc13d40eb3e8d1b85d6,Ethereum,"Element Wrapped Yearn Curve LUSD",Token
-0x5fa5b62c8af877cb37031e0a3b2f34a78e3c56a6,Ethereum,"Curve LUSD Pool yVault",Token
-0x97278ce17d4860f8f49afc6e4c1c5acbf2584ce5,Ethereum,"ELF Wrapped tricrypto",Token
-0x3d980e50508cfd41a13837a60149927a11c03731,Ethereum,"crvtricrypto yearn",Token
-0x4f424b26c7c659f198797bd87282bf602f543521,Ethereum,"ELF Wrapped tricrypto2",Token
-0xe537b5cc158eb71037d4125bdd7538421981e6aa,Ethereum,"crvtricrypto2 yearn vault",Token
-0x21bbc083362022ab8d7e42c18c47d484cc95c193,Ethereum,"ELF Wrapped dai",Token
-0xda816459f1ab5631232fe5e97a05bbbb94970c95,Ethereum,"dai yearn vault",Token
-0xdea04ffc66ecd7bf35782c70255852b34102c3b0,Ethereum,"ELF Wrapped USDC",Token
-0x5f18c75abdae578b483e5f43f12a39cf75b973a9,Ethereum,"USDC yearn vault",Token
-0xbabd64a87881d8df7680907fcde176ff11fa0292,Ethereum,"Element Yield Token yvCurveLUSD-28SEP21",Token
-0xed279fdd11ca84beef15af5d39bb4d4bee23f0ca,Ethereum,"Curve.fi Factory USD Metapool: Liquity",Token
-0x9b44ed798a10df31dee52c5256dcb4754bcf097e,Ethereum,"Element Principal Token yvCurveLUSD-28SEP21",Token
-0xba12222222228d8ba445958a75a0704d566bf2c8,Ethereum,"Balancer: Vault",Token
+address,chain,description,type,label
+0x59ecf48345a221e0731e785ed79ed40d0a94e2a5,ethereum,Thorsten Hot Wallet,PersonalWallet,
+0x11111112542d85b3ef69ae05771c2dccff4faa26,ethereum,1Inch V3,Contract,
+0x514910771af9ca656af840dff83e8264ecf986ca,ethereum,Chainlink TOKEN,Contract,
+0x06012c8cf97bead5deae237070f9587f8e7a266d,ethereum,CryptoKitties,Contract,
+0x17d38b18d646dc00479b89baaeaaaeb8a0c5ea4d,xdai,Maker Booth Swag Store,Store,
+0x4b78a47532d9e966574d30189b3de734a232a78a,xdai,Buttercup Bucks,Contract,
+0x5ffec48e3fb8d2a9dd0a46f2565f61fcc964894a,xdai,Stephens BCB Wallet (Phone),PersonalWallet,
+0xfb3f831edf675409defeccadc60636224abf8746,xdai,Stephens BCB Wallet (Laptop),PersonalWallet,
+0xe91d153e0b41518a2ce8dd3d7944fa863463a97d,xdai,Wrapped XDAI (WXDAI),Contract,
+0x7f90122bf0700f9e7e1f688fe926940e8839f353,xdai,Vyper_contract,Contract,
+0x8c0c36c85192204c8d782f763ff5a30f5ba0192f,xdai,SushiSwap LP Token (SLP),Contract,
+0xa227c72a4055a9dc949cae24f54535fe890d3663,xdai,SushiSwap LP Token (SLP),Contract,
+0x1865d5445010e0baf8be2eb410d3eae4a68683c2,xdai,DXswap (DXS),Contract,
+0x6685c047eab042297e659bfaa7423e94b4a14b9e,xdai,SushiSwap LP Token (SLP),Contract,
+0xa76fbe83c5b6d03438d82cf1ba4bcd6e30d06b0e,xdai,DXswap (DXS),Contract,
+0x01b9ae223e71b215209a0b6873ef63d7925862cc,ethereum,Budverse Cans - Heritage Edition,NFT Contract,
+0x7be8076f4ea4a4ad08075c2508e481d6c946d12b,ethereum,OpenSea,Contract,
+0x7f268357a8c2552623316e2562d90e642bb538e5,ethereum,OpenSea: Wyvern Exchange v2,Contract,
+0x6b3595068778dd592e39a122f4f5a5cf09c90fe2,ethereum,SushiToken (SUSHI),Contract,
+0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f,ethereum,SushiSwap Router,Contract,
+0xdac17f958d2ee523a2206206994597c13d831ec7,ethereum,Tether USD (USDT),Contract,
+0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48,ethereum,USD Coin (USDC),Contract,
+0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce,ethereum,SHIBA INU,Contract,
+0x881d40237659c251811cec9c364ef91dc08d300c,ethereum,Metamask Swap Router,Contract,
+0x47e312d99c09ce61a866c83cbbbbed5a4b9d33e7,Ethereum,Art Blocks,Contract,
+0xc729ce9bf1030fbb639849a96fa8bbd013680b64,Ethereum,Monarchs,Contract,
+0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2,Ethereum,Wrapped Ethereum,Token,
+0x2260fac5e5542a773aa44fbcfedf7c193bc2c599,Ethereum,Wrapped BTC,Token,
+0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0,Ethereum,Matic Token (MATIC),Token,
+0x0000000000000000000000000000000000000000,Ethereum,BlackHole,BlackHole,
+0x415747ee98d482e6dd9b431fa76ad5553744f247,Ethereum,LP Element Yield Token yvDAI-29APR22,Token,Element
+0x38c9728e474a73bccf82705e29de4ca41852b8c8,Ethereum,Element Yield Token yvDAI-29APR22,Token,Element
+0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c,Ethereum,alusd3crv-f,Token,Element
+0xc4ad29ba4b3c580e6d59105fff484999997675ff,Ethereum,crv3crypto,Token,Element
+0xca3d75ac011bf5ad07a98d02f18225f9bd9a6bdf,Ethereum,crvtricrypto,Token,Element
+0x194ebd173f6cdace046c53eacce9b953f28411d1,Ethereum,eurscrv,Token,Element
+0xb3295e739380bd68de96802f7c4dba4e54477206,Ethereum,ELF Wrapped steth,Token,Element
+0xdcd90c7f6324cfa40d7169ef80b12031770b4325,Ethereum,stecrv yearn vault,Token,Element
+0x53b1aeaa018da00b4f458cc13d40eb3e8d1b85d6,Ethereum,Element Wrapped Yearn Curve LUSD,Token,Element
+0x5fa5b62c8af877cb37031e0a3b2f34a78e3c56a6,Ethereum,Curve LUSD Pool yVault,Token,Element
+0x97278ce17d4860f8f49afc6e4c1c5acbf2584ce5,Ethereum,ELF Wrapped tricrypto,Token,Element
+0x3d980e50508cfd41a13837a60149927a11c03731,Ethereum,crvtricrypto yearn,Token,Element
+0x4f424b26c7c659f198797bd87282bf602f543521,Ethereum,ELF Wrapped tricrypto2,Token,Element
+0xe537b5cc158eb71037d4125bdd7538421981e6aa,Ethereum,crvtricrypto2 yearn vault,Token,Element
+0x21bbc083362022ab8d7e42c18c47d484cc95c193,Ethereum,ELF Wrapped dai,Token,Element
+0xda816459f1ab5631232fe5e97a05bbbb94970c95,Ethereum,dai yearn vault,Token,Element
+0xdea04ffc66ecd7bf35782c70255852b34102c3b0,Ethereum,ELF Wrapped USDC,Token,Element
+0x5f18c75abdae578b483e5f43f12a39cf75b973a9,Ethereum,USDC yearn vault,Token,Element
+0xbabd64a87881d8df7680907fcde176ff11fa0292,Ethereum,Element Yield Token yvCurveLUSD-28SEP21,Token,Element
+0x5a6a4d54456819380173272a5e8e9b9904bdf41b,Ethereum,mim-3lp3crv-f,Token,Element
+0xed279fdd11ca84beef15af5d39bb4d4bee23f0ca,Ethereum,lusd3crv-f,Token,Element
+0x06325440d014e39736583c165c2963ba99faf14e,Ethereum,stecrv,Token,Element
+0x9b44ed798a10df31dee52c5256dcb4754bcf097e,Ethereum,Element Principal Token yvCurveLUSD-28SEP21,Token,
+0xba12222222228d8ba445958a75a0704d566bf2c8,Ethereum,Balancer: Vault,Token,
+0xba100000625a3754423978a60c9317c58a424e3d,Ethereum,Balancer (BAL) Token,Token,
+0x29cca1dba3f2db3c2708608d2676ff8044c14073,Ethereum,Element Yield Token yvUSDC-29APR22,Token,Element
+0x956f47f50a910163d8bf957cf5846d573e7f87ca,Ethereum,Fei USD (FEI),Token,
+0xae78736cd615f374d3085123a210448e74fc6393,Ethereum,Rocket Pool ETH (rETH),Token,
+0xa36fdbbae3c9d55a1d67ee5821d53b50b63a1ab9,Ethereum,Tempus (TEMP),Token,
+0x476c5e26a75bd202a9683ffd34359c0cc15be0ff,Ethereum,Serum (SRM),Token,
+0x6b175474e89094c44da98b954eedeac495271d0f,Ethereum,Dai Stablecoin (DAI),Token,
+0x7a250d5630b4cf539739df2c5dacb4c659f2488d,ethereum,Uniswap V2: Router 2,Contract,
+0xe592427a0aece92de3edee1f18e0157c05861564,ethereum,Uniswap V3: Router,Contract,
+0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc,Ethereum,Uniswap V2: USDC,Contract,
+0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640,Ethereum,Uniswap V3: USDC 3,Contract,
+0x503828976d22510aad0201ac7ec88293211d23da,Ethereum,Coinbase 2,Exchange,
+0x71660c4005ba85c37ccec55d0c4493e66fe775d3,Ethereum,Coinbase 1,Exchange,
+0x39aa39c021dfbae8fac545936693ac917d5e7563,Ethereum,Compound: cUSDC Token,Exchange,
+0x46340b20830761efd32832a74d7169b29feb9758,Ethereum,Crypto.com 2,Exchange,
+0x10c6b61dbf44a083aec3780acf769c77be747e23,Ethereum,Anyswap: Moonriver Bridge,Contract,
+0x8d1f2ebfaccf1136db76fdd1b86f1dede2d23852,Ethereum,CoinList,Contract,
+0x2a549b4af9ec39b03142da6dc32221fc390b5533,Ethereum,BlockFi 3,Contract,
+0x808b4da0be6c9512e948521452227efc619bea52,Ethereum,BlockFi 5,Contract,
+0x3fda25f27211a138adf211f4c060f2149674be6d,Ethereum,BlockFi 4,Contract,
+0x1522900b6dafac587d499a862861c0869be6e428,Ethereum,Bitstamp 2,Exchange,
+0xab8e74017a8cc7c15ffccd726603790d26d7deca,Ethereum,Alchemix Finance: Staking Pool,Contract,
+0x55fe002aeff02f77364de339a1292923a15844b8,Ethereum,Circle,Contract,
+0x2faf487a4414fe77e2327f0bf4ae2a264a776ad2,Ethereum,FTX Exchange,Exchange,
+0xa57bd00134b2850b2a1c55860c9e9ea100fdd6cf,Ethereum,MEV Bot,Contract,
+0x3a7f072141d048154749fa73d03cd1085d3fc6df,Ethereum,LaborXContract,Contract,
+0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be,Ethereum,Binance,Exchange,
+0xf977814e90da44bfa03b6295a0616a897441acec,Ethereum,Binance 8,Exchange,
+0x85b931a32a0725be14285b66f1a22178c672d69b,Ethereum,Binance 10,Exchange,
+0x28c6c06298d514db089934071355e5743bf21d60,Ethereum,Binance 14,Exchange,
+0xbcca60bb61934080951369a648fb03df4f96263c,Ethereum,Aave: aUSDC Token V2,Token,
+0x165cd37b4c644c2921454429e7f9358d18a45e14,Ethereum,Ukraine Govt Official,Ukraine_Donation_List,
+0x0d8775f648430679a709e98d2b0cb6250d2887ef,Ethereum,Basic Attention Token (BAT),Token,
+0x4f82596742e790e03acd34503e9a6143ff1c0099,Ethereum,Cyber Koala Collective (CKC),Token,
+0xda22422592ee3623c8d3c40fe0059cdecf30ca79,Ethereum,Censored,Token,
+0x846716328715a312efd0d89c43938bb5c9f342d6,Ethereum,GIToadz,Contract,
+0x77ab999d1e9f152156b4411e1f3e2a42dab8cd6d,Ethereum,Kuna.io 2,Exchange,
+0x990f341946a3fdb507ae7e52d17851b87168017c,Ethereum,StrongBlock: STRONG Token,Contract,
+0xfbddadd80fe7bda00b901fbaf73803f2238ae655,Ethereum,StrongBlock: Service,Contract,
+0xf382e136b1c38f2761ed42a5b960beb5eeaacdbd,Ethereum,Peaceful Ukraine (Peace),Contract,
+0x13bc6a0c84d757460e86b7ba186a17a05a431082,Ethereum,Peaceful World (Peace),Contract,
+0x1122b6a0e00dce0563082b6e2953f3a943855c1f,Ethereum,Centrality Token (CENNZ),Contract,
+0x1d5764841b6b5f59257b45bd3a1d0fdc71c9e7ed,Ethereum,Foundation for Ukraine (UAHELP),Contract,
+0x3b484b82567a09e2588a13d54d032153f0c0aee0,Ethereum,SOS (SOS),Contract,
+0x495f947276749ce646f68ac8c248420045cb7b5e,Ethereum,OpenSea Shared Storefront (OPENSTORE),Contract,
+0x2d677dbe16752a066ef83e382dcc04d7003a61ed,Ethereum,Louis Vuitton (LV),Contract,
+0x8215e8427d2c7a2f4448801457d2cdcdbb1336d5,Ethereum,Louis Vuitton (LV),Contract,
+0x06eb75d315b88eaf04d1e22d8c9488b7834a31b5,Ethereum,Louis Vuitton (LV),Contract,
+0xc4b87b74dd61edd9fc00fc31db251324ff13dce9,Ethereum,Louis Vuitton (LV),Contract,
+0x4ebc94fd959d2c4b33ca75963c6b5e95b7bf4a21,Ethereum,Louis Vuitton (LV),Contract,
+0x20189f380660d6e7023936ff88ba33164dbffef4,Ethereum,Louis Vuitton Ape (LV Ape),Contract,
+0x095c1e0a6fe0075d78ad275c657df5b07630c021,Ethereum,NIKE (NIKE),Contract,
+0xabe7b97730887de0aa949a6751fa411f103e9977,Ethereum,Coca Cola (CocaCola),Contract,
+0x0c5932213a9b70b91625caeea7d22b5a16b108ae,Ethereum,Coca Cola (CocaCola),Contract,
+0x35a23bc27c345b36dee700a256f69c6334030971,Ethereum,Concern Poverty Chain (CHY) ,Contract,
+0x6fb3e0a217407efff7ca062d46c26e5d60a14d69,Ethereum,IoTeX Network (IOTX),Contract,
+0xabf66ca534f8a5081303e3873f0f4771c67b7b45,Ethereum,TWD Walker Access Pass,Contract,
+0x3819f64f282bf135d62168c1e513280daf905e06,Ethereum,Hedron (HDRN),Contract,
+0xe6cd4727a1058e6973e973986d0493f1e7975ef8,Ethereum,OogaVerse: MekaApes Game,Contract,
+0x892848074ddea461a15f337250da3ce55580ca85,Ethereum,CyberBrokers,Contract,
+0x8b1f8159db068f19882afecd82832a06fb990d10,Ethereum,UKRHODL (UKRHODL),Token,
+0x467264d4a9301a1acf05858e0a73fe3fe95e0e58,Ethereum,Meta-Jesus (MJ),Token,
+0x8e7ed8892f215022bb8006d32ef032973d237851,Ethereum,Ukraine Arsenal (UARSL),Token,
+0x3bfcdb0261e7f71bd81896816d8515c7352099f0,Ethereum,Adidas Bayc (ADIDASBAYC),Contract,
+0x77b25667e5258305dcaab7e0a21d068c5a3c7eb1,Ethereum,Imaginary Ones (IMAGINARY),Contract,
+0x86cbd722483b1000c3aa604de923bc3056213db2,Ethereum,Givenchy (Givenchy),Contract,
+0xebbd75122a9e292b5205d9a374b5ea2c1933f903,Ethereum,OOK LABS 420 Buds (BUDS),Contract,
+0x0e7dfcc6c9dcb9ea928b4328cd6ff16f8bcab1c4,Ethereum,Rolex (Rolex),Contract,
+0x38797ea75becceb8381201525cf29c7d651f3cf5,Ethereum,APPLE (APPLE),Contract,
+0x4246ccdc8f3dcd9c593b4057c9c85521387b8952,Ethereum,Bullsht (BS),Contract,
+0xf1a14c92a5ebb846a88705ec3a153e88ac7ea8be,Ethereum,UKRHODL (UKRHODL),Contract,
+0xc8583adb18a4033dab2846685f535af0bfb3bd87,Ethereum,Murakami flowers (MuraFlower),Contract,
+0x30d20208d987713f46dfd34ef128bb16c404d10f,Ethereum,Stader (SD),Contract,
+0x23c6585c5bae979638f23cceddb3055554e32d7a,Ethereum,International Medical Corps,Ukraine_Donation_List,
+0xf5deeb6e7e9267caa269ea05c1958771e12ea363,Ethereum,www.ukrainenow.org,Ukraine_Donation_List,
+tbd,Ethereum,Vostok SOS,Ukraine_Donation_List,
+tbd,Ethereum,People In Need,Ukraine_Donation_List,
+tbd,Ethereum,Polish Centre for International Aid,Ukraine_Donation_List,
+0xe481387ca21aea113180a184d14b64d804027deb,Ethereum,Voices of Children,Ukraine_Donation_List,
+tbd,Ethereum,World of Connections,Ukraine_Donation_List,
+0x54aaabe1d85f82828799482a225a61c4f9a8d024,Ethereum,Nova Ukraine,Ukraine_Donation_List,
+tbd,Ethereum,Hope for Ukraine,Ukraine_Donation_List,
+0xcb35eb0202a0e706d3de47944d19958e57ff00eb,Ethereum,Care,Ukraine_Donation_List,
+0xaff450b4e5aab33e443ac888d17ff88928830db1,Ethereum,Mercy Corps,Ukraine_Donation_List,
+0x5569f99f0edd94c3eaacae67a7ed5ec4aeaf4f61,Ethereum,Project Hope,Ukraine_Donation_List,
+0x15a937e35ac69e7f44354fac43d9ecfec7da934f,Ethereum,wonderfoundation,Ukraine_Donation_List,
+0xc81d8d60dbd9d7e631c0165ebd253f0916c73c13,Ethereum,Team Rubicon,Ukraine_Donation_List,
+0xa0dc5423adeef16edfed3c640d5dd77a9d0cc9b0,Ethereum,OutRight Action International,Ukraine_Donation_List,
+0x00ac89b957f27abf210c7f76003b467927ef66d9,Ethereum,Danish Refugee Council,Ukraine_Donation_List,
+0xd9f5d76a94ddc701cb1063ac1765a764a16e3f9f,Ethereum,Alight,Ukraine_Donation_List,
+0x99ba52cddcec64b23b8f8390eb0b3dbde6128faa,Ethereum,Good360,Ukraine_Donation_List,
+0xd481b8662c0922371011317cffdc10905ab80e98,Ethereum,FOUR PAWS USA,Ukraine_Donation_List,
+0xa81ec7373800e937330b975e56c7f1c995ad271b,Ethereum,Action Against Hunger USA,Ukraine_Donation_List,
+0x0883d895837a7111a6c61f39815d2e1622b629ff,Ethereum,Food For Life Global-Americas,Ukraine_Donation_List,
+0x6816c729bb90116d261d61a234f8e732443471c5,Ethereum,"All Hands and Hearts Smart Response, Inc.",Ukraine_Donation_List,
+0x5d3a3db5ac72e79d02dfc95377460f90b6547145,Ethereum,United Way Worldwide,Ukraine_Donation_List,
+0x2886725fd22386787352471908cde4369b37c941,Ethereum,LAWYERS FOR GOOD GOVERNMENT,Ukraine_Donation_List,
+0x7d0202494bb85fe00ba97078a2601e8e2882a275,Ethereum,Global Fund for Children,Ukraine_Donation_List,
+0x52848ecc1fc67630f6f64402c5aa34db967fce62,Ethereum,Save the Children,Ukraine_Donation_List,
+0x6d6e12c0bacb2ff3749f0e8eeb8b6415aee46017,Ethereum,Direct Relief,Ukraine_Donation_List,
+0x4ede1d2c323331385fbaba168cf2a3f8dadb9cf5,Ethereum,Committee to Protect Journalists,Ukraine_Donation_List,
+0x6ef5cae561c56151dc435fb001433857010a478c,Ethereum,ActionAid USA,Ukraine_Donation_List,
+0xbe7103fd734ce3020010e7bcae806d488a35d56b,Ethereum,International Fund for Animal Welfare (IFAW),Ukraine_Donation_List,
+0x06ff5010c1a382266b1359d2930f5651ed735b0e,Ethereum,World Central Kitchen,Ukraine_Donation_List,
+0x1e17d511be5cb3298efda9be6e5b069cf9fad9dd,Ethereum,SOS Children’s Villages,Ukraine_Donation_List,
+0x7dc35d87f136b6f0033e6da0eb33c66bb1615c3b,Ethereum,Catholic Relief Services,Ukraine_Donation_List,
+0x10e1439455bd2624878b243819e31cfee9eb721c,Ethereum,Unchain (redistributes to other NGOs),Ukraine_Donation_List,
+0xa1b1bbb8070df2450810b8eb2425d543cfcef79b,Ethereum,Come Back Alive,Ukraine_Donation_List,
+0x32b8b6fc046314dff1f3b1ee6daf1e46b762094d,Ethereum,Come Back Alive,Ukraine_Donation_List,
+0x4508401bade71ae75fe70c97fe585d734f975502,Ethereum,UkraineDAO,Ukraine_Donation_List,
+0xa4166bc4be559b762b346cb4aaad3b051e584e39,Ethereum,Razom for Ukraine,Ukraine_Donation_List,
+0x707a0a00e2fcf5329816b5223c91ea38f22d31a0,Ethereum,Palianytsia,Ukraine_Donation_List,
+0x3f757112c7c49f1da874cfce2ece60354d61d434,Ethereum,Dobrobut Foundation,Ukraine_Donation_List,
+0xfac926d5566ed4515cdaa6655cb6c4ba8008ff2e,Ethereum,Kind Race,Ukraine_Donation_List,
+0x1b4a932bfe0bb8ff56029bc1d0502cce639388eb,Ethereum,Binance Humanity First - Ukraine fund,Ukraine_Donation_List,
+0x6196c73fa4de6a07eb5601db32ff6e1e82eb06ab,Ethereum,Tabletochki,Ukraine_Donation_List,
+0x8b0fdffc6c607816550878c59464dd13b1558e48,Ethereum,Save Ukraine Relief Fund,Ukraine_Donation_List,
+0x956b02d2d5eaca4d5e918074aa124efe924d1b07,Ethereum,Direct help to army or humanitrian,Ukraine_Donation_List,
+0x30fa71e3fac1652fd9a241a1d7a801aad1b28b0b,Ethereum,BTC-Alpha,Ukraine_Donation_List,
+0x5c61b722a3f946930ea4c60aa989f61ae2163646,Ethereum,Ministry of Health,Ukraine_Donation_List,
+0x76136b4d578df727b132053d9a392eef202f9a80,Ethereum,Cyberpolice of Ukraine,Ukraine_Donation_List,
+0x02b7647cc3df7e209c30b4aef87d22dde613ba7e,Ethereum,Ukrainian Armed Forces Assistance Fund,Ukraine_Donation_List,
