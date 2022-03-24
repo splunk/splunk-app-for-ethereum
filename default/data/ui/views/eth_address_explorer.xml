@@ -1,5 +1,17 @@
 <form theme="dark" version="1.1">
   <label>ETH Address Explorer</label>
+  <search id="base_search">
+    <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d OR to=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d)
+| eval value=value/1000000000000000000 
+| eval from=lower(from) 
+| eval to=lower(to) 
+| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
+    </query>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+    <sampleRatio>1</sampleRatio>
+  </search>
   <fieldset submitButton="false">
     <input type="time" token="field1">
       <label>Select a time range:</label>
@@ -28,11 +40,8 @@
     <panel>
       <single>
         <title>Total Transactions</title>
-        <search>
-          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | stats count</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
+        <search base="base_search">
+          <query> | stats count</query>
           <done>
             <condition match=" $result.count$ &gt; 3000">
               <set token="form.sample_token">1000</set>
@@ -70,11 +79,8 @@
     <panel>
       <chart>
         <title>Transaction History</title>
-        <search>
-          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | timechart count</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
+        <search base="base_search">
+          <query>| timechart count</query>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -114,13 +120,8 @@
     <panel>
       <single>
         <title>Sum ETH Transferred</title>
-        <search>
-          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
-| eval value=value/1000000000000000000 
-| stats sum(value)</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
+        <search base="base_search">
+          <query> | stats sum(value) </query>
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
@@ -148,18 +149,18 @@
       <table>
         <title>Transaction Table for $address_token$</title>
         <search>
-          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) 
+          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d OR to=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d) 
 | eval value=value/1000000000000000000 
 | eval from=lower(from) 
 | eval to=lower(to) 
 | lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner
 | lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
+
 | table _time from from_owner to to_owner call.name value gas status 
 | rename toInfo.isContract AS toContract 
 | sort - _time</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">10</option>
         <option name="dataOverlayMode">none</option>
@@ -192,6 +193,38 @@
   </row>
   <row>
     <panel>
+      <title>Sankey Diagram for $address_token$</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search base="base_search">
+          <query>| eval from=if(isnull(from_owner),from,from_owner) 
+| eval to=if(isnull(to_owner),to,to_owner) 
+| stats count by to from
+| fields - *owner</query>
+        </search>
+        <option name="drilldown">all</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="sankey_diagram_app.sankey_diagram.colorMode">categorical</option>
+        <option name="sankey_diagram_app.sankey_diagram.maxColor">#3fc77a</option>
+        <option name="sankey_diagram_app.sankey_diagram.minColor">#d93f3c</option>
+        <option name="sankey_diagram_app.sankey_diagram.numOfBins">6</option>
+        <option name="sankey_diagram_app.sankey_diagram.showBackwards">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLabels">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLegend">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showSelf">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.showTooltip">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.styleBackwards">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.useColors">true</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <drilldown>
+          <link target="_blank">/app/ethereum-basics/eth_address_explorer?address_token=$row.from$</link>
+        </drilldown>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
       <html>
         <center>
           Note: If you see "No matching visualization" below - download the and install the viz from Splunkbase <a href="https://splunkbase.splunk.com/app/3767/" target="_blank">viz from Splunkbase.</a>  Then you can delete this chart panel by editing the dashboard.
@@ -204,20 +237,11 @@
       <title>Direct Relationships for $address_token$</title>
       <viz type="force_directed_viz.force_directed">
         <title>Thicker the line, more txns between each node</title>
-        <search>
-          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
-| eval value=value/1000000000000000000 
-| stats count by to from 
-| eval from=lower(from) 
-| eval to=lower(to) 
-| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
-| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
-| eval from=if(isnull(from_owner),substr(lower(from),0,10)."...",from_owner) 
+        <search base="base_search">
+          <query>| eval from=if(isnull(from_owner),substr(lower(from),0,10)."...",from_owner) 
 | eval to=if(isnull(to_owner),substr(lower(to),0,10)."...",to_owner) 
+| stats count by from to
 | fields - *owner</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-          <sampleRatio>$sample_token$</sampleRatio>
         </search>
         <option name="drilldown">none</option>
         <option name="force_directed_viz.force_directed.AttractDistanceMax">200</option>

@@ -1,7 +1,14 @@
 <form theme="dark"  version="1.1">
-  <label>Wrapped xDai Balance Analytics</label>
+  <label>Wrapped xDai Balance Explorer</label>
   <description>Currently for Wrapped xDAI (wxDAI) - 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d</description>
   <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
     <input type="text" token="address_token">
       <label>Address</label>
       <default>0xe91d153e0b41518a2ce8dd3d7944fa863463a97d</default>
@@ -15,10 +22,12 @@
         <search>
           <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
 | stats latest(balance) as latest_balance by account | stats dc(account) as unique_accounts</query>
-          <earliest>0</earliest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
       </single>
     </panel>
     <panel>
@@ -29,10 +38,12 @@
 | stats latest(balance) as latest_balance by account 
 | search latest_balance&gt;0 
 | stats dc(account) as unique_accounts</query>
-          <earliest>0</earliest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
       </single>
     </panel>
     <panel>
@@ -41,8 +52,8 @@
         <search>
           <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d 
 | stats latest(blockNumber) as block</query>
-          <earliest>-15m</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
           <refresh>11s</refresh>
           <refreshType>delay</refreshType>
@@ -59,8 +70,8 @@
         <title># Accounts Actively Trading</title>
         <search>
           <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d | timechart partial=f span=1h dc(account) as "Unique Accts"</query>
-          <earliest>-7d@h</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -113,8 +124,8 @@
 
 | table account account_owner percent *Balance percent 
 | head 10</query>
-          <earliest>0</earliest>
-          <latest></latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">10</option>
@@ -160,8 +171,8 @@
 | streamstats count 
 | search count=11 
 | fields - count | eval account="               Top 10 Token Holders"</query>
-          <earliest>0</earliest>
-          <latest></latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="count">10</option>
@@ -200,8 +211,8 @@
 | eval account=lower(account) 
 
 | eval account=if(isnull(account_found),account,account_found)</query>
-          <earliest>0</earliest>
-          <latest></latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -242,16 +253,6 @@
   </row>
   <row>
     <panel>
-      <input type="time" token="field1">
-        <label>Select a Time Range:</label>
-        <default>
-          <earliest>0</earliest>
-          <latest></latest>
-        </default>
-      </input>
-      <input type="dropdown" token="span_token">
-        <label>Select a Chart Span:</label>
-      </input>
       <html>
       </html>
     </panel>
@@ -263,8 +264,8 @@
         <search>
           <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d $account_token$ 
 | timechart avg(balance) as balance</query>
-          <earliest>-7d@h</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
@@ -283,7 +284,7 @@
         <option name="charting.chart.bubbleMaximumSize">50</option>
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
-        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.nullValueMode">connect</option>
         <option name="charting.chart.showDataLabels">none</option>
         <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
         <option name="charting.chart.stackMode">default</option>
@@ -307,8 +308,8 @@
         <search>
           <query>`xdai_index` sourcetype="ethereum:balance" 0xe91d153e0b41518a2ce8dd3d7944fa863463a97d $account_token$ 
 | stats count</query>
-          <earliest>-7d@h</earliest>
-          <latest>now</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
