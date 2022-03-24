@@ -1,7 +1,7 @@
 <form theme="dark" version="1.1">
   <label>ETH Address Explorer</label>
   <search id="base_search">
-    <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d OR to=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d)
+    <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
 | eval value=value/1000000000000000000 
 | eval from=lower(from) 
 | eval to=lower(to) 
@@ -13,10 +13,10 @@
     <sampleRatio>1</sampleRatio>
   </search>
   <fieldset submitButton="false">
-    <input type="time" token="field1">
+    <input type="time" token="field1" searchWhenChanged="true">
       <label>Select a time range:</label>
       <default>
-        <earliest>-60m@m</earliest>
+        <earliest>-24h@h</earliest>
         <latest>now</latest>
       </default>
     </input>
@@ -149,7 +149,7 @@
       <table>
         <title>Transaction Table for $address_token$</title>
         <search>
-          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d OR to=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d) 
+          <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) 
 | eval value=value/1000000000000000000 
 | eval from=lower(from) 
 | eval to=lower(to) 
@@ -191,7 +191,7 @@
       </table>
     </panel>
   </row>
-    <row>
+  <row>
     <panel>
       <html>
         <center>
@@ -199,7 +199,8 @@
         </center>
       </html>
     </panel>
-  </row><row>
+  </row>
+  <row>
     <panel>
       <title>Sankey Diagram for events with value &gt; 0 for:  $address_token$</title>
       <viz type="sankey_diagram_app.sankey_diagram">
@@ -248,7 +249,7 @@
         <title>Thicker the line, more txns between each node</title>
         <search>
           <query>
-            `ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d OR to=0x06012c8cf97BEaD5deAe237070F9587f8E7A266d)
+            `ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
             | eval value=value/1000000000000000000 
             | eval from=lower(from) 
             | eval to=lower(to) 
