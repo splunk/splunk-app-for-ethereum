@@ -1,0 +1,138 @@
+<form theme="dark" verson="1.1">
+  <label>Blockchain Data Explorer</label>
+  <description>Explore the data for a specific contract</description>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="time" token="selTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="selIndex" searchWhenChanged="true">
+      <label>index</label>
+      <prefix>index="</prefix>
+      <suffix>"</suffix>
+      <fieldForLabel>index</fieldForLabel>
+      <fieldForValue>index</fieldForValue>
+      <search>
+        <query>| rest splunk_server=* /services/data/indexes 
+| search datatype=event disabled=0 isInternal=0
+| fields title
+| rename title as index
+| dedup index</query>
+        <earliest>$selTime.earliest$</earliest>
+        <latest>$selTime.latest$</latest>
+      </search>
+      <default>mainnet</default>
+      <initialValue>mainnet</initialValue>
+      <change>
+        <condition>
+          <set token="form.selSourcetype">*</set>
+          <set token="form.selAddress"></set>
+          <set token="form.selSPL"></set>
+        </condition>
+      </change>
+    </input>
+    <input type="dropdown" token="selSourcetype" searchWhenChanged="true">
+      <label>sourcetype</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>ethereum:transaction:event</initialValue>
+      <fieldForLabel>sourcetype</fieldForLabel>
+      <fieldForValue>sourcetype</fieldForValue>
+      <search>
+        <query>| metasearch $selIndex$    sourcetype=* | stats count by sourcetype | fields - count</query>
+        <earliest>$selTime.earliest$</earliest>
+        <latest>$selTime.latest$</latest>
+      </search>
+      <prefix>sourcetype="</prefix>
+      <suffix>"</suffix>
+    </input>
+    <input type="text" token="selAddress" searchWhenChanged="true">
+      <label>Limit Results to</label>
+      <default></default>
+      <initialValue>0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48</initialValue>
+    </input>
+    <input type="text" token="selSPL">
+      <label>Additional SPL</label>
+      <default></default>
+      <initialValue>event.name="transfer"</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Number of Entries</title>
+        <search>
+          <query>$selIndex$ $selSourcetype$ $selAddress$ $selSPL$ | stats count</query>
+          <earliest>$selTime.earliest$</earliest>
+          <latest>$selTime.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </single>
+    </panel>
+    <panel>
+      <chart>
+        <title>Activity Timeline</title>
+        <search>
+          <query>$selIndex$ $selSourcetype$ $selAddress$ $selSPL$ | timechart count</query>
+          <earliest>$selTime.earliest$</earliest>
+          <latest>$selTime.latest$</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Event Types</title>
+        <search>
+          <query> $selIndex$ $selSourcetype$ $selAddress$ $selSPL$ | fillnull event.name value="No Event name" 
+| stats count by event.name</query>
+          <earliest>$selTime.earliest$</earliest>
+          <latest>$selTime.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <drilldown>
+          <set token="form.selSPL">$selSPL$ event.name=$click.value$</set>
+        </drilldown>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <event>
+        <title>Raw Data  (Last 100 Events)</title>
+        <search>
+          <query>$selIndex$ $selSourcetype$ $selAddress$ $selSPL$ | head 100</query>
+          <earliest>$selTime.earliest$</earliest>
+          <latest>$selTime.latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="list.drilldown">none</option>
+        <option name="raw.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="table.drilldown">none</option>
+        <option name="type">list</option>
+      </event>
+    </panel>
+  </row>
+</form>

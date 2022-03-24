@@ -1,0 +1,241 @@
+<form theme="dark" version="1.1">
+  <label>USDC Whale Watcher vIndexedABI</label>
+  <search id="base_search">
+    <query>
+index=mainnet sourcetype="ethereum:transaction:event" 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 
+| fillnull event.name value="NotDecoded" `erc20_parse` 
+      </query>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+    <sampleRatio>1</sampleRatio>
+  </search>
+  <fieldset submitButton="false">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="amount_token">
+      <label>Enter Single Txn Amount Limit</label>
+      <default>1000000</default>
+      <initialValue>1000000</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <title>Transfers over $amount_token$</title>
+        <search base="base_search">
+          <query>| eval usdc_from_burner=coalesce(event_transfer_from,event_burn_burner) 
+| eval usdc_to_minter=coalesce(event_transfer_to,event_mint_minter) 
+| eval usdc_value_amount=coalesce(event_transfer_value,event_burn_value,event_mint_value) 
+| lookup crypto_addresses.csv address AS usdc_from_burner_minter OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS usdc_to_minter OUTPUTNEW description AS to_owner 
+| eval usdc_from_burner=if(isnull(from_owner),usdc_from_burner,from_owner) 
+| eval usdc_to_minter=if(isnull(to_owner),usdc_to_minter,to_owner) 
+| search event.name="Transfer" 
+| search usdc_value_amount&gt;$amount_token$ 
+| rename event.name AS event 
+| table _time event usdc_value_amount usdc_from_burner usdc_to_minter</query>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="usdc_value_amount">
+          <colorPalette type="minMidMax" maxColor="#006D9C" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="usdc_value_amount">
+          <option name="unit">$</option>
+          <option name="unitPosition">before</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Transactions over $amount_token$</title>
+        <search base="base_search">
+          <query>| eval usdc_from_burner=coalesce(event_transfer_from,event_burn_burner) 
+| eval usdc_to_minter=coalesce(event_transfer_to,event_mint_minter) 
+| eval usdc_value_amount=coalesce(event_transfer_value,event_burn_value,event_mint_value) 
+| lookup crypto_addresses.csv address AS usdc_from_burner_minter OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS usdc_to_minter OUTPUTNEW description AS to_owner 
+| eval usdc_from_burner=if(isnull(from_owner),usdc_from_burner,from_owner) 
+| eval usdc_to_minter=if(isnull(to_owner),usdc_to_minter,to_owner) 
+| search event.name="Transfer" 
+| search usdc_value_amount&gt;$amount_token$ 
+| table _time usdc_value_amount 
+| eval limit=$amount_token$</query>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.overlayFields">limit</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">266</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Top Senders by Amount</title>
+        <search base="base_search">
+          <query>| eval usdc_from_burner=coalesce(event_transfer_from,event_burn_burner) 
+| eval usdc_to_minter=coalesce(event_transfer_to,event_mint_minter) 
+| eval usdc_value_amount=coalesce(event_transfer_value,event_burn_value,event_mint_value) 
+| lookup crypto_addresses.csv address AS usdc_from_burner_minter OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS usdc_to_minter OUTPUTNEW description AS to_owner 
+| eval usdc_from_burner=if(isnull(from_owner),usdc_from_burner,from_owner) 
+| eval usdc_to_minter=if(isnull(to_owner),usdc_to_minter,to_owner) 
+| search event.name="Transfer" 
+| stats sum(usdc_value_amount) as USDC_SENT count as txn_count by usdc_from_burner 
+| sort - USDC_SENT</query>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="USDC_SENT">
+          <colorPalette type="minMidMax" maxColor="#5A4575" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="USDC_SENT">
+          <option name="unit">$</option>
+          <option name="unitPosition">before</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Top Receivers by Amount</title>
+        <search base="base_search">
+          <query>| eval usdc_from_burner=coalesce(event_transfer_from,event_burn_burner) 
+| eval usdc_to_minter=coalesce(event_transfer_to,event_mint_minter) 
+| eval usdc_value_amount=coalesce(event_transfer_value,event_burn_value,event_mint_value) 
+| lookup crypto_addresses.csv address AS usdc_from_burner_minter OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS usdc_to_minter OUTPUTNEW description AS to_owner 
+| eval usdc_from_burner=if(isnull(from_owner),usdc_from_burner,from_owner) 
+| eval usdc_to_minter=if(isnull(to_owner),usdc_to_minter,to_owner) 
+| search event.name="Transfer" 
+| stats sum(usdc_value_amount) as USDC_RECEIVED count as txn_count by usdc_to_minter 
+| sort - USDC_RECEIVED</query>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="USDC_RECEIVED">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="USDC_RECEIVED">
+          <option name="unit">$</option>
+          <option name="unitPosition">before</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <viz type="force_directed_viz.force_directed">
+        <title>Top 100 Relationships by Amount</title>
+        <search base="base_search">
+          <query>| eval usdc_from_burner=coalesce(event_transfer_from,event_burn_burner) 
+| eval usdc_to_minter=coalesce(event_transfer_to,event_mint_minter) 
+| eval usdc_value_amount=coalesce(event_transfer_value,event_burn_value,event_mint_value) 
+| lookup crypto_addresses.csv address AS usdc_from_burner_minter OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS usdc_to_minter OUTPUTNEW description AS to_owner 
+| eval usdc_from_burner=if(isnull(from_owner),usdc_from_burner,from_owner) 
+| eval usdc_to_minter=if(isnull(to_owner),usdc_to_minter,to_owner) 
+| search event.name="Transfer" 
+| stats sum(usdc_value_amount) as count by usdc_from_burner usdc_to_minter
+| sort - count 
+| search count&gt;$amount_token$ 
+| head 100</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="force_directed_viz.force_directed.AttractDistanceMax">200</option>
+        <option name="force_directed_viz.force_directed.AttractDistanceMin">60</option>
+        <option name="force_directed_viz.force_directed.AttractForceStrength">-300</option>
+        <option name="force_directed_viz.force_directed.CollisionIterations">1</option>
+        <option name="force_directed_viz.force_directed.CollisionRadius">30</option>
+        <option name="force_directed_viz.force_directed.CollisionStrength">0.7</option>
+        <option name="force_directed_viz.force_directed.ColorRange1">1000000</option>
+        <option name="force_directed_viz.force_directed.ColorRange1Code">#ccc</option>
+        <option name="force_directed_viz.force_directed.ColorRange2">50000000</option>
+        <option name="force_directed_viz.force_directed.ColorRange2Code">#6db7c6</option>
+        <option name="force_directed_viz.force_directed.ColorRange3">100000000</option>
+        <option name="force_directed_viz.force_directed.ColorRange3Code">#f7bc38</option>
+        <option name="force_directed_viz.force_directed.ColorRange4">3000000000</option>
+        <option name="force_directed_viz.force_directed.ColorRange4Code">#dc4e41</option>
+        <option name="force_directed_viz.force_directed.ColorRange5">5000000000</option>
+        <option name="force_directed_viz.force_directed.ColorRange5Code">#d93f3c</option>
+        <option name="force_directed_viz.force_directed.ForceCollision">20</option>
+        <option name="force_directed_viz.force_directed.LineColor">enabled</option>
+        <option name="force_directed_viz.force_directed.LinkDistance">100</option>
+        <option name="force_directed_viz.force_directed.LinkLength">1</option>
+        <option name="force_directed_viz.force_directed.PanZoom">disabled</option>
+        <option name="force_directed_viz.force_directed.RepelDistanceMax">50</option>
+        <option name="force_directed_viz.force_directed.RepelDistanceMin">10</option>
+        <option name="force_directed_viz.force_directed.RepelForceStrength">-140</option>
+        <option name="force_directed_viz.force_directed.SWRange1">1</option>
+        <option name="force_directed_viz.force_directed.SWRange2">3</option>
+        <option name="force_directed_viz.force_directed.SWRange3">5</option>
+        <option name="force_directed_viz.force_directed.SWRange4">7</option>
+        <option name="force_directed_viz.force_directed.SWRange5">10</option>
+        <option name="force_directed_viz.force_directed.arrows">enabled</option>
+        <option name="force_directed_viz.force_directed.lowerRange">5</option>
+        <option name="force_directed_viz.force_directed.theme">dark</option>
+        <option name="force_directed_viz.force_directed.upperRange">5</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+</form>
