@@ -36,6 +36,18 @@
       <default>100</default>
       <initialValue>100</initialValue>
     </input>
+    <input type="dropdown" token="known_addresses">
+      <label>Interesting Addresses</label>
+      <choice value="0x06012c8cf97BEaD5deAe237070F9587f8E7A266d">CryptoKitties</choice>
+      <choice value="0x87A9DCF2BA62880d3125A992D4900878f2d688cF">Scam Example</choice>
+      <choice value="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D">Bored Ape Yacht Club (BYAC)</choice>
+      <choice value="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB">CryptoPunks</choice>
+      <change>
+        <condition label="*">
+          <set token="form.address_token">$value$</set>
+        </condition>
+      </change>
+    </input>
   </fieldset>
   <row>
     <panel>
@@ -158,8 +170,7 @@
 | lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
 
 | table _time from from_owner to to_owner call.name value gas status 
-| addcoltotals labelfield=status label="Totals"
-| eval gas=tostring(gas, "commas"), value=tostring(value, "commas")| rename toInfo.isContract AS toContract 
+| rename toInfo.isContract AS toContract 
 | sort - _time</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
@@ -204,7 +215,7 @@
   </row>
   <row>
     <panel>
-      <title>Sankey Diagram for successful transactions for:  $address_token$</title>
+      <title>Sankey Diagram of successful transactions for:  $address_token$</title>
       <viz type="sankey_diagram_app.sankey_diagram">
         <search base="base_search">
           <query>| eval from=if(isnull(from_owner),from,from_owner) 
