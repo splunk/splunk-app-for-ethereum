@@ -16,11 +16,7 @@
       <fieldForLabel>index</fieldForLabel>
       <fieldForValue>index</fieldForValue>
       <search>
-        <query>| rest splunk_server=* /services/data/indexes 
-| search datatype=event disabled=0 isInternal=0
-| fields title
-| rename title as index
-| dedup index</query>
+        <query>| eventcount summarize=false index=*  | dedup index | fields index</query>
         <earliest>$selTime.earliest$</earliest>
         <latest>$selTime.latest$</latest>
       </search>

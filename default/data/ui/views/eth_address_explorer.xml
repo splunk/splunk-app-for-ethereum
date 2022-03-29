@@ -7,6 +7,7 @@
 | eval to=lower(to) 
 | lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner
 | lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
+| fields *
     </query>
     <earliest>$field1.earliest$</earliest>
     <latest>$field1.latest$</latest>
@@ -34,6 +35,18 @@
       <choice value="10000">1:10000</choice>
       <default>100</default>
       <initialValue>100</initialValue>
+    </input>
+    <input type="dropdown" token="known_addresses">
+      <label>Interesting Addresses</label>
+      <choice value="0x06012c8cf97BEaD5deAe237070F9587f8E7A266d">CryptoKitties</choice>
+      <choice value="0x87A9DCF2BA62880d3125A992D4900878f2d688cF">Scam Example</choice>
+      <choice value="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D">Bored Ape Yacht Club (BYAC)</choice>
+      <choice value="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB">CryptoPunks</choice>
+      <change>
+        <condition label="*">
+          <set token="form.address_token">$value$</set>
+        </condition>
+      </change>
     </input>
   </fieldset>
   <row>
@@ -202,12 +215,12 @@
   </row>
   <row>
     <panel>
-      <title>Sankey Diagram for events with value &gt; 0 for:  $address_token$</title>
+      <title>Sankey Diagram of successful transactions for:  $address_token$</title>
       <viz type="sankey_diagram_app.sankey_diagram">
         <search base="base_search">
           <query>| eval from=if(isnull(from_owner),from,from_owner) 
 | eval to=if(isnull(to_owner),to,to_owner) 
-| search value &gt; 0
+| search status = "success"
 | stats count by to from
 | fields - *owner</query>
         </search>
