@@ -1,30 +1,27 @@
 <form theme="dark" version="1.1">
-    <search id="base_search">
-      <query>
-`ethereum_index` sourcetype="ethereum:transaction:event" 0xba12222222228d8ba445958a75a0704d566bf2c8 
-| fillnull event.name value="NotDecoded" 
+  <search id="base_search">
+    <query>
+index=mainnet sourcetype="ethereum:transaction:event" $contract_token$ 
+| fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval address=lower(address) 
-| eval event_transfer_from=lower(if('event.name'="Transfer",mvindex('event.params{}.value',0),null)) 
-| eval event_transfer_to=lower(if('event.name'="Transfer",mvindex('event.params{}.value',1),null)) 
-| eval event_transfer_value=tonumber(if('event.name'="Transfer",mvindex('event.params{}.value',2),null)) 
-| eval event_deposit_dst=lower(if('event.name'="Deposit",mvindex('event.params{}.value',0),null)) 
-| eval event_deposit_value=tonumber(if('event.name'="Deposit",mvindex('event.params{}.value',1),null)) 
-| eval event_approval_owner=lower(if('event.name'="Approval",mvindex('event.params{}.value',0),null)) 
-| eval event_approval_spender=lower(if('event.name'="Approval",mvindex('event.params{}.value',1),null)) 
-| eval event_approval_value=tonumber(if('event.name'="Approval",mvindex('event.params{}.value',2),null))/1000000 
-| eval event_approvalAll_owner=lower(if('event.name'="ApprovalForAll",mvindex('event.params{}.value',0),null)) 
-| eval event_approvalAll_spender=lower(if('event.name'="ApprovalForAll",mvindex('event.params{}.value',1),null)) 
-| eval event_approvalAll_bool=tonumber(if('event.name'="ApprovalForAll",mvindex('event.params{}.value',2),null))/1000000 
+| eval event_transfer_from=lower(event_transfer_from) 
+| eval event_transfer_to=lower(event_transfer_to) 
+| eval event_swap_tokenIn=lower(event_swap_tokenIn)
+| eval event_swap_tokenOut=lower(event_swap_tokenOut) 
+| eval event_transfer_value=event_transfer_value/1000000 
+| eval event_swap_amountIn=event_swap_amountIn/1000000 
+| eval event_swap_amountOut=event_swap_amountOut/1000000 
 | lookup crypto_addresses.csv address AS address OUTPUTNEW description AS contract_owner 
 | lookup crypto_addresses.csv address AS event_transfer_from OUTPUTNEW description AS event_from_owner 
-| lookup crypto_addresses.csv address AS event_transfer_to OUTPUTNEW description AS event_to_owner
-| eval event_transfer_value=event_transfer_value/1000000000000000000 
+| lookup crypto_addresses.csv address AS event_transfer_to OUTPUTNEW description AS event_to_owner 
+| lookup crypto_addresses.csv address AS event_swap_tokenIn OUTPUTNEW description AS event_swap_tokenIn_owner 
+| lookup crypto_addresses.csv address AS event_swap_tokenOut OUTPUTNEW description AS event_swap_tokenOut_owner 
 | fields *
       </query>
-      <earliest>$field1.earliest$</earliest>
-      <latest>$field1.latest$</latest>
-      <sampleRatio>1</sampleRatio>
-    </search>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+    <sampleRatio>1</sampleRatio>
+  </search>
   <label>Contract Decoding Breakdown</label>
   <fieldset submitButton="false">
     <input type="time" token="field1">
@@ -66,9 +63,9 @@
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
         <option name="drilldown">none</option>
-        <option name="height">225</option>
+        <option name="height">100</option>
         <option name="numberPrecision">0</option>
-        <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
         <option name="rangeValues">[0,30,70,100]</option>
         <option name="refresh.display">progressbar</option>
         <option name="showSparkline">1</option>
@@ -89,12 +86,11 @@
         <search base="base_search">
           <query>
 | stats count</query>
-
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
         <option name="drilldown">none</option>
-        <option name="height">225</option>
+        <option name="height">100</option>
         <option name="numberPrecision">0</option>
         <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
         <option name="rangeValues">[0,30,70,100]</option>
@@ -117,12 +113,11 @@
         <search base="base_search">
           <query>
 | search event.name="NotDecoded" | stats count</query>
-
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
         <option name="drilldown">none</option>
-        <option name="height">225</option>
+        <option name="height">100</option>
         <option name="numberPrecision">0</option>
         <option name="rangeColors">["0x53a051","0xdc4e41"]</option>
         <option name="rangeValues">[0]</option>
@@ -139,6 +134,8 @@
         <option name="useThousandSeparators">1</option>
       </single>
     </panel>
+  </row>
+  <row>
     <panel>
       <chart>
         <title>Decoding Breakdown</title>
@@ -146,7 +143,6 @@
           <query> 
 | eval event.name=if('event.name'="NotDecoded","NotDecoded","Decoded") 
 | stats count by event.name</query>
-
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -183,15 +179,12 @@
         <option name="trellis.size">medium</option>
       </chart>
     </panel>
-  </row>
-  <row>
     <panel>
-      <title>OverTime</title>
       <chart>
+        <title>decodedOverTime</title>
         <search base="base_search">
           <query>
 | timechart count by event.name</query>
-
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -230,12 +223,11 @@
       </chart>
     </panel>
     <panel>
-      <title>decodedEvent</title>
       <chart>
+        <title>decodedEvent</title>
         <search base="base_search">
           <query>
 | stats count by event.name</query>
-
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -259,6 +251,7 @@
         <option name="charting.chart.stackMode">default</option>
         <option name="charting.chart.style">shiny</option>
         <option name="charting.drilldown">none</option>
+        <option name="charting.fieldColors">{"NotDecoded":0x000000}</option>
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
@@ -269,7 +262,70 @@
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
-        <option name="charting.fieldColors">{"NotDecoded":0x000000}</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>eventParsed</title>
+        <search>
+          <query>index=mainnet sourcetype="ethereum:transaction:event" $contract_token$ 
+| fillnull event.name value="NotDecoded" `erc20_parse` 
+| eval address=lower(address) 
+| eval event_transfer_from=lower(event_transfer_from) 
+| eval event_transfer_to=lower(event_transfer_to) 
+| eval event_swap_tokenIn=lower(event_swap_tokenIn) 
+| eval event_swap_tokenOut=lower(event_swap_tokenOut) 
+| eval event_transfer_value=event_transfer_value/1000000 
+| eval event_swap_amountIn=event_swap_amountIn/1000000 
+| eval event_swap_amountOut=event_swap_amountOut/1000000 
+| lookup crypto_addresses.csv address AS address OUTPUTNEW description AS contract_owner 
+| lookup crypto_addresses.csv address AS event_transfer_from OUTPUTNEW description AS event_from_owner 
+| lookup crypto_addresses.csv address AS event_transfer_to OUTPUTNEW description AS event_to_owner 
+| lookup crypto_addresses.csv address AS event_swap_tokenIn OUTPUTNEW description AS event_swap_tokenIn_owner 
+| lookup crypto_addresses.csv address AS event_swap_tokenOut OUTPUTNEW description AS event_swap_tokenOut_owner 
+| fields * 
+| eval event_parsed_summary=if('event.name'="Transfer", "from: ".event_transfer_from.", to: ".event_transfer_to.", value: ".event_transfer_value,if('event.name'="Approval", "spender: ".event_approval_spender.", value: ".event_approval_value,if('event.name'="Swap", "poolId: ".event_swap_poolId.", tokenIn: ".event_swap_tokenIn.", tokenOut: ".event_swap_tokenOut.", amountIn: ".event_swap_amountIn.", amountOut: ".event_swap_amountOut,if('event.name'="OrdersMatched", "buyHash: ".event_OrdersMatched_buyHash.", sellHash: ".event_OrdersMatched_sellHash.", maker: ".event_OrdersMatched_maker.", taker: ".event_OrdersMatched_taker.", price: ".event_OrdersMatched_price.", metadata: ".event_OrdersMatched_metadata,if('event.name'="TransferSingle", "operator: ".event_transferSingle_operator.", from: ".event_transferSingle_from.", to: ".event_transferSingle_to.", id: ".event_transferSingle_id.", value: ".event_transferSingle_value,null))))) 
+| table _time address contract_owner event.name event_parsed_summary transactionHash 
+| sort - _time 
+| eval event_parsed_summary=if(isnull(event_parsed_summary),"NotParsed","Parsed") 
+| stats count by event_parsed_summary</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.fieldColors">{"NotParsed":0xAF575A, "Parsed":0x53A051}</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
       </chart>
     </panel>
   </row>
@@ -278,10 +334,10 @@
       <table>
         <title>Click Address to go to EtherScan</title>
         <search base="base_search">
-          <query>
-| table _time address contract_owner event.name event_*from* event_*to* event_*value transactionHash 
+          <query>| eval event_parsed_summary=if('event.name'="Transfer", "from: ".event_transfer_from.", to: ".event_transfer_to.", value: ".event_transfer_value,if('event.name'="Approval", "spender: ".event_approval_spender.", value: ".event_approval_value,if('event.name'="Swap", "poolId: ".event_swap_poolId.", tokenIn: ".event_swap_tokenIn.", tokenOut: ".event_swap_tokenOut.", amountIn: ".event_swap_amountIn.", amountOut: ".event_swap_amountOut,if('event.name'="OrdersMatched", "buyHash: ".event_OrdersMatched_buyHash.", sellHash: ".event_OrdersMatched_sellHash.", maker: ".event_OrdersMatched_maker.", taker: ".event_OrdersMatched_taker.", price: ".event_OrdersMatched_price.", metadata: ".event_OrdersMatched_metadata,if('event.name'="TransferSingle", "operator: ".event_transferSingle_operator.", from: ".event_transferSingle_from.", to: ".event_transferSingle_to.", id: ".event_transferSingle_id.", value: ".event_transferSingle_value,null))))) 
+| eval event_parsed_summary=if(isnull(event_parsed_summary),"NotParsed",event_parsed_summary)
+| table _time address contract_owner event.name event_parsed_summary transactionHash 
 | sort - _time</query>
-
         </search>
         <option name="count">20</option>
         <option name="dataOverlayMode">none</option>
@@ -296,8 +352,10 @@
           <scale type="minMidMax"></scale>
         </format>
         <format type="color" field="event.name">
-          <colorPalette type="sharedList"></colorPalette>
-          <scale type="sharedCategory"></scale>
+          <colorPalette type="map">{"NotDecoded":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="event_parsed_summary">
+          <colorPalette type="map">{"NotParsed":#AF575A}</colorPalette>
         </format>
         <drilldown>
           <link target="_blank">https://etherscan.io/tx/$row.transactionHash$</link>
@@ -314,7 +372,6 @@
 | table _time address contract_owner event.name event_*from* event_*to* event_*value transactionHash 
 | transaction transactionHash 
 | sort - _time</query>
-
         </search>
         <option name="count">20</option>
         <option name="dataOverlayMode">none</option>
