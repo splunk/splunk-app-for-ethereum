@@ -1,0 +1,619 @@
+<form theme="dark" version="1.1">
+  <label>ETH Address Explorer v3</label>
+  <description>Tjis is an experimental dashbaord and will be changed in future versions.</description>
+  <search id="base_search">
+    <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success")
+    </query>
+    <earliest>$field1.earliest$</earliest>
+    <latest>$field1.latest$</latest>
+    <sampleRatio>1</sampleRatio>
+  </search>
+  <fieldset submitButton="false">
+    <input type="time" token="field1">
+      <label>Select a time range:</label>
+      <default>
+        <earliest>-60m@m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="address_token">
+      <label>Enter an Address</label>
+      <default>0x165cd37b4c644c2921454429e7f9358d18a45e14</default>
+      <initialValue>0x165cd37b4c644c2921454429e7f9358d18a45e14</initialValue>
+    </input>
+    <input type="radio" token="bundle" searchWhenChanged="true">
+      <label>Bundle Txn Logs</label>
+      <choice value="| transaction transactionHash">Bundle</choice>
+      <choice value="|">Unbundle</choice>
+      <fieldForLabel>bundle</fieldForLabel>
+      <fieldForValue>bundle</fieldForValue>
+      <default>|</default>
+      <initialValue>|</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Total Transactions or Events (token transfers, approvals, etc)</title>
+        <search base="base_search">
+          <query> | stats count</query>
+          <done>
+            <condition match=" $result.count$ &gt; 3000">
+              <set token="form.sample_token">1000</set>
+            </condition>
+            <condition match=" $result.count$ &gt; 300">
+              <set token="form.sample_token">100</set>
+            </condition>
+            <condition match=" $result.count$ &gt; 200">
+              <set token="form.sample_token">10</set>
+            </condition>
+            <condition>
+              <set token="form.sample_token">1</set>
+            </condition>
+          </done>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">125</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">none</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <chart>
+        <title>Transaction/Token History</title>
+        <search>
+          <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") | fillnull event.name value="NotDecoded" `erc20_parse` | eval event.name=if(sourcetype="ethereum:transaction","ETH Transfer",'event.name') 
+| timechart count by event.name</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">125</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <viz type="semicircle_donut.semicircle_donut">
+        <title>Transaction/Token History</title>
+        <search>
+          <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") | fillnull event.name value="NotDecoded" `erc20_parse` | eval event.name=if(sourcetype="ethereum:transaction","ETH Transfer",'event.name') 
+| stats count by event.name</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="height">102</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="semicircle_donut.semicircle_donut.cutoutPercentage">50</option>
+        <option name="semicircle_donut.semicircle_donut.legendPosition">right</option>
+        <option name="semicircle_donut.semicircle_donut.type">half</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <single>
+        <title>Sum ETH Transferred</title>
+        <search>
+          <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") 
+| eval value=value/1000000000000000000 
+| stats sum(value)</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">125</option>
+        <option name="numberPrecision">0.000</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unit">eth</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Last 5 Ethereum Transaction Table for $address_token$</title>
+        <search>
+          <query>(index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") OR (index="mainnet" sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD") 
+| eval value=value/1000000000000000000 
+| eval from=lower(from) 
+| eval to=lower(to) 
+| eventstats avg(answer) as eth_price by blockNumber 
+| stats latest(_time) as _time sum(value) as eth_value latest(gas*) as gas* latest(from) as from latest(to) as to latest(status) as status latest(eth_price) as eth_price latest(toInfo.isContract) as toContract by hash blockNumber 
+| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
+| eval from=if(isnull(from_owner),from,from_owner) 
+| eval to=if(isnull(to_owner),to,to_owner) 
+| eval eth_usd=round(eth_value*eth_price,2) 
+| eval gasFee=(gasUsed*gasPrice)/1000000000000000000 
+| eval usd_tx_fee=round(gasFee*eth_price,2) 
+| fields - toContract *owner gasUsed 
+| table _time from to eth_value eth_price eth_usd usd_tx_fee gas* hash 
+| sort - _time</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="number" field="usd_tx_fee">
+          <option name="unit">$</option>
+          <option name="unitPosition">before</option>
+        </format>
+        <format type="number" field="eth_usd">
+          <option name="unit">$</option>
+          <option name="unitPosition">before</option>
+        </format>
+        <format type="color" field="eth_usd">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">https://etherscan.io/tx/$row.hash$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Last 5 Token/Contract Transaction Table for $address_token$</title>
+        <search>
+          <query>index=mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+| fillnull event.name value="NotDecoded" `erc20_parse` 
+| eval contract_address=lower(address) 
+| eval event_transfer_from=lower(event_transfer_from) 
+| eval event_transfer_to=lower(event_transfer_to) 
+| eval event_swap_from=lower(event_swap_from) 
+| eval event_swap_to=lower(event_swap_to) 
+| eval event_OrdersMatched_maker=lower(event_OrdersMatched_maker) 
+| eval event_OrdersMatched_taker=lower(event_OrdersMatched_taker) 
+| eval from_apprOwner_swpFrom_omMaker=coalesce(event_transfer_from,event_approval_owner,event_swap_from,event_OrdersMatched_maker) 
+| eval to_apprSpender_swpTo_omTaker=coalesce(event_transfer_to,event_approval_spender,event_swap_to,event_OrdersMatched_taker) 
+| eval value_apprV_swpV_omPrice=coalesce(event_transfer_value,event_approval_value,event_swap_valueFrom." / ".event_swap_valueTo,event_OrdersMatched_price) 
+| lookup crypto_addresses.csv address AS contract_address OUTPUTNEW description AS contract_owner 
+| lookup crypto_addresses.csv address AS from_apprOwner_swpFrom_omMaker OUTPUTNEW description AS event_from_owner 
+| lookup crypto_addresses.csv address AS to_apprSpender_swpTo_omTaker OUTPUTNEW description AS event_to_owner 
+| eval from_apprOwner_swpFrom_omMaker=if(isnull(event_from_owner),from_apprOwner_swpFrom_omMaker,event_from_owner) 
+| eval to_apprSpender_swpTo_omTaker=if(isnull(event_to_owner),to_apprSpender_swpTo_omTaker,event_to_owner) 
+| eval value_apprV_swpV_omPrice=if('event.name'="Approval","---",value_apprV_swpV_omPrice) 
+| eval event_summary=if('event.name'="OrdersMatched", "maker: ".event_OrdersMatched_maker.", taker: ".event_OrdersMatched_taker.", price: ".event_OrdersMatched_price,if('event.name'="TransferSingle", "operator: ".event_transferSingle_operator.", from: ".event_transferSingle_from.", to: ".event_transferSingle_to.", id: ".event_transferSingle_id.", value: ".event_transferSingle_value,null)) 
+| table _time contract_address contract_owner event.name from_a* to_app* value_app* transactionHash event_summary 
+| sort - _time | eval value_apprV_swpV_omPrice=if(contract_address="0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xed5af388653567af2f388e6224dc7c4b3241c544" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" AND 'event.name'="Transfer",value_apprV_swpV_omPrice/1000000000000,value_apprV_swpV_omPrice))) $bundle$</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="value">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="from">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="to">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="toContract">
+          <colorPalette type="map">{"true":#294E70}</colorPalette>
+        </format>
+        <format type="color" field="status">
+          <colorPalette type="map">{"success":#53A051,"failure":#AF575A}</colorPalette>
+        </format>
+        <format type="color" field="from_apprOwner_swpFrom_omMaker">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="to_apprSpender_swpTo_omTaker">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">https://etherscan.io/tx/$row.transactionHash$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Activity by Token/Contract</title>
+        <search>
+          <query>index=mainnet sourcetype="ethereum:transaction:event" $address_token$  
+| fillnull event.name value="NotDecoded" `erc20_parse` 
+| eval contract_address=lower(address) 
+| eval event_transfer_from=lower(event_transfer_from) 
+| eval event_transfer_to=lower(event_transfer_to) 
+| eval event_swap_from=lower(event_swap_from) 
+| eval event_swap_to=lower(event_swap_to) 
+| eval event_transfer_value=event_transfer_value 
+| eval event_swap_valueFrom=event_swap_valueFrom/1000000 
+| eval event_swap_valueTo=event_swap_valueTo/1000000 
+| eval from_apprOwner_swpFrom=coalesce(event_transfer_from,event_approval_owner,event_swap_from) 
+| eval to_apprSpender_swpTo=coalesce(event_transfer_to,event_approval_spender,event_swap_to) 
+| eval value_apprV_swpV=coalesce(event_transfer_value,event_approval_value,event_swap_valueFrom." / ".event_swap_valueTo) 
+| lookup crypto_addresses.csv address AS contract_address OUTPUTNEW description AS contract_owner 
+| lookup crypto_addresses.csv address AS from_apprOwner_swpFrom OUTPUTNEW description AS event_from_owner 
+| lookup crypto_addresses.csv address AS to_apprSpender_swpTo OUTPUTNEW description AS event_to_owner 
+| eval from_apprOwner_swpFrom=if(isnull(event_from_owner),from_apprOwner_swpFrom,event_from_owner) 
+| eval to_apprSpender_swpTo=if(isnull(event_to_owner),to_apprSpender_swpTo,event_to_owner) 
+| eval value_apprV_swpV=if('event.name'="Approval","---",value_apprV_swpV) 
+| eval contract=if(isnull(contract_owner),contract_address,contract_owner) 
+| stats values(event.name) as methods count by contract 
+| sort - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">7</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Activity by Token/Contract</title>
+        <search>
+          <query>index=mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+| fillnull event.name value="NotDecoded" `erc20_parse` 
+| eval contract_address=lower(address) 
+| eval event_transfer_from=lower(event_transfer_from) 
+| eval event_transfer_to=lower(event_transfer_to) 
+| eval event_swap_from=lower(event_swap_from) 
+| eval event_swap_to=lower(event_swap_to) 
+| eval event_transfer_value=event_transfer_value
+| eval event_swap_valueFrom=event_swap_valueFrom/1000000 
+| eval event_swap_valueTo=event_swap_valueTo/1000000 
+| eval from_apprOwner_swpFrom=coalesce(event_transfer_from,event_approval_owner,event_swap_from) 
+| eval to_apprSpender_swpTo=coalesce(event_transfer_to,event_approval_spender,event_swap_to) 
+| eval value_apprV_swpV=coalesce(event_transfer_value,event_approval_value,event_swap_valueFrom." / ".event_swap_valueTo) 
+| lookup crypto_addresses.csv address AS contract_address OUTPUTNEW description AS contract_owner 
+| lookup crypto_addresses.csv address AS from_apprOwner_swpFrom OUTPUTNEW description AS event_from_owner 
+| lookup crypto_addresses.csv address AS to_apprSpender_swpTo OUTPUTNEW description AS event_to_owner 
+| eval from_apprOwner_swpFrom=if(isnull(event_from_owner),from_apprOwner_swpFrom,event_from_owner) 
+| eval to_apprSpender_swpTo=if(isnull(event_to_owner),to_apprSpender_swpTo,event_to_owner) 
+| eval value_apprV_swpV=if('event.name'="Approval","---",value_apprV_swpV) 
+| eval contract=if(isnull(contract_owner),contract_address,contract_owner) | stats count by contract</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">408.993</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <viz type="force_directed_viz.force_directed">
+        <title>Connections</title>
+        <search>
+          <query>(index=mainnet sourcetype="ethereum:transaction:event" 0x87a9dcf2ba62880d3125a992d4900878f2d688cf) OR (index=mainnet sourcetype="ethereum:transaction" 0x87a9dcf2ba62880d3125a992d4900878f2d688cf toInfo.isContract="false" status="success") 
+| fillnull event.name value="NotDecoded" `erc20_parse` 
+| eval contract_address=lower(address) 
+| eval from=lower(from) 
+| eval to=lower(to) 
+| eval event_transfer_from=lower(event_transfer_from) 
+| eval event_transfer_to=lower(event_transfer_to) 
+| eval event_swap_from=lower(event_swap_from) 
+| eval event_swap_to=lower(event_swap_to) 
+| eval event_OrdersMatched_maker=lower(event_OrdersMatched_maker) 
+| eval event_OrdersMatched_taker=lower(event_OrdersMatched_taker) 
+| eval from_apprOwner_swpFrom_omMaker=coalesce(from,event_transfer_from,event_approval_owner,event_swap_from,event_OrdersMatched_maker) 
+| eval to_apprSpender_swpTo_omTaker=coalesce(to,event_transfer_to,event_approval_spender,event_swap_to,event_OrdersMatched_taker) 
+| eval value_apprV_swpV_omPrice=coalesce(event_transfer_value,event_approval_value,event_swap_valueFrom." / ".event_swap_valueTo,event_OrdersMatched_price) 
+| lookup crypto_addresses.csv address AS contract_address OUTPUTNEW description AS contract_owner 
+| lookup crypto_addresses.csv address AS from_apprOwner_swpFrom_omMaker OUTPUTNEW description AS event_from_owner 
+| lookup crypto_addresses.csv address AS to_apprSpender_swpTo_omTaker OUTPUTNEW description AS event_to_owner 
+| eval from_apprOwner_swpFrom_omMaker=if(isnull(event_from_owner),from_apprOwner_swpFrom_omMaker,event_from_owner) 
+| eval to_apprSpender_swpTo_omTaker=if(isnull(event_to_owner),to_apprSpender_swpTo_omTaker,event_to_owner) 
+| eval value_apprV_swpV_omPrice=if('event.name'="Approval","---",value_apprV_swpV_omPrice) 
+| eval from_apprOwner_swpFrom_omMaker=if(sourcetype="ethereum:transaction",from,if(from_apprOwner_swpFrom_omMaker="0x87a9dcf2ba62880d3125a992d4900878f2d688cf",from_apprOwner_swpFrom_omMaker,from_apprOwner_swpFrom_omMaker." (".'event.name'." - ".contract_owner.")")) 
+| eval to_apprSpender_swpTo_omTaker=if(sourcetype="ethereum:transaction",to,if(to_apprSpender_swpTo_omTaker="0x87a9dcf2ba62880d3125a992d4900878f2d688cf",to_apprSpender_swpTo_omTaker,to_apprSpender_swpTo_omTaker." (".'event.name'." - ".contract_owner.")")) 
+| search event.name!="Appro*" 
+| stats count by from_apprOwner_swpFrom_omMaker to_apprSpender_swpTo_omTaker</query>
+          <earliest>0</earliest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="force_directed_viz.force_directed.AttractDistanceMax">300</option>
+        <option name="force_directed_viz.force_directed.AttractDistanceMin">100</option>
+        <option name="force_directed_viz.force_directed.AttractForceStrength">-300</option>
+        <option name="force_directed_viz.force_directed.CollisionIterations">2</option>
+        <option name="force_directed_viz.force_directed.CollisionRadius">50</option>
+        <option name="force_directed_viz.force_directed.CollisionStrength">.2</option>
+        <option name="force_directed_viz.force_directed.ColorRange1">100</option>
+        <option name="force_directed_viz.force_directed.ColorRange1Code">#65a637</option>
+        <option name="force_directed_viz.force_directed.ColorRange2">500</option>
+        <option name="force_directed_viz.force_directed.ColorRange2Code">#6db7c6</option>
+        <option name="force_directed_viz.force_directed.ColorRange3">1000</option>
+        <option name="force_directed_viz.force_directed.ColorRange3Code">#f7bc38</option>
+        <option name="force_directed_viz.force_directed.ColorRange4">10000</option>
+        <option name="force_directed_viz.force_directed.ColorRange4Code">#f58f39</option>
+        <option name="force_directed_viz.force_directed.ColorRange5">1000000</option>
+        <option name="force_directed_viz.force_directed.ColorRange5Code">#d93f3c</option>
+        <option name="force_directed_viz.force_directed.ForceCollision">30</option>
+        <option name="force_directed_viz.force_directed.LineColor">disabled</option>
+        <option name="force_directed_viz.force_directed.LinkDistance">200</option>
+        <option name="force_directed_viz.force_directed.LinkLength">1</option>
+        <option name="force_directed_viz.force_directed.PanZoom">disabled</option>
+        <option name="force_directed_viz.force_directed.RepelDistanceMax">100</option>
+        <option name="force_directed_viz.force_directed.RepelDistanceMin">50</option>
+        <option name="force_directed_viz.force_directed.RepelForceStrength">-140</option>
+        <option name="force_directed_viz.force_directed.SWRange1">1</option>
+        <option name="force_directed_viz.force_directed.SWRange2">1</option>
+        <option name="force_directed_viz.force_directed.SWRange3">1</option>
+        <option name="force_directed_viz.force_directed.SWRange4">1</option>
+        <option name="force_directed_viz.force_directed.SWRange5">1</option>
+        <option name="force_directed_viz.force_directed.arrows">enabled</option>
+        <option name="force_directed_viz.force_directed.lowerRange">5</option>
+        <option name="force_directed_viz.force_directed.theme">dark</option>
+        <option name="force_directed_viz.force_directed.upperRange">5</option>
+        <option name="height">410</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <center>
+          Note: If you see "No matching visualization" below - download the and install the viz from Splunkbase <a href="https://splunkbase.splunk.com/app/3767/" target="_blank">viz from Splunkbase.</a>  Then you can delete this chart panel by editing the dashboard.
+        </center>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <title>Ethereum Transferred for $address_token$</title>
+        <search>
+          <query>(index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") 
+| eval value=value/1000000000000000000 
+| eval from=lower(from), to=lower(to) 
+| lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
+| lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
+| eval from=if(isnull(from_owner),from,from_owner) 
+| eval to=if(isnull(to_owner),to,to_owner) 
+| stats sum(value) as eth by from to 
+| sort - eth 
+| head 40</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <input type="dropdown" token="function_token">
+        <label>Select a function:</label>
+        <fieldForLabel>event.name</fieldForLabel>
+        <fieldForValue>event.name</fieldForValue>
+        <search>
+          <query>index=mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+| fillnull event.name value="NotDecoded" 
+| stats count by event.name</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <choice value="*">All</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+      </input>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <title>Token Activity (count) for $address_token$</title>
+        <search>
+          <query>index=mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+| fillnull event.name value="NotDecoded" `erc20_parse` 
+| eval contract_address=lower(address) 
+| eval from=lower(from) 
+| eval to=lower(to) 
+| eval event_transfer_from=lower(event_transfer_from) 
+| eval event_transfer_to=lower(event_transfer_to) 
+| eval event_swap_from=lower(event_swap_from) 
+| eval event_swap_to=lower(event_swap_to) 
+| eval event_OrdersMatched_maker=lower(event_OrdersMatched_maker) 
+| eval event_OrdersMatched_taker=lower(event_OrdersMatched_taker) 
+| eval from_apprOwner_swpFrom_omMaker=coalesce(from,event_transfer_from,event_approval_owner,event_swap_from,event_OrdersMatched_maker) 
+| eval to_apprSpender_swpTo_omTaker=coalesce(to,event_transfer_to,event_approval_spender,event_swap_to,event_OrdersMatched_taker) 
+| eval value_apprV_swpV_omPrice=coalesce(event_transfer_value,event_approval_value,event_swap_valueFrom." / ".event_swap_valueTo,event_OrdersMatched_price) 
+| lookup crypto_addresses.csv address AS contract_address OUTPUTNEW description AS contract_owner 
+| lookup crypto_addresses.csv address AS from_apprOwner_swpFrom_omMaker OUTPUTNEW description AS event_from_owner 
+| lookup crypto_addresses.csv address AS to_apprSpender_swpTo_omTaker OUTPUTNEW description AS event_to_owner 
+| eval from_apprOwner_swpFrom_omMaker=if(isnull(event_from_owner),from_apprOwner_swpFrom_omMaker,event_from_owner) 
+| eval to_apprSpender_swpTo_omTaker=if(isnull(event_to_owner),to_apprSpender_swpTo_omTaker,event_to_owner) 
+| eval value_apprV_swpV_omPrice=if('event.name'="Approval","---",value_apprV_swpV_omPrice) 
+| eval from_apprOwner_swpFrom_omMaker=if(sourcetype="ethereum:transaction",from,if(from_apprOwner_swpFrom_omMaker=lower("$address_token$"),from_apprOwner_swpFrom_omMaker,from_apprOwner_swpFrom_omMaker." (".'event.name'." - ".contract_owner.")")) 
+| eval to_apprSpender_swpTo_omTaker=if(sourcetype="ethereum:transaction",to,if(to_apprSpender_swpTo_omTaker=lower("$address_token$"),to_apprSpender_swpTo_omTaker,to_apprSpender_swpTo_omTaker." (".'event.name'." - ".contract_owner.")")) 
+| search event.name="$function_token$" 
+| stats count by from_apprOwner_swpFrom_omMaker to_apprSpender_swpTo_omTaker</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <viz type="event-timeline-viz.event-timeline-viz">
+        <search>
+          <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") 
+| fillnull event.name value="NotDecoded" `erc20_parse` 
+| eval contract_address=lower(address) 
+| eval event_transfer_from=lower(event_transfer_from) 
+| eval event_transfer_to=lower(event_transfer_to) 
+| eval event_swap_from=lower(event_swap_from) 
+| eval event_swap_to=lower(event_swap_to) 
+| eval event_OrdersMatched_maker=lower(event_OrdersMatched_maker) 
+| eval event_OrdersMatched_taker=lower(event_OrdersMatched_taker) 
+| eval from_apprOwner_swpFrom_omMaker=coalesce(event_transfer_from,event_approval_owner,event_swap_from,event_OrdersMatched_maker) 
+| eval to_apprSpender_swpTo_omTaker=coalesce(event_transfer_to,event_approval_spender,event_swap_to,event_OrdersMatched_taker) 
+| eval value_apprV_swpV_omPrice=coalesce(event_transfer_value,event_approval_value,event_swap_valueFrom." / ".event_swap_valueTo,event_OrdersMatched_price) 
+| lookup crypto_addresses.csv address AS contract_address OUTPUTNEW description AS contract_owner 
+| lookup crypto_addresses.csv address AS from_apprOwner_swpFrom_omMaker OUTPUTNEW description AS event_from_owner 
+| lookup crypto_addresses.csv address AS to_apprSpender_swpTo_omTaker OUTPUTNEW description AS event_to_owner 
+| eval from_apprOwner_swpFrom_omMaker=if(isnull(event_from_owner),from_apprOwner_swpFrom_omMaker,event_from_owner) 
+| eval to_apprSpender_swpTo_omTaker=if(isnull(event_to_owner),to_apprSpender_swpTo_omTaker,event_to_owner) 
+| eval value_apprV_swpV_omPrice=if('event.name'="Approval","---",value_apprV_swpV_omPrice) 
+| eval event_parsed_summary=if('event.name'="Transfer", "from: ".event_transfer_from.", to: ".event_transfer_to.", value: ".event_transfer_value,if('event.name'="Approval", "spender: ".event_approval_spender.", value: ".event_approval_value,if('event.name'="Swap", "poolId: ".event_swap_poolId.", tokenIn: ".event_swap_tokenIn.", tokenOut: ".event_swap_tokenOut.", amountIn: ".event_swap_amountIn.", amountOut: ".event_swap_amountOut,if('event.name'="OrdersMatched", "buyHash: ".event_OrdersMatched_buyHash.", sellHash: ".event_OrdersMatched_sellHash.", maker: ".event_OrdersMatched_maker.", taker: ".event_OrdersMatched_taker.", price: ".event_OrdersMatched_price.", metadata: ".event_OrdersMatched_metadata,if('event.name'="TransferSingle", "operator: ".event_transferSingle_operator.", from: ".event_transferSingle_from.", to: ".event_transferSingle_to.", id: ".event_transferSingle_id.", value: ".event_transferSingle_value,null))))) 
+| eval from_apprOwner_swpFrom_omMaker=if(sourcetype="ethereum:transaction",from,if(from_apprOwner_swpFrom_omMaker="$address_token$",from_apprOwner_swpFrom_omMaker,from_apprOwner_swpFrom_omMaker." (".'event.name'." - ".contract_owner.")")) 
+| eval to_apprSpender_swpTo_omTaker=if(sourcetype="ethereum:transaction",to,if(to_apprSpender_swpTo_omTaker="$address_token$",to_apprSpender_swpTo_omTaker,to_apprSpender_swpTo_omTaker." (".'event.name'." - ".contract_owner.")")) 
+| eval value_apprV_swpV_omPrice=if(contract_address="0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xed5af388653567af2f388e6224dc7c4b3241c544" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" AND 'event.name'="Transfer",value_apprV_swpV_omPrice/1000000000000,value_apprV_swpV_omPrice))) 
+| fillnull value_apprV_swpV_omPrice value="---" 
+| sort - _time 
+| eval group=if(sourcetype="ethereum:transaction","Direct ETH",'event.name') 
+| eval start=_time 
+| eval tooltip=if(sourcetype="ethereum:transaction","from: ".from." to: ".to." value: ".value,event_parsed_summary) 
+| eval color=case(match(group, "Transfer"), "#009933", match(group, "OrdersMatched"), "#29b6f6", match(group, "Direct ETH"), "#ff44ee", 1==1, null()) 
+| eval label=if(sourcetype="ethereum:transaction","Direct ETH Transfer",'event.name'.": ".contract_owner." (".value_apprV_swpV_omPrice.")") 
+| table group color label _time start tooltip</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="event-timeline-viz.event-timeline-viz.backgroundColor">#222222</option>
+        <option name="event-timeline-viz.event-timeline-viz.eventColor">#d5ddf6</option>
+        <option name="event-timeline-viz.event-timeline-viz.maxZoom">315360000000000</option>
+        <option name="event-timeline-viz.event-timeline-viz.minZoom">1</option>
+        <option name="event-timeline-viz.event-timeline-viz.orientation">top</option>
+        <option name="event-timeline-viz.event-timeline-viz.showCurrentTime">false</option>
+        <option name="event-timeline-viz.event-timeline-viz.sortGroupsBy">name</option>
+        <option name="event-timeline-viz.event-timeline-viz.stack">true</option>
+        <option name="event-timeline-viz.event-timeline-viz.tokenAllVisible">tok_et_all_visible</option>
+        <option name="event-timeline-viz.event-timeline-viz.tokenData">tok_et_data</option>
+        <option name="event-timeline-viz.event-timeline-viz.tokenEnd">tok_et_end</option>
+        <option name="event-timeline-viz.event-timeline-viz.tokenLabel">tok_et_label</option>
+        <option name="event-timeline-viz.event-timeline-viz.tokenStart">tok_et_start</option>
+        <option name="event-timeline-viz.event-timeline-viz.tooltipDateFormat">DD-MMM-YYYY</option>
+        <option name="height">994.991</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+</form>
