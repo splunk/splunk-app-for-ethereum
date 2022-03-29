@@ -1,8 +1,8 @@
 <form theme="dark" version="1.1">
   <label>ETH Address Explorer v3</label>
-  <description>Tjis is an experimental dashbaord and will be changed in future versions.</description>
+  <description>This is an experimental dashboard and will be changed in future versions.</description>
   <search id="base_search">
-    <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success")
+    <query>(index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$) | append [ search (index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") ] | fields *
     </query>
     <earliest>$field1.earliest$</earliest>
     <latest>$field1.latest$</latest>
@@ -30,6 +30,20 @@
       <default>|</default>
       <initialValue>|</initialValue>
     </input>
+    <input type="dropdown" token="known_addresses">
+      <label>Interesting Addresses</label>
+      <choice value="0x06012c8cf97BEaD5deAe237070F9587f8E7A266d">CryptoKitties</choice>
+      <choice value="0x87A9DCF2BA62880d3125A992D4900878f2d688cF">Scam Example</choice>
+      <choice value="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D">Bored Ape Yacht Club (BYAC)</choice>
+      <choice value="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB">CryptoPunks</choice>
+      <change>
+        <condition label="*">
+          <set token="form.address_token">$value$</set>
+        </condition>
+      </change>
+      <initialValue>0x06012c8cf97BEaD5deAe237070F9587f8E7A266d</initialValue>
+    </input>
+
   </fieldset>
   <row>
     <panel>
@@ -75,8 +89,8 @@
     <panel>
       <chart>
         <title>Transaction/Token History</title>
-        <search>
-          <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") | fillnull event.name value="NotDecoded" `erc20_parse` | eval event.name=if(sourcetype="ethereum:transaction","ETH Transfer",'event.name') 
+        <search base="base_search">
+          <query>| fillnull event.name value="NotDecoded" `erc20_parse` | eval event.name=if(sourcetype="ethereum:transaction","ETH Transfer",'event.name') 
 | timechart count by event.name</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
@@ -120,8 +134,8 @@
     <panel>
       <viz type="semicircle_donut.semicircle_donut">
         <title>Transaction/Token History</title>
-        <search>
-          <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") | fillnull event.name value="NotDecoded" `erc20_parse` | eval event.name=if(sourcetype="ethereum:transaction","ETH Transfer",'event.name') 
+        <search base="base_search">
+          <query> | fillnull event.name value="NotDecoded" `erc20_parse` | eval event.name=if(sourcetype="ethereum:transaction","ETH Transfer",'event.name') 
 | stats count by event.name</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
@@ -140,8 +154,8 @@
     <panel>
       <single>
         <title>Sum ETH Transferred</title>
-        <search>
-          <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") 
+        <search base="base_search">
+          <query>
 | eval value=value/1000000000000000000 
 | stats sum(value)</query>
           <earliest>$field1.earliest$</earliest>
@@ -175,7 +189,7 @@
       <table>
         <title>Last 5 Ethereum Transaction Table for $address_token$</title>
         <search>
-          <query>(index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") OR (index="mainnet" sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD") 
+          <query>(index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") | append [ search (index="mainnet" sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD") ]
 | eval value=value/1000000000000000000 
 | eval from=lower(from) 
 | eval to=lower(to) 
@@ -226,7 +240,7 @@
       <table>
         <title>Last 5 Token/Contract Transaction Table for $address_token$</title>
         <search>
-          <query>index=mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$ 
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
@@ -295,7 +309,7 @@
       <table>
         <title>Activity by Token/Contract</title>
         <search>
-          <query>index=mainnet sourcetype="ethereum:transaction:event" $address_token$  
+          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$  
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
@@ -334,7 +348,7 @@
       <chart>
         <title>Activity by Token/Contract</title>
         <search>
-          <query>index=mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$ 
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
@@ -396,8 +410,8 @@
     <panel>
       <viz type="force_directed_viz.force_directed">
         <title>Connections</title>
-        <search>
-          <query>(index=mainnet sourcetype="ethereum:transaction:event" 0x87a9dcf2ba62880d3125a992d4900878f2d688cf) OR (index=mainnet sourcetype="ethereum:transaction" 0x87a9dcf2ba62880d3125a992d4900878f2d688cf toInfo.isContract="false" status="success") 
+        <search base="base_search">
+          <query>
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval from=lower(from) 
@@ -479,7 +493,7 @@
       <viz type="sankey_diagram_app.sankey_diagram">
         <title>Ethereum Transferred for $address_token$</title>
         <search>
-          <query>(index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") 
+          <query>index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success"
 | eval value=value/1000000000000000000 
 | eval from=lower(from), to=lower(to) 
 | lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
@@ -519,7 +533,7 @@
       <viz type="sankey_diagram_app.sankey_diagram">
         <title>Token Activity (count) for $address_token$</title>
         <search>
-          <query>index=mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$ 
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval from=lower(from) 
@@ -558,8 +572,8 @@
   <row>
     <panel>
       <viz type="event-timeline-viz.event-timeline-viz">
-        <search>
-          <query>(index=mainnet sourcetype="ethereum:transaction:event" $address_token$) OR (index=mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") 
+        <search base="base_search">
+          <query>
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
