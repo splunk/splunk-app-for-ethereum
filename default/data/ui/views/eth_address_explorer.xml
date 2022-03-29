@@ -7,6 +7,7 @@
 | eval to=lower(to) 
 | lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner
 | lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
+| fields *
     </query>
     <earliest>$field1.earliest$</earliest>
     <latest>$field1.latest$</latest>
@@ -157,7 +158,8 @@
 | lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
 
 | table _time from from_owner to to_owner call.name value gas status 
-| rename toInfo.isContract AS toContract 
+| addcoltotals labelfield=status label="Totals"
+| eval gas=tostring(gas, "commas"), value=tostring(value, "commas")| rename toInfo.isContract AS toContract 
 | sort - _time</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
@@ -202,12 +204,12 @@
   </row>
   <row>
     <panel>
-      <title>Sankey Diagram for events with value &gt; 0 for:  $address_token$</title>
+      <title>Sankey Diagram for successful transactions for:  $address_token$</title>
       <viz type="sankey_diagram_app.sankey_diagram">
         <search base="base_search">
           <query>| eval from=if(isnull(from_owner),from,from_owner) 
 | eval to=if(isnull(to_owner),to,to_owner) 
-| search value &gt; 0
+| search status = "success"
 | stats count by to from
 | fields - *owner</query>
         </search>
