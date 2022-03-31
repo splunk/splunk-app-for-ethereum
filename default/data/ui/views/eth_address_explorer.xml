@@ -43,8 +43,15 @@
       <choice value="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D">Bored Ape Yacht Club (BYAC)</choice>
       <choice value="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB">CryptoPunks</choice>
       <change>
+        <condition label="Scam Example">
+          <set token="form.address_token">$value$</set>
+          <set token="form.field1.earliest">1648440000</set>
+          <set token="form.field1.latest">1648569600</set>
+        </condition>
         <condition label="*">
           <set token="form.address_token">$value$</set>
+          <set token="form.field1.earliest">-60m@m</set>
+          <set token="form.field1.latest">now</set>
         </condition>
       </change>
       <initialValue>0x06012c8cf97BEaD5deAe237070F9587f8E7A266d</initialValue>

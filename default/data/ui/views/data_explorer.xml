@@ -38,7 +38,7 @@
       <fieldForLabel>sourcetype</fieldForLabel>
       <fieldForValue>sourcetype</fieldForValue>
       <search>
-        <query>| metasearch $selIndex$    sourcetype=* | stats count by sourcetype | fields - count</query>
+        <query>$selIndex$ | fields sourcetype |  dedup sourcetype | stats dc(sourcetype) by sourcetype</query>
         <earliest>$selTime.earliest$</earliest>
         <latest>$selTime.latest$</latest>
       </search>
