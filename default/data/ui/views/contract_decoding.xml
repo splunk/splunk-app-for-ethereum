@@ -269,7 +269,7 @@
       <chart>
         <title>eventParsed</title>
         <search>
-          <query>index=`ethereum_index` sourcetype="ethereum:transaction:event" $contract_token$ 
+          <query>`ethereum_index` sourcetype="ethereum:transaction:event" $contract_token$ 
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
