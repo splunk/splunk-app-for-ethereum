@@ -1,7 +1,9 @@
 <form theme="dark" version="1.1">
+  <label>Contract Decoding</label>
+  <description>ABI decoding of events as they are ingested into Splunk</description>
   <search id="base_search">
     <query>
-index=`ethereum_index` sourcetype="ethereum:transaction:event" $contract_token$ 
+`ethereum_index` sourcetype="ethereum:transaction:event" $contract_token$ 
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
@@ -22,9 +24,7 @@ index=`ethereum_index` sourcetype="ethereum:transaction:event" $contract_token$
     <latest>$field1.latest$</latest>
     <sampleRatio>1</sampleRatio>
   </search>
-  <label>Contract Decoding Breakdown</label>
-  <description>ABI decoding of events as they are ingested into Splunk</description>
-  <fieldset submitButton="false">
+ <fieldset submitButton="false">
     <input type="time" token="field1">
       <label>Select a Time Range:</label>
       <default>
