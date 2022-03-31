@@ -17,9 +17,9 @@
     <view name="crypto_kitties" />
   </collection>
   <collection label="Decoding">
-    <view name="contract_decoding_breakdown" />
-    <view name="usdc_whale_wathcer" />
+    <view name="contract_decoding" />
     <view name="abi_decoding" />
+    <view name="usdc_whale_watcherXX" />
   </collection>
   <collection label="Node Monitoring">
     <view name="node_health__sc4ethereum" />
