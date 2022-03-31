@@ -20,8 +20,6 @@
         <earliest>$selTime.earliest$</earliest>
         <latest>$selTime.latest$</latest>
       </search>
-      <default>mainnet</default>
-      <initialValue>mainnet</initialValue>
       <change>
         <condition>
           <set token="form.selSourcetype">*</set>
@@ -34,7 +32,7 @@
       <label>sourcetype</label>
       <choice value="*">All</choice>
       <default>*</default>
-      <initialValue>ethereum:transaction:event</initialValue>
+      <initialValue>*</initialValue>
       <fieldForLabel>sourcetype</fieldForLabel>
       <fieldForValue>sourcetype</fieldForValue>
       <search>

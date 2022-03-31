@@ -2,7 +2,7 @@
   <label>Multichain Stats</label>
   <description>Visulaizing multiple blockchains from a single dashboard.</description>
   <init>
-    <set token="base_search">`ethereum_index` sourcetype="ethereum:block" | append [search `xdai_index` sourcetype="ethereum:block" ]</set>
+    <set token="base_search">`ethereum_index` sourcetype="ethereum:block" | append [search `xdai_index` sourcetype="ethereum:block" ] | append [search `rinkeby_index` sourcetype="ethereum:block" ]</set>
   </init>
   <fieldset submitButton="false">
     <input type="time" token="myTime" searchWhenChanged="true">
