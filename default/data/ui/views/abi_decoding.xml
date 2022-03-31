@@ -92,7 +92,7 @@
 | eval {key} = value
 | stats count by key | sort key</query>
         </search>
-        <default>spender</default>
+        <default>sender</default>
         <initialValue>sender</initialValue>
       </input>
       <chart>
