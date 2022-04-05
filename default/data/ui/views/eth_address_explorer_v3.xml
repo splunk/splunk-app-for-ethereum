@@ -1,6 +1,6 @@
 <form theme="dark" version="1.1">
   <label>ETH Address Explorer v3</label>
-  <description>This is an experimental dashboard and will be changed in future versions.</description>
+  <description>Tjis is an experimental dashbaord and will be changed in future versions.</description>
   <search id="base_search">
     <query>(index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$) | append [ search (index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") ] | fields *
     </query>
@@ -19,7 +19,6 @@
     <input type="text" token="address_token">
       <label>Enter an Address</label>
       <default>0x165cd37b4c644c2921454429e7f9358d18a45e14</default>
-      <initialValue>0x165cd37b4c644c2921454429e7f9358d18a45e14</initialValue>
     </input>
     <input type="radio" token="bundle" searchWhenChanged="true">
       <label>Bundle Txn Logs</label>
@@ -27,28 +26,47 @@
       <choice value="|">Unbundle</choice>
       <fieldForLabel>bundle</fieldForLabel>
       <fieldForValue>bundle</fieldForValue>
-      <default>|</default>
-      <initialValue>|</initialValue>
+      <default>| transaction transactionHash</default>
+      <initialValue>| transaction transactionHash</initialValue>
     </input>
     <input type="dropdown" token="known_addresses">
       <label>Interesting Addresses</label>
-      <choice value="0x06012c8cf97BEaD5deAe237070F9587f8E7A266d">CryptoKitties</choice>
-      <choice value="0x87A9DCF2BA62880d3125A992D4900878f2d688cF">Scam Example</choice>
-      <choice value="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D">Bored Ape Yacht Club (BYAC)</choice>
-      <choice value="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB">CryptoPunks</choice>
       <change>
+        <condition label="">
+          <set token="form.address_token">0x165cd37b4c644c2921454429e7f9358d18a45e14</set>
+          <set token="form.field1.earliest">-60m@m</set>
+          <set token="form.field1.latest">now</set>
+        </condition>
         <condition label="Scam Example">
           <set token="form.address_token">$value$</set>
           <set token="form.field1.earliest">1648440000</set>
           <set token="form.field1.latest">1648569600</set>
         </condition>
-        <condition label="*">
+        <condition label="BAYC Bubble Gum Ape Scam">
+          <set token="form.address_token">$value$</set>
+          <set token="form.field1.earliest">1649073600</set>
+          <set token="form.field1.latest">1649160000</set>
+        </condition>
+        <condition>
           <set token="form.address_token">$value$</set>
           <set token="form.field1.earliest">-60m@m</set>
           <set token="form.field1.latest">now</set>
         </condition>
       </change>
-      <initialValue>0x06012c8cf97BEaD5deAe237070F9587f8E7A266d</initialValue>
+      <fieldForLabel>name</fieldForLabel>
+      <fieldForValue>address</fieldForValue>
+      <search>
+        <query>| noop 
+| makeresults 
+| eval address="0x87A9DCF2BA62880d3125A992D4900878f2d688cF", name="Scam Example"
+| append [ | makeresults | eval  address="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D", name="Bored Ape Yacht Club (BYAC)" ]
+| append [ | makeresults | eval  address="0xb26de945b52568f9445013f16fa1203d046ec57a", name="BAYC Bubble Gum Ape Scam" ]
+| append [ | makeresults | eval  address="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB", name="CryptoPunks" ]
+| append [ | makeresults | eval  address="0x06012c8cf97BEaD5deAe237070F9587f8E7A266d", name="CryptoKitties" ]
+| table name address        
+        </query>
+      </search>
+      <default>0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D</default>
     </input>
   </fieldset>
   <row>
@@ -195,7 +213,7 @@
       <table>
         <title>Last 5 Ethereum Transaction Table for $address_token$</title>
         <search>
-          <query>(index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") | append [ search (index="mainnet" sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD") ]
+          <query>(index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") | append [ search (index="federated:mainnet" sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD") ]
 | eval value=value/1000000000000000000 
 | eval from=lower(from) 
 | eval to=lower(to) 
@@ -266,7 +284,8 @@
 | eval value_apprV_swpV_omPrice=if('event.name'="Approval","---",value_apprV_swpV_omPrice) 
 | eval event_summary=if('event.name'="OrdersMatched", "maker: ".event_OrdersMatched_maker.", taker: ".event_OrdersMatched_taker.", price: ".event_OrdersMatched_price,if('event.name'="TransferSingle", "operator: ".event_transferSingle_operator.", from: ".event_transferSingle_from.", to: ".event_transferSingle_to.", id: ".event_transferSingle_id.", value: ".event_transferSingle_value,null)) 
 | table _time contract_address contract_owner event.name from_a* to_app* value_app* transactionHash event_summary 
-| sort - _time | eval value_apprV_swpV_omPrice=if(contract_address="0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xed5af388653567af2f388e6224dc7c4b3241c544" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" AND 'event.name'="Transfer",value_apprV_swpV_omPrice/1000000000000,value_apprV_swpV_omPrice))) $bundle$</query>
+| sort - _time 
+| eval value_apprV_swpV_omPrice=if(contract_address="0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xed5af388653567af2f388e6224dc7c4b3241c544" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" AND 'event.name'="Transfer",value_apprV_swpV_omPrice/1000000000000,if(contract_address="0xfcf71e369b25428427f166ca619f31a756db49d9" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0x60e4d786628fea6478f785a6d7e704777c86a7c6" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),value_apprV_swpV_omPrice))))) $bundle$</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
@@ -579,8 +598,7 @@
     <panel>
       <viz type="event-timeline-viz.event-timeline-viz">
         <search base="base_search">
-          <query>
-| fillnull event.name value="NotDecoded" `erc20_parse` 
+          <query>| fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
 | eval event_transfer_to=lower(event_transfer_to) 
@@ -600,18 +618,16 @@
 | eval event_parsed_summary=if('event.name'="Transfer", "from: ".event_transfer_from.", to: ".event_transfer_to.", value: ".event_transfer_value,if('event.name'="Approval", "spender: ".event_approval_spender.", value: ".event_approval_value,if('event.name'="Swap", "poolId: ".event_swap_poolId.", tokenIn: ".event_swap_tokenIn.", tokenOut: ".event_swap_tokenOut.", amountIn: ".event_swap_amountIn.", amountOut: ".event_swap_amountOut,if('event.name'="OrdersMatched", "buyHash: ".event_OrdersMatched_buyHash.", sellHash: ".event_OrdersMatched_sellHash.", maker: ".event_OrdersMatched_maker.", taker: ".event_OrdersMatched_taker.", price: ".event_OrdersMatched_price.", metadata: ".event_OrdersMatched_metadata,if('event.name'="TransferSingle", "operator: ".event_transferSingle_operator.", from: ".event_transferSingle_from.", to: ".event_transferSingle_to.", id: ".event_transferSingle_id.", value: ".event_transferSingle_value,null))))) 
 | eval from_apprOwner_swpFrom_omMaker=if(sourcetype="ethereum:transaction",from,if(from_apprOwner_swpFrom_omMaker="$address_token$",from_apprOwner_swpFrom_omMaker,from_apprOwner_swpFrom_omMaker." (".'event.name'." - ".contract_owner.")")) 
 | eval to_apprSpender_swpTo_omTaker=if(sourcetype="ethereum:transaction",to,if(to_apprSpender_swpTo_omTaker="$address_token$",to_apprSpender_swpTo_omTaker,to_apprSpender_swpTo_omTaker." (".'event.name'." - ".contract_owner.")")) 
-| eval value_apprV_swpV_omPrice=if(contract_address="0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xed5af388653567af2f388e6224dc7c4b3241c544" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" AND 'event.name'="Transfer",value_apprV_swpV_omPrice/1000000000000,value_apprV_swpV_omPrice))) 
-| fillnull value_apprV_swpV_omPrice value="---" 
 | sort - _time 
 | eval group=if(sourcetype="ethereum:transaction","Direct ETH",'event.name') 
 | eval start=_time 
 | eval tooltip=if(sourcetype="ethereum:transaction","from: ".from." to: ".to." value: ".value,event_parsed_summary) 
 | eval color=case(match(group, "Transfer"), "#009933", match(group, "OrdersMatched"), "#29b6f6", match(group, "Direct ETH"), "#ff44ee", 1==1, null()) 
+| eval value_apprV_swpV_omPrice=if(contract_address="0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xed5af388653567af2f388e6224dc7c4b3241c544" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" AND 'event.name'="Transfer",value_apprV_swpV_omPrice/1000000000000,if(contract_address="0xfcf71e369b25428427f166ca619f31a756db49d9" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0x60e4d786628fea6478f785a6d7e704777c86a7c6" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),value_apprV_swpV_omPrice))))) 
+| fillnull value_apprV_swpV_omPrice value="---" 
 | eval label=if(sourcetype="ethereum:transaction","Direct ETH Transfer",'event.name'.": ".contract_owner." (".value_apprV_swpV_omPrice.")") 
+| fillnull label value="No Label" 
 | table group color label _time start tooltip</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
         <option name="event-timeline-viz.event-timeline-viz.backgroundColor">#222222</option>
