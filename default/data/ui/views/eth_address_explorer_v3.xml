@@ -214,14 +214,19 @@
         <title>Last 5 Ethereum Transaction Table for $address_token$</title>
         <search>
           <query>index=federated:mainnet AND ( (sourcetype="ethereum:transaction"  $address_token$  toInfo.isContract="false" status="success") OR (sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD")   )
+``` add eth_price based on blockNumber   ```
+| eventstats avg(answer) as eth_price by blockNumber
+
+``` summarize the transactions  ```
+| stats latest(_time) as _time sum(value) as eth_value latest(gas*) as gas* latest(from) as from latest(to) as to latest(status) as status latest(eth_price) as eth_price latest(toInfo.isContract) as toContract by hash blockNumber 
+
+``` lookup addresses  ```
 | eval from=lower(from) 
 | eval to=lower(to) 
-| eventstats avg(answer) as eth_price by blockNumber 
-| stats latest(_time) as _time sum(value) as eth_value latest(gas*) as gas* latest(from) as from latest(to) as to latest(status) as status latest(eth_price) as eth_price latest(toInfo.isContract) as toContract by hash blockNumber 
 | lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
 | lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
 | eval from=if(isnull(from_owner),from,from_owner) 
-| eval to=if(isnull(to_owner),to,to_owner) 
+| eval to=if(isnull(to_owner),to,to_owner)  
 
 ``` Now lets convert wei, eth and USD ```
 | eval wei = pow(10,18)             ``` wei = 18th decimal of an eth ```
