@@ -2,7 +2,7 @@
   <label>ETH Address Explorer v3</label>
   <description>Tjis is an experimental dashbaord and will be changed in future versions.</description>
   <search id="base_search">
-    <query>(index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$) | append [ search (index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") ] | fields *
+    <query>index=federated:mainnet (   (sourcetype="ethereum:transaction:event" $address_token$)  OR (index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success")   ) | fields *
     </query>
     <earliest>$field1.earliest$</earliest>
     <latest>$field1.latest$</latest>
@@ -213,8 +213,7 @@
       <table>
         <title>Last 5 Ethereum Transaction Table for $address_token$</title>
         <search>
-          <query>(index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success") | append [ search (index="federated:mainnet" sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD") ]
-| eval value=value/1000000000000000000 
+          <query>index=federated:mainnet AND ( (sourcetype="ethereum:transaction"  $address_token$  toInfo.isContract="false" status="success") OR (sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD")   )
 | eval from=lower(from) 
 | eval to=lower(to) 
 | eventstats avg(answer) as eth_price by blockNumber 
@@ -223,12 +222,25 @@
 | lookup crypto_addresses.csv address AS to OUTPUTNEW description AS to_owner 
 | eval from=if(isnull(from_owner),from,from_owner) 
 | eval to=if(isnull(to_owner),to,to_owner) 
+
+``` Now lets convert wei, eth and USD ```
+| eval wei = pow(10,18)             ``` wei = 18th decimal of an eth ```
+| eval eth_value=eth_value / wei 
 | eval eth_usd=round(eth_value*eth_price,2) 
-| eval gasFee=(gasUsed*gasPrice)/1000000000000000000 
+| eval gasFee=(gasUsed*gasPrice/wei)
 | eval usd_tx_fee=round(gasFee*eth_price,2) 
 | fields - toContract *owner gasUsed 
-| table _time from to eth_value eth_price eth_usd usd_tx_fee gas* hash 
-| sort - _time</query>
+| table _time from to eth_value eth_price eth_usd usd_tx_fee gas gasPrice gasFee hash 
+| sort - _time
+| addcoltotals labelfield=to label="Totals"
+
+```  and finally, let's format the numbers  
+| fieldformat eth_usd=printf("$%'12.2f",eth_usd)
+| fieldformat usd_tx_fee=printf("$%'12.2f",usd_tx_fee)
+| fieldformat eth_price=printf("%'12.2f",eth_price)
+| fieldformat gasPrice=printf("%'12.0f",gasPrice)
+| fieldformat gas=printf("%'12.0f",gas)
+```</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -241,17 +253,21 @@
         <option name="rowNumbers">false</option>
         <option name="totalsRow">false</option>
         <option name="wrap">false</option>
-        <format type="number" field="usd_tx_fee">
-          <option name="unit">$</option>
-          <option name="unitPosition">before</option>
+        <format type="color" field="eth_usd">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
         </format>
         <format type="number" field="eth_usd">
           <option name="unit">$</option>
           <option name="unitPosition">before</option>
         </format>
-        <format type="color" field="eth_usd">
-          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
-          <scale type="minMidMax"></scale>
+        <format type="number" field="usd_tx_fee">
+          <option name="unit">$</option>
+          <option name="unitPosition">before</option>
+        </format>
+        <format type="number" field="eth_price">
+          <option name="unit">$</option>
+          <option name="unitPosition">before</option>
         </format>
         <drilldown>
           <link target="_blank">https://etherscan.io/tx/$row.hash$</link>
@@ -578,6 +594,7 @@
 | eval from_apprOwner_swpFrom_omMaker=if(isnull(event_from_owner),from_apprOwner_swpFrom_omMaker,event_from_owner) 
 | eval to_apprSpender_swpTo_omTaker=if(isnull(event_to_owner),to_apprSpender_swpTo_omTaker,event_to_owner) 
 | eval value_apprV_swpV_omPrice=if('event.name'="Approval","---",value_apprV_swpV_omPrice) 
+| fillnull contract_owner value="---" 
 | eval from_apprOwner_swpFrom_omMaker=if(sourcetype="ethereum:transaction",from,if(from_apprOwner_swpFrom_omMaker=lower("$address_token$"),from_apprOwner_swpFrom_omMaker,from_apprOwner_swpFrom_omMaker." (".'event.name'." - ".contract_owner.")")) 
 | eval to_apprSpender_swpTo_omTaker=if(sourcetype="ethereum:transaction",to,if(to_apprSpender_swpTo_omTaker=lower("$address_token$"),to_apprSpender_swpTo_omTaker,to_apprSpender_swpTo_omTaker." (".'event.name'." - ".contract_owner.")")) 
 | search event.name="$function_token$" 
@@ -625,6 +642,7 @@
 | eval color=case(match(group, "Transfer"), "#009933", match(group, "OrdersMatched"), "#29b6f6", match(group, "Direct ETH"), "#ff44ee", 1==1, null()) 
 | eval value_apprV_swpV_omPrice=if(contract_address="0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xed5af388653567af2f388e6224dc7c4b3241c544" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" AND 'event.name'="Transfer",value_apprV_swpV_omPrice/1000000000000,if(contract_address="0xfcf71e369b25428427f166ca619f31a756db49d9" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),if(contract_address="0x60e4d786628fea6478f785a6d7e704777c86a7c6" AND 'event.name'="Transfer","TokenId: ".tostring(value_apprV_swpV_omPrice*1000000),value_apprV_swpV_omPrice))))) 
 | fillnull value_apprV_swpV_omPrice value="---" 
+| fillnull contract_owner value="---"
 | eval label=if(sourcetype="ethereum:transaction","Direct ETH Transfer",'event.name'.": ".contract_owner." (".value_apprV_swpV_omPrice.")") 
 | fillnull label value="No Label" 
 | table group color label _time start tooltip</query>
