@@ -1,0 +1,149 @@
+<form version="1.1" theme="dark">
+  <label>Contract Explorer</label>
+  <search id="base_search">
+    <query>
+index=federated:mainnet sourcetype="ethereum:transaction:event" $contract_address$ Transfer(address,address,uint256)
+| fillnull event.name value="NotDecoded" `erc20_parse` 
+| eval contract_address=lower(address) 
+| eval event_transfer_from=lower(event_transfer_from) 
+| eval event_transfer_to=lower(event_transfer_to) 
+| eval event_direction = if(event_transfer_to=lower("$contract_address$"),"out","in")
+| eval event_transfer_value = event_transfer_value/pow(10,18)
+| fillnull value=0 event_transfer_value
+| fields *
+    </query>
+    <earliest>$myTime.earliest$</earliest>
+    <latest>$myTime.latest$</latest>
+  </search>
+  <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </default>
+      <change>
+        <eval token="time.earliest_epoch">if(isnum('earliest'),'earliest',relative_time(now(),'earliest')</eval>
+        <eval token="time.latest_epoch">if(isnum('latest'),'latest',relative_time(now(),'latest')</eval>
+        <eval token="time_length">$time.latest_epoch$ - $time.earliest_epoch$</eval>
+        <!--
+      5 hours = 3600 * 5 = 18000,      5 days = 86400 * 4 = 432000,    31 days =  31 * 86400  = 2678400
+      -->
+        <eval token="form.span">if($time_length$ &lt; 18000, "1m", if($time_length$ &lt; 432000, "1h", if($time_length$ &lt; 2678400, "1d", "30d")))</eval>
+      </change>
+    </input>
+    <input type="dropdown" token="span" searchWhenChanged="true">
+      <label>Granularity</label>
+      <choice value="1m">Minutes</choice>
+      <choice value="1h">Hours</choice>
+      <choice value="1d">Days</choice>
+      <choice value="30d">Months</choice>
+      <default>1d</default>
+      <initialValue>1d</initialValue>
+    </input>
+    <input type="dropdown" token="predict_span" searchWhenChanged="true">
+      <label>Periods to Predict</label>
+      <choice value="5">5</choice>
+      <choice value="10">10</choice>
+      <choice value="15">15</choice>
+      <choice value="20">20</choice>
+      <choice value="30">30</choice>
+      <default>5</default>
+      <initialValue>5</initialValue>
+    </input>
+    <input type="text" token="contract_address" searchWhenChanged="true">
+      <label>Contract Address</label>
+      <default>0x5a6A4D54456819380173272A5E8E9B9904BdF41B</default>
+      <initialValue>0x5a6A4D54456819380173272A5E8E9B9904BdF41B</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Transfers Combined</title>
+      <single>
+        <search base="base_search">
+          <query>| stats sum(event_transfer_value)</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">110</option>
+        <option name="numberPrecision">0.0000</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">large</option>
+        <option name="unit">gwei</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Transfers by Direction</title>
+      <chart>
+        <search base="base_search">
+          <query>| stats sum(event_transfer_value) by event_direction</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Transfers Totals</title>
+      <single>
+        <search base="base_search">
+          <query>| stats sum(event_transfer_value) by event_direction</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">223</option>
+        <option name="numberPrecision">0.0000</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+        <option name="trellis.size">large</option>
+        <option name="unit">gwei</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Total Transfers</title>
+      <chart>
+        <search base="base_search">
+          <query>| timechart span=$span$  sum(event_transfer_value) as Total
+| predict Total future_timespan=$predict_span$</query>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Transfers In</title>
+      <chart>
+        <search base="base_search">
+          <query>| search event_direction="in"
+| timechart span=$span$  sum(event_transfer_value) by event_direction
+| predict in future_timespan=$predict_span$</query>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Transfers Out</title>
+      <chart>
+        <search base="base_search">
+          <query>| search event_direction="out"
+| timechart span=$span$  sum(event_transfer_value) by event_direction
+| predict out future_timespan=$predict_span$</query>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

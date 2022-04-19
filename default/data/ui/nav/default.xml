@@ -5,7 +5,9 @@
   <view name="gas_analytics" />
   <collection label="Explorers">
     <view name="data_explorer" />
+    <view name="contract_explorer" />
     <view name="eth_address_explorer" />
+    <view name="eth_address_explorer_v3" />
     <view name="xdai_address_explorer" /> 
     <view name="wrapped_xdai_balance_analytics" />    
   </collection>
