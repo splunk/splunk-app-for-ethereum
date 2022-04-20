@@ -36,7 +36,7 @@
       </change>
     </input>
     <input type="text" token="contract_id" searchWhenChanged="true">
-      <label>Contract to use</label>
+      <label>Contract / Wallet to use</label>
       <default>0xbee13ba31178b6a92c8e8d54de64512bc4f52adf</default>
       <initialValue>0xbee13ba31178b6a92c8e8d54de64512bc4f52adf</initialValue>
     </input>
