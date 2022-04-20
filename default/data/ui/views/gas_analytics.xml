@@ -227,8 +227,10 @@
       <chart>
         <title>Average gasPrice w/ number of txns</title>
         <search>
-          <query>`ethereum_index` sourcetype="ethereum:transaction" | timechart avg(gasPrice) as gasPrice dc(hash) as txnCount
-| eval gasPrice=gasPrice/1000000000</query>
+          <query>`ethereum_index` sourcetype="ethereum:transaction" 
+| eval gasPrice=round(gasPrice/1000000000,2)
+| timechart avg(gasPrice) as gasPrice dc(hash) as txnCount
+| predict holdback=0 future_timespan=15 gasPrice</query>
           <earliest>$myTime.earliest$</earliest>
           <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
