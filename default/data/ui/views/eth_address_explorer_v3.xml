@@ -1,8 +1,8 @@
 <form theme="dark" version="1.1">
   <label>ETH Address Explorer v3</label>
-  <description>Tjis is an experimental dashbaord and will be changed in future versions.</description>
+  <description>This is an experimental dashboard and will be changed in future versions.</description>
   <search id="base_search">
-    <query>index=federated:mainnet (   (sourcetype="ethereum:transaction:event" $address_token$)  OR (index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success")   ) | fields *
+    <query>index=federated:mainnet (   (sourcetype="ethereum:transaction:event" $address_token$)  OR (sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success")   ) | fields *
     </query>
     <earliest>$field1.earliest$</earliest>
     <latest>$field1.latest$</latest>

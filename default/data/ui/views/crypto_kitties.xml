@@ -205,11 +205,11 @@
           <query>`ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
 | stats count by kittyId 
 | append 
-    [ search index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+    [ search `ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
     | stats count by sireId 
     | rename sireId AS kittyId] 
 | append 
-    [ search index=* network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
+    [ search `ethereum_index` network::mainnet sourcetype=ethereum:transaction 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d `cryptokitty_fields` 
     | stats count by matronId 
     | rename matronId AS kittyId] 
 | stats sum(count) as count by kittyId 

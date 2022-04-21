@@ -145,7 +145,7 @@
     <panel>
       <title>1. Select the Raw Transaction Events</title>
       <table>
-        <title>index=ethereum sourcetype="ethereum:transaction:event" address="$contract_addr$" | table ...</title>
+        <title>`ethereum_index` sourcetype="ethereum:transaction:event" address="$contract_addr$" | table ...</title>
         <search base="base_search">
           <query>| table address logIndex transactionIndex data</query>
         </search>

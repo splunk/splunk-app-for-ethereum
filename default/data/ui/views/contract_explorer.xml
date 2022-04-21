@@ -2,7 +2,7 @@
   <label>Contract Explorer</label>
   <search id="base_search">
     <query>
-index=federated:mainnet sourcetype="ethereum:transaction:event" $contract_address$ Transfer(address,address,uint256)
+`ethereum_index` sourcetype="ethereum:transaction:event" $contract_address$ Transfer(address,address,uint256)
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
