@@ -38,23 +38,42 @@
     </input>
     <input type="dropdown" token="known_addresses">
       <label>Interesting Addresses</label>
-      <choice value="0x06012c8cf97BEaD5deAe237070F9587f8E7A266d">CryptoKitties</choice>
-      <choice value="0x87A9DCF2BA62880d3125A992D4900878f2d688cF">Scam Example</choice>
-      <choice value="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D">Bored Ape Yacht Club (BYAC)</choice>
-      <choice value="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB">CryptoPunks</choice>
       <change>
+        <condition label="">
+          <set token="form.address_token">0x165cd37b4c644c2921454429e7f9358d18a45e14</set>
+          <set token="form.field1.earliest">-60m@m</set>
+          <set token="form.field1.latest">now</set>
+        </condition>
         <condition label="Scam Example">
           <set token="form.address_token">$value$</set>
           <set token="form.field1.earliest">1648440000</set>
           <set token="form.field1.latest">1648569600</set>
         </condition>
-        <condition label="*">
+        <condition label="BAYC Bubble Gum Ape Scam">
+          <set token="form.address_token">$value$</set>
+          <set token="form.field1.earliest">1649073600</set>
+          <set token="form.field1.latest">1649160000</set>
+        </condition>
+        <condition>
           <set token="form.address_token">$value$</set>
           <set token="form.field1.earliest">-60m@m</set>
           <set token="form.field1.latest">now</set>
         </condition>
       </change>
-      <initialValue>0x06012c8cf97BEaD5deAe237070F9587f8E7A266d</initialValue>
+      <fieldForLabel>name</fieldForLabel>
+      <fieldForValue>address</fieldForValue>
+      <search>
+        <query>| noop 
+| makeresults 
+| eval address="0x87A9DCF2BA62880d3125A992D4900878f2d688cF", name="Scam Example"
+| append [ | makeresults | eval  address="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D", name="Bored Ape Yacht Club (BYAC)" ]
+| append [ | makeresults | eval  address="0xb26de945b52568f9445013f16fa1203d046ec57a", name="BAYC Bubble Gum Ape Scam" ]
+| append [ | makeresults | eval  address="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB", name="CryptoPunks" ]
+| append [ | makeresults | eval  address="0x06012c8cf97BEaD5deAe237070F9587f8E7A266d", name="CryptoKitties" ]
+| table name address        
+        </query>
+      </search>
+      <default>0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D</default>
     </input>
   </fieldset>
   <row>

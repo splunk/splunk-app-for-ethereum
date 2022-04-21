@@ -1,4 +1,4 @@
-<form theme="dark"  version="1.1">
+<form theme="dark" version="1.1">
   <label>NFT Viewer</label>
   <fieldset submitButton="false">
     <input type="time" token="myTime" searchWhenChanged="true">
@@ -12,6 +12,7 @@
       <label>Select Chain:</label>
       <choice value="`rinkeby_index`">rinkeby</choice>
       <choice value="`xdai_index`">xdai</choice>
+      <choice value="`ethereum_index`">Ethereum</choice>
       <default>`xdai_index`</default>
       <initialValue>`xdai_index`</initialValue>
     </input>
@@ -30,7 +31,7 @@
         <condition>
           <set token="form.chain_token">`xdai_index`</set>
           <set token="form.contract_id">0x22C1f6050E56d2876009903609a2cC3fEf83B415</set>
-          <set token="form.myTime.earliest">-1h@h</set>
+          <set token="form.myTime.earliest">-7d@d</set>
         </condition>
       </change>
     </input>
@@ -42,12 +43,13 @@
   </fieldset>
   <row>
     <panel>
-      <title>Minted $contract_id$</title>
+      <title>Transactions for  $contract_id$</title>
       <single>
         <search>
           <query>$chain_token$ sourcetype="ethereum:nft" $contract_id$ NOT tokenURI=""
 | spath input=metadata | search NOT errorTokenURI.code=3 
-| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) | search txn_type=mint | stats count</query>
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
+| stats count by txn_type</query>
           <earliest>$myTime.earliest$</earliest>
           <latest>$myTime.latest$</latest>
           <sampleRatio>1</sampleRatio>
@@ -55,47 +57,16 @@
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
         <option name="drilldown">none</option>
-        <option name="height">164</option>
+        <option name="height">179</option>
         <option name="numberPrecision">0</option>
         <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
         <option name="rangeValues">[0,30,70,100]</option>
         <option name="refresh.display">progressbar</option>
         <option name="showSparkline">1</option>
         <option name="showTrendIndicator">1</option>
-        <option name="trellis.enabled">0</option>
+        <option name="trellis.enabled">1</option>
         <option name="trellis.scales.shared">1</option>
-        <option name="trellis.size">medium</option>
-        <option name="trendColorInterpretation">standard</option>
-        <option name="trendDisplayMode">absolute</option>
-        <option name="unitPosition">after</option>
-        <option name="useColors">0</option>
-        <option name="useThousandSeparators">1</option>
-      </single>
-    </panel>
-    <panel>
-      <title>Transfers</title>
-      <single>
-        <search>
-          <query>$chain_token$ sourcetype="ethereum:nft"  $contract_id$ NOT tokenURI=""
-| spath input=metadata | search NOT errorTokenURI.code=3 
-| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) | search txn_type=transfer | stats count</query>
-          <earliest>$myTime.earliest$</earliest>
-          <latest>$myTime.latest$</latest>
-          <sampleRatio>1</sampleRatio>
-        </search>
-        <option name="colorBy">value</option>
-        <option name="colorMode">none</option>
-        <option name="drilldown">none</option>
-        <option name="height">169</option>
-        <option name="numberPrecision">0</option>
-        <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
-        <option name="rangeValues">[0,30,70,100]</option>
-        <option name="refresh.display">progressbar</option>
-        <option name="showSparkline">1</option>
-        <option name="showTrendIndicator">1</option>
-        <option name="trellis.enabled">0</option>
-        <option name="trellis.scales.shared">1</option>
-        <option name="trellis.size">medium</option>
+        <option name="trellis.size">large</option>
         <option name="trendColorInterpretation">standard</option>
         <option name="trendDisplayMode">absolute</option>
         <option name="unitPosition">after</option>
@@ -128,6 +99,58 @@
         <option name="charting.axisY2.enabled">0</option>
         <option name="charting.axisY2.scale">inherit</option>
         <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">195</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Projected Minting Timeline</title>
+      <chart>
+        <search>
+          <query>$chain_token$ sourcetype="ethereum:nft"  $contract_id$ NOT tokenURI=""
+| spath input=metadata | search NOT errorTokenURI.code=3 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
+
+| search txn_type="mint"
+
+| timechart span=1d count by txn_type 
+| accum mint as TotalMints
+| predict TotalMints future_timespan=25</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
