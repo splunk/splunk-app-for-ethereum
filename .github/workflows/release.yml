@@ -6,8 +6,8 @@ on:
     branches:
       - master
 env:
-  appName: "ethereum-basics"
-  releaseName: "Ethereum Basics"
+  appName: "splunk-app-for-ethereum"
+  releaseName: "Splunk App for Ethereum"
 
 jobs:
   build_release:
@@ -21,7 +21,7 @@ jobs:
         id: version
       - name: package
         run: |
-          touch ethereum-basics.tgz
+          touch ${{env.appName}}.tgz
           tar --transform 's,^\.,${{env.appName}},' --exclude='.git*' --exclude='${{env.appName}}.tgz' -cvzf ${{env.appName}}.tgz ./
       - name: release
         uses: actions/create-release@v1

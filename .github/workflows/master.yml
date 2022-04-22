@@ -5,6 +5,11 @@ on:
       - master
     tags:
       - v*
+
+env:
+  appName: "splunk-app-for-ethereum"
+  releaseName: "Splunk App for Ethereum"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,13 +17,13 @@ jobs:
     - uses: actions/checkout@master
     - name: Build Release
       run: |
-        touch ethereum-basics.tgz
-        tar --transform 's,^\.,ethereum-basics,' --exclude='.git*' --exclude='ethereum-basics.tgz' -cvzf ethereum-basics.tgz ./
-    - name: Release
+          touch ${{env.appName}}.tgz
+          tar --transform 's,^\.,${{env.appName}},' --exclude='.git*' --exclude='${{env.appName}}.tgz' -cvzf ${{env.appName}}.tgz ./
+   - name: Release
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         automatic_release_tag: latest
         prerelease: false
         files: |
-          ethereum-basics.tgz
+          splunk-app-for-ethereum.tgz
