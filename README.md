@@ -1,4 +1,4 @@
-# Ethereum Basics
+# Splunk App for Ethereum
 This Splunk app provides a set of starter dashboards for Ethereum and Ethereum-based blockchain networks.  There are a number of starter searches and dashboards that can be leveraged to provide ledger analytics and node monitoring for any Ethereum-based blockchain.  
 
 
