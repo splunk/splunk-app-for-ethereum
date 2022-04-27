@@ -1,4 +1,4 @@
-<form  version="1.1">
+<form version="1.1">
   <label>Introduction</label>
   <init>
     <set token="base_search">`ethereum_index` sourcetype=ethereum* | append [ search `xdai_index` sourcetype="ethereum*" ] | append [ search `rinkeby_index` sourcetype="ethereum*" ]</set>
@@ -44,8 +44,8 @@
         <search>
           <query>$base_search$
 | timechart count by sourcetype</query>
-    <earliest>$myTime.earliest$</earliest>
-    <latest>$myTime.latest$</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -89,8 +89,8 @@
 | stats count sparkline(count) as sparkline values(sourcetype) as sourcetypes by network 
 | rename network AS Chains count AS eventCount
 </query>
-    <earliest>$myTime.earliest$</earliest>
-    <latest>$myTime.latest$</latest>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
         </search>
         <option name="count">20</option>
         <option name="dataOverlayMode">none</option>
@@ -151,32 +151,16 @@
         <center>
           <h1>Step 3:</h1> <h2>
             <strong>Checkout the reference guides</strong> for using Splunk's Search Processing Language (SPL) and building dashboards. </h2> 
-        </center>
-      </html>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <html>
-        <center>
-          <strong>
-            <a href="https://www.splunk.com/pdfs/solution-guides/splunk-quick-reference-guide.pdf" target="_blank">Splunk Search Reference Guide</a>
-          </strong>
-        </center>
-        <center>
-          <img src="/static/app/ethereum-basics/search_reference_guide.png" width="50%"/>
-        </center>
-      </html>
-    </panel>
-    <panel>
-      <html>
-        <center>
-          <strong>
-            <a href="https://www.splunk.com/pdfs/solution-guides/splunk-dashboards-quick-reference-guide.pdf" target="_blank">Splunk Dashboard Reference Guide</a>
-          </strong>
-        </center>
-        <center>
-          <img src="/static/app/ethereum-basics/dashboards_reference_guide.png" width="50%"/>
+            <strong>
+              <ul>
+                <li>
+                <a href="https://www.splunk.com/pdfs/solution-guides/splunk-quick-reference-guide.pdf" target="_blank">Splunk Search Reference Guide</a>
+              </li>
+                <li>
+                <a href="https://www.splunk.com/pdfs/solution-guides/splunk-dashboards-quick-reference-guide.pdf" target="_blank">Splunk Dashboard Reference Guide</a>
+              </li>
+              </ul>
+            </strong>
         </center>
       </html>
     </panel>
