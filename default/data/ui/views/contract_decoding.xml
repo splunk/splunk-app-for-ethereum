@@ -3,7 +3,7 @@
   <description>ABI decoding of events as they are ingested into Splunk</description>
   <search id="base_search">
     <query>
-`ethereum_index` sourcetype="ethereum:transaction:event" $contract_token$ 
+index=federated:mainnet sourcetype="ethereum:transaction:event" $contract_token$ 
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
