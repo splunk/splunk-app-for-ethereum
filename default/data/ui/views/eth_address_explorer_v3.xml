@@ -569,8 +569,8 @@
           <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$ 
 | fillnull event.name value="NotDecoded" 
 | stats count by event.name</query>
-          <earliest>-30d@d</earliest>
-          <latest>now</latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
