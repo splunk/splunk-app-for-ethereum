@@ -121,7 +121,7 @@
             <a href="/app/ethereum-basics/search?earliest=-60m%40m&amp;latest=now&amp;q=search `ethereum_index` sourcetype%3D%22ethereum%3Atransaction%22" target="_blank">Splunk Search</a>
           </strong> This is where it all starts. Start searching through your data!
         </center>
-        <img src="/static/app/ethereum-basics/search_example.png" width="100%"/>
+        <img src="/static/app/splunk-app-for-ethereum/search_example.png" width="100%"/>
       </html>
     </panel>
     <panel>
@@ -131,7 +131,7 @@
             <a href="/app/ethereum-basics/multichain_stats" target="_blank">Basic Block Stats by Chain</a>
           </strong> - Simple charts and graphs around block info.
         </center>
-        <img src="/static/app/ethereum-basics/multichain_stats.png" width="100%"/>
+        <img src="/static/app/splunk-app-for-ethereum/multichain_stats.png" width="100%"/>
       </html>
     </panel>
     <panel>
@@ -141,7 +141,7 @@
             <a href="/app/ethereum-basics/ethereum_starter_searches" target="_blank">Ingesting Eth Mainnet? Start here.</a> 
           </strong> - You can modify this dashboard to work with other chains such as xDai.
         </center>
-        <img src="/static/app/ethereum-basics/ethereum_starter_searches.png" width="100%"/>
+        <img src="/static/app/splunk-app-for-ethereum/ethereum_starter_searches.png" width="100%"/>
       </html>
     </panel>
   </row>
@@ -185,7 +185,7 @@
             <a href="https://splunkbase.splunk.com/app/1603/" target="_blank">Splunk Dashboard Examples:</a>
           </strong> Tons of examples to help you learn how to build compelling dashboards.
         </center>
-        <img src="/static/app/ethereum-basics/dashboard_examples.png" width="100%"/>
+        <img src="/static/app/splunk-app-for-ethereum/dashboard_examples.png" width="100%"/>
       </html>
     </panel>
     <panel>
@@ -195,7 +195,7 @@
             <a href="https://splunkbase.splunk.com/app/3112/" target="_blank">Custom Visualization Example</a>
           </strong>: Try adding a new custom visualization. Like it? <a href="https://splunkbase.splunk.com/apps/#/app_content/visualizations" target="_blank">Get more!</a>
         </center>
-        <img src="/static/app/ethereum-basics/sankey_example.png" width="100%"/>
+        <img src="/static/app/splunk-app-for-ethereum/sankey_example.png" width="100%"/>
       </html>
     </panel>
     <panel>
@@ -205,7 +205,7 @@
             <a href="https://splunkbase.splunk.com/app/4866" target="_blank">Using Quorum? Try our Splunk App for Quorum!</a>
           </strong> It contains several out of the box dashboards to get you journey to observability started.
         </center>
-        <img src="/static/app/ethereum-basics/qstats_latest.png" width="100%"/>
+        <img src="/static/app/splunk-app-for-ethereum/qstats_latest.png" width="100%"/>
       </html>
     </panel>
   </row>
@@ -227,7 +227,7 @@
             Download and Install the <a href="https://splunkbase.splunk.com/app/1724/" target="_blank">Lookup Editor</a> which will allow you to edit CSVs from the GUI. Go to the Lookup Editor App once installed and find <a href="/app/lookup_editor/lookup_edit?owner=nobody&amp;namespace=ethereum-basics&amp;lookup=crypto_addresses.csv&amp;type=csv" target="_blank">"crypto_addresses.csv"</a> 
           </strong> 
         </center>
-        <img src="/static/app/ethereum-basics/lookup_editor.png" width="100%"/>
+        <img src="/static/app/splunk-app-for-ethereum/lookup_editor.png" width="100%"/>
       </html>
     </panel>
     <panel>
@@ -237,7 +237,7 @@
             We've already configured the lookups for you but can learn more <a href="https://docs.splunk.com/Documentation/Splunk/latest/Knowledge/Aboutlookupsandfieldactions" target="_blank">here</a>.  Now that you've updated the spreadsheet, look for the new fields in your search! Notice how these fields (from_type, to_description, etc.) don't exist in the raw data but now appear for every event in real-time!
           </strong> 
         </center>
-        <img src="/static/app/ethereum-basics/search_lookup_example.png" width="100%"/>
+        <img src="/static/app/splunk-app-for-ethereum/search_lookup_example.png" width="100%"/>
       </html>
     </panel>
   </row>
