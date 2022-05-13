@@ -1,5 +1,14 @@
 <form theme="dark" version="1.1">
   <label>NFT Viewer</label>
+  <search id="base_search">
+    <query>$chain_token$ sourcetype="ethereum:nft"NOT tokenURI="" NOT errorTokenURI.code=3  $contract_id$
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer"))
+| fields *
+    </query>
+    <earliest>$myTime.earliest$</earliest>
+    <latest>$myTime.latest$</latest>
+    <sampleRatio>1</sampleRatio>
+  </search>
   <fieldset submitButton="false">
     <input type="time" token="myTime" searchWhenChanged="true">
       <label>Time</label>
@@ -31,7 +40,7 @@
         <condition>
           <set token="form.chain_token">`xdai_index`</set>
           <set token="form.contract_id">0x22C1f6050E56d2876009903609a2cC3fEf83B415</set>
-          <set token="form.myTime.earliest">-7d@d</set>
+          <set token="form.myTime.earliest">-60m@m</set>
         </condition>
       </change>
     </input>
@@ -45,14 +54,9 @@
     <panel>
       <title>Transactions for  $contract_id$</title>
       <single>
-        <search>
-          <query>$chain_token$ sourcetype="ethereum:nft" $contract_id$ NOT tokenURI=""
-| spath input=metadata | search NOT errorTokenURI.code=3 
-| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
+        <search base="base_search">
+          <query>
 | stats count by txn_type</query>
-          <earliest>$myTime.earliest$</earliest>
-          <latest>$myTime.latest$</latest>
-          <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
@@ -66,7 +70,7 @@
         <option name="showTrendIndicator">1</option>
         <option name="trellis.enabled">1</option>
         <option name="trellis.scales.shared">1</option>
-        <option name="trellis.size">large</option>
+        <option name="trellis.size">medium</option>
         <option name="trendColorInterpretation">standard</option>
         <option name="trendDisplayMode">absolute</option>
         <option name="unitPosition">after</option>
@@ -77,14 +81,8 @@
     <panel>
       <title>Activity Timeline</title>
       <chart>
-        <search>
-          <query>$chain_token$ sourcetype="ethereum:nft"  $contract_id$ NOT tokenURI=""
-| spath input=metadata | search NOT errorTokenURI.code=3 
-| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
-| timechart span=1h count by txn_type</query>
-          <earliest>$myTime.earliest$</earliest>
-          <latest>$myTime.latest$</latest>
-          <sampleRatio>1</sampleRatio>
+        <search base="base_search">
+          <query>| timechart  count by txn_type</query>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -124,19 +122,11 @@
     <panel>
       <title>Projected Minting Timeline</title>
       <chart>
-        <search>
-          <query>$chain_token$ sourcetype="ethereum:nft"  $contract_id$ NOT tokenURI=""
-| spath input=metadata | search NOT errorTokenURI.code=3 
-| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer")) 
-
-| search txn_type="mint"
-
-| timechart span=1d count by txn_type 
+        <search base="base_search">
+          <query>| search txn_type="mint"
+| timechart count by txn_type
 | accum mint as TotalMints
 | predict TotalMints future_timespan=25</query>
-          <earliest>$myTime.earliest$</earliest>
-          <latest>$myTime.latest$</latest>
-          <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -178,28 +168,25 @@
     <panel>
       <title>NFT Listing</title>
       <table>
-        <search>
+        <search base="base_search">
           <finalized>
             <condition match=" 'job.resultCount' != 0">
               <set token="nft_image">$result.image$</set>
+              <set token="nft_uri">$result.tokenURI$</set>
             </condition>
             <condition>
               <set token="nft_image">No result found</set>
+              <set token="nft_uri">No result found</set>
             </condition>
           </finalized>
-          <query>$chain_token$ sourcetype="ethereum:nft" $contract_id$  
-    from="0x0000000000000000000000000000000000000000"
-    NOT tokenURI=""
+          <query>| search txn_type="mint"
 | spath input=metadata
-| rename metadata.image_url as poap_image, metadata.name as poap_name
+| rename metadata.image_url as poap_image, metadata.name as poap_name     ```  POAP NFTs name the image field poap_image as opposed to just image   ```
 | eval image=if(isNotNull(poap_image),poap_image,image)
 | eval name=if(isNotNull(poap_image),poap_name,name)
-| table _time name image</query>
-          <earliest>$myTime.earliest$</earliest>
-          <latest>$myTime.latest$</latest>
-          <sampleRatio>1</sampleRatio>
+| table _time name image tokenURI</query>
         </search>
-        <option name="count">10</option>
+        <option name="count">15</option>
         <option name="dataOverlayMode">none</option>
         <option name="drilldown">row</option>
         <option name="percentagesRow">false</option>
@@ -207,9 +194,32 @@
         <option name="rowNumbers">true</option>
         <option name="totalsRow">false</option>
         <option name="wrap">false</option>
+        <fields>["_time","name"]</fields>
         <drilldown>
           <set token="nft_image">$row.image$</set>
+          <set token="nft_uri">$row.tokenURI$</set>
         </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Traits for $nft_uri$</title>
+      <table>
+        <search base="base_search">
+          <query>`parse_nft_attributes`
+| rename metadata.name as Name 
+| search tokenURI = "$nft_uri$"
+| table Name tokenURI trait*
+| rename trait_* as *
+| transpose</query>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
       </table>
     </panel>
     <panel>
