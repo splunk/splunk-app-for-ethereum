@@ -15,10 +15,10 @@ There are several dashboards provided to get you started with analyzing Ethereum
   * **ABI Decoding** - That's right, Splunk can decode your Smart Contracts and show you all the transaction and transaction log events.
   * **Node Monitoring** - Whether you monitor your nodes with Splunk Infrastructure Monitoring, OpenTelemetry or Prometheus we have dashboards for the most common configurations.   We've even baked in the ability to link directly back to Splunk Observability Cloud for any specific instance.  
 
-Please consult our [documentation](https://www.splunkdlt.com/fabric/splunk-app-for-fabric) for screenshots and more information.
-
 ### Macros
 The app provides a number of macros to make things easier.  There are macros for indexx names to make it easy for you to customize your environment, a macro to parse ERC-20 transactions and a few more to make trait parsing easier for NFTs.  
+
+Please consult our [documentation](https://www.splunkdlt.com/) for screenshots and more information.
 
 # Getting Started
 
