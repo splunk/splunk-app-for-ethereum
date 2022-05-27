@@ -7,15 +7,15 @@ The Splunk App for Ethereum is used in conjunction with [Splunk Connect for Ethe
 
 ### Dashboards
 There are several dashboards provided to get you started with analyzing Ethereum data. These include:
-  * **Introduction** - A dashboard to ensure that your Splunk environment is receiving data with links to other dashboards.
-  * **Ethereum Start Searches** - See at a glance the number of blocks, transactions, average block timings, distinct Eth Addresses and total Eth transferred (with built in links to Etherscan.io).
-  * **Multichain Stats** - Are you ingesting mainnet and other networks like Rinkeby or xDai?   Here you can see them all at a glance.   Cross Chain Analysis anyone?
-  * **Gas Analytics** - Real time visibility into the fees being charged to execute transactions on Ethereum. This dashboard also includes a little ML to predict where gas prices will go in the future based on past history!
-  * **Explorers Galore** - There are Explorer dashboards for raw blockchain data, Smart Contracts, Ethereum Addresses, Wrapped xDai, and NFT's!   
-  * **ABI Decoding** - That's right, Splunk can decode your Smart Contracts and show you all the transaction and transaction log events.
-  * **Node Monitoring** - Whether you monitor your nodes with Splunk Infrastructure Monitoring, OpenTelemetry or Prometheus we have dashboards for the most common configurations.   We've even baked in the ability to link directly back to Splunk Observability Cloud for any specific instance.  
+  * **[Introduction](./screenshots/Introduction.png)** - A dashboard to ensure that your Splunk environment is receiving data with links to other dashboards.
+  * **[Ethereum Starter Searches](./screenshots/Starter_Searches.png)** - See at a glance the number of blocks, transactions, average block timings, distinct Eth Addresses and total Eth transferred (with built in links to Etherscan.io).
+  * **[Multichain Stats](./screenshots/Multichain_Stats.png)** - Are you ingesting mainnet and other networks like Rinkeby or xDai?   Here you can see them all at a glance.   Cross Chain Analysis anyone?
+  * **[Gas Analytics](./screenshots/GasAnalytics.png)** - Real time visibility into the fees being charged to execute transactions on Ethereum. This dashboard also includes a little ML to predict where gas prices will go in the future based on past history!
+  * **[Explorers Galore](./screenshots/Eth_Address_Explorer.png)** - There are Explorer dashboards for raw blockchain data, Smart Contracts, Ethereum Addresses, Wrapped xDai, and NFT's!   
+  * **[ABI Decoding](./screenshots/ABI_Decoding.png)** - That's right, Splunk can decode your Smart Contracts and show you all the transaction and transaction log events.
+  * **[Node Monitoring](./screenshots/NNode_Health_SC4Eth.png)** - Whether you monitor your nodes with Splunk Infrastructure Monitoring, OpenTelemetry or Prometheus we have dashboards for the most common configurations.   We've even baked in the ability to link directly back to Splunk Observability Cloud for any specific instance.  
 
-Please consult our [documentation](https://www.splunkdlt.com/fabric/splunk-app-for-fabric) for screenshots and more information.
+Please visit the screenshots directory or for more information visit our [documentation](https://www.splunkdlt.com/fabric/splunk-app-for-fabric).
 
 ### Macros
 The app provides a number of macros to make things easier.  There are macros for indexx names to make it easy for you to customize your environment, a macro to parse ERC-20 transactions and a few more to make trait parsing easier for NFTs.  
