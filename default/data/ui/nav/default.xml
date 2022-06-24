@@ -14,6 +14,13 @@
   <collection label="NFTs">
     <view name="nft_viewer" /> 
     <view name="poap_nft_analytics" /> 
+    <collection label=".conf22 Buttercup NFTs" >
+      <view name="conf22_buttercup_nft_analytics" /> 
+      <view name="conf22_buttercup_nft_analytics_summary" /> 
+      <view name="conf22_buttercup_bucks_transaction_analytics" /> 
+      <view name="conf22_nfts_are_green" /> 
+      <view name="conf22_resources" /> 
+    </collection>
     <view name="buttercup_nft_analytics" />
     <view name="buttercup_nft_analytics_vds" />
     <view name="crypto_kitties" />

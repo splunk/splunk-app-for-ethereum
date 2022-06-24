@@ -1,0 +1,443 @@
+<form theme="dark" version="1.1">
+  <label>.conf22 Buttercup NFT Analytics</label>
+  <search id="base_search">
+    <query>`conf22_buttercup_nfts`   
+| spath input=metadata 
+| eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer"))
+| fields *
+    </query>
+    <earliest>$myTime.earliest$</earliest>
+    <latest>$myTime.latest$</latest>
+    <sampleRatio>1</sampleRatio>
+  </search>
+  <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>0</earliest>
+        <latest></latest>
+      </default>
+    </input>
+  </fieldset>
+  <row depends="$dontShowMe$">
+    <panel>
+      <single>
+        <title>Buttercup Bucks</title>
+        <search>
+          <query>| makeresults | eval test="Tap to Claim Buttercup Bucks" |</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">all</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <!-- <link target="_blank">https://bcb-sokol-rmoore.vercel.app/qr/r#cad15be9-ec19-402e-8fef-225179bc4b49</link>    -->
+          <link target="_blank">https://pony.cash/</link>
+          <!-- <link target="_blank">https://bit.ly/mobile-to-bcb</link>   -->
+        </drilldown>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Minted</title>
+      <single>
+        <search base="base_search">
+          <query> | search txn_type=mint | stats count</query>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">125</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Latest Mint!</title>
+      <html>
+        <center>
+         <img src="$tok_wimg$" width="25%" height="25%"/>
+          <br/>
+         $tok_desc$
+        </center>
+       </html>
+    </panel>
+    <panel>
+      <title>Transfers</title>
+      <single>
+        <search base="base_search">
+          <query>| search txn_type=transfer | stats count</query>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">125</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Distinct Owners</title>
+      <single>
+        <search base="base_search">
+          <query>| stats dc(to)</query>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">125</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051", "0x0877a6", "0xf8be34", "0xf1813f", "0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Activity Timeline</title>
+        <search base="base_search">
+          <query>| timechart count by txn_type</query>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="charting.seriesColors">[0xD2207E, 0x8C1FE6, 0xDF6536, 0xEDA041, 0x811A23]</option>
+        <option name="height">207</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Who Minted the Most - Table</title>
+        <search base="base_search">
+          <query>
+| search txn_type=mint 
+| top to 
+| eval to=lower(to) 
+| lookup buttercup_nft.csv address AS to 
+| rename to as address 
+| table address owner count percent | head 7</query>
+        </search>
+        <option name="count">7</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="percent">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <drilldown>
+          <link target="_blank">https://etherscan.io/address/$row.address$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Who Minted the Most - Pie</title>
+        <search base="base_search">
+          <query>| search txn_type=mint 
+| top to 
+| eval to=lower(to) 
+| lookup buttercup_nft.csv address AS to OUTPUT owner as to_owner
+| eval from=if(isnull(from_owner),substr(from,0,10)."...",from_owner) 
+| eval to=if(isnull(to_owner),substr(to,0,10)."...",to_owner) 
+| fields -  to_owner</query>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.seriesColors">[0xD2207E, 0x8C1FE6, 0xDF6536, 0xEDA041, 0x811A23]</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <table>
+        <title>Transfers</title>
+        <search base="base_search">
+          <query>
+| search txn_type=transfer 
+| lookup buttercup_nft.csv address AS to OUTPUT owner AS to_owner 
+| lookup buttercup_nft.csv address AS from OUTPUT owner AS from_owner 
+| eval from=if(isnull(from_owner),substr(from,0,10)."...",from_owner) 
+| eval to=if(isnull(to_owner),substr(to,0,10)."...",to_owner)
+| table _time from to name</query>
+        </search>
+        <option name="count">7</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="percent">
+          <colorPalette type="minMidMax" maxColor="#53A051" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row depends="$dontShowMe$">
+    <panel>
+      <title>Latest Mint</title>
+      <table>
+        <search base="base_search">
+          <finalized>
+            <condition match=" 'job.resultCount' != 0">
+              <set token="tok_wimg">$result.imageURI$</set>
+              <set token="tok_desc">$result.Description$</set>
+            </condition>
+            <condition>
+              <set token="tok_wimg">No result found</set>
+              <set token="tok_desc"></set>
+            </condition>
+          </finalized>
+          <query>| search txn_type=mint 
+| stats latest(imageURI) as imageURI latest(metadata.description) as Description</query>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>How Rare is your Buttercup?</title>
+      <input type="text" token="myButtercup">
+        <label>Search for a Buttercup by Name or an Owner</label>
+        <default>*</default>
+        <prefix>*</prefix>
+        <suffix>*</suffix>
+      </input>
+      <table>
+        <title>Buttercup NFT Rarity Table -- Most Rare to Least (Click for details)</title>
+        <search base="base_search">
+          <finalized>
+            <condition match=" 'job.resultCount' != 0">
+              <set token="nft_image">$result.imageURI$</set>
+              <set token="nft_uri">$result.tokenURI$</set>
+              <set token="nft_name">$result.NFT_Name$</set>
+            </condition>
+            <condition>
+              <set token="nft_image">No result found</set>
+              <set token="nft_uri">No result found</set>
+            </condition>
+          </finalized>
+          <query>| eval from=lower(from), to=lower(to) 
+| lookup buttercup_nft.csv address AS to OUTPUT owner AS to_owner 
+| lookup buttercup_nft.csv address AS from OUTPUT owner AS from_owner 
+| search name="$myButtercup$" OR from_owner="$myButtercup$" OR to_owner="$myButtercup$"
+| eval from=if(isnull(from_owner),substr(from,0,10)."...",from_owner) 
+| eval to=if(isnull(to_owner),substr(to,0,10)."...",to_owner)   
+`conf22_parse_nft_attributes`
+| eval totalRS = 0
+| foreach trait_* [| eval attribute_name = substr("&lt;&lt;FIELD&gt;&gt;",7) | lookup conf22_ButtercupNFT_rarity_lookup.csv Trait as attribute_name Value AS "&lt;&lt;FIELD&gt;&gt;" OUTPUT Rarity_Class AS "&lt;&lt;FIELD&gt;&gt;_R" Rarity_Pct AS "&lt;&lt;FIELD&gt;&gt;_RS"  
+| fillnull value=0 "&lt;&lt;FIELD&gt;&gt;_RS" 
+| eval totalRS = totalRS + '&lt;&lt;FIELD&gt;&gt;_RS' ]             ```  look thru all the attributes and find their rarity value and rarity score  ```    
+
+| search totalRS &gt; 0   ``` remove old test NFTs that had no traits defined ```
+
+
+| fields txn_type to from name totalRS trait_* NFT_Name tokenURI imageURI _time
+| sort - totalRS
+| rename totalRS as "Rarity Score" trait_* as *
+| table txn_type to NFT_Name "Rarity Score" * tokenURI imageURI _time
+| sort "Rarity Score" asc</query>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="rare_score">
+          <colorPalette type="minMidMax" maxColor="#5A4575" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="RS">
+          <colorPalette type="minMidMax" maxColor="#62B3B2" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <drilldown>
+          <set token="nft_image">$row.imageURI$</set>
+          <set token="nft_uri">$row.tokenURI$</set>
+          <set token="nft_name">$row.NFT_Name$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Traits for $nft_name$</title>
+      <table>
+        <search base="base_search">
+          <query>`conf22_parse_nft_attributes` 
+| search tokenURI = "$nft_uri$"
+| head 1
+| lookup buttercup_nft.csv address AS to
+| table NFT_Name imageURI tokenURI metadata.description trait* to owner
+| rename trait_* as *
+| transpose
+| rename column as Attribute "row 1" as Value
+| lookup conf22_ButtercupNFT_rarity_lookup.csv Trait as Attribute Value AS Value OUTPUT Rarity_Class  Rarity_Pct
+| addColTotals labelfield=Rarity_Class label="Total Rarity Score"</query>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <drilldown>
+          <link target="_blank">$nft_image|n$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>NFT Image for $nft_name$</title>
+      <html>
+        <center>
+         <img src="$nft_image$" width="25%" height="25%"/>
+        </center>
+       </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Most Rare Traits</title>
+      <table>
+        <search>
+          <query>| inputlookup conf22_ButtercupNFT_rarity_lookup.csv 
+| eventstats min(Rarity_Pct) as rarest by Trait
+| sort Trait rarest
+| streamstats first(rarest) as rarest by Trait  | where Rarity_Pct = rarest
+| rename rarest as Rarity_Pct count_of_value as "Buttercups with this Value"
+| fields Trait Value Rarity_Class Rarity_Pct "Buttercups with this Value"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Most Common Traits</title>
+      <table>
+        <search>
+          <query>| inputlookup conf22_ButtercupNFT_rarity_lookup.csv 
+| eventstats max(Rarity_Pct) as most_common by Trait
+| sort Trait most_common
+| streamstats first(most_common) as most_common by Trait  | where Rarity_Pct = most_common
+| rename most_common as Rarity_Pct count_of_value as "Buttercups with this Value"
+| fields Trait Value Rarity_Class Rarity_Pct "Buttercups with this Value"</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">row</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+  </row>
+</form>
