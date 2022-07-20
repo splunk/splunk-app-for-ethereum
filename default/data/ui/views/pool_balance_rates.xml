@@ -1,0 +1,114 @@
+<form theme="dark" version="1.1">
+  <label>Pool Balance Rates</label>
+  <fieldset submitButton="false">
+    <input type="time" token="myTime" searchWhenChanged="true">
+      <label>Time</label>
+      <default>
+        <earliest>0</earliest>
+        <latest></latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Select a Pool</title>
+      <table>
+        <search>
+          <query>index=federated:mainnet sourcetype="ethereum:transaction" call.name=create  call.signature="create(address,address,uint256,uint256,uint256,string,string,address)"
+| spath call 
+| eval pool_contract_address = json_extract(call,"params{0}.value")
+| eval pool_bond_address     = json_extract(call,"params{1}.value")
+| eval pool_expiration       = json_extract(call,"params{2}.value")
+| eval pool_unit_seconds     = json_extract(call,"params{3}.value")
+| eval pool_name             = json_extract(call,"params{5}.value")
+| eval pool_symbol           = json_extract(call,"params{6}.value")
+| eval pool_exp_date         = strftime(pool_expiration,"%m/%d/%y %H:%M:%S")
+| table pool_expiration pool_exp_date pool_symbol pool_name pool_unit_seconds pool_contract_address pool_*
+| sort pool_expiration desc</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <set token="contract_address">$row.pool_contract_address$</set>
+          <set token="contract_unit_seconds">$row.pool_unit_seconds$</set>
+          <set token="contract_maturity">$row.pool_expiration$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Pool ID</title>
+      <table>
+        <search>
+          <query>index=federated:mainnet sourcetype="ethereum:transaction" call.name=swap $contract_address$
+| head 1
+| spath call 
+| eval pool_id = json_extract(call,"params{0}.value.poolId")
+| table pool_id</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+          <finalized>
+            <condition match=" 'job.resultCount' != 0">
+              <set token="pool_id">$result.pool_id$</set>
+            </condition>
+            <condition>
+              <set token="pool_id">No Pool ID found.</set>
+            </condition>
+          </finalized>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <set token="pool_id">$row.pool_id$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Balance &amp; Rate Timeline for Pool ID: $pool_id$</title>
+      <table>
+        <search>
+          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $pool_id$
+ | spath event
+ | eval maturity_date = $contract_maturity$
+ | eval unitSeconds = $contract_unit_seconds$
+ | eval oneYearInSeconds = 31536000
+ | eval test1=if('event.name'="Swap",1,0)
+ | eval address1=if('event.name'="Swap",json_extract(event, "params{1}.value"),json_extract(event, "params{2}.value{0}"))
+ | eval address2=if('event.name'="Swap",json_extract(event, "params{2}.value"),json_extract(event, "params{2}.value{1}"))
+ | eval temp_balance1=if('event.name'="Swap",json_extract(event, "params{3}.value"),json_extract(event, "params{3}.value{0"))
+ | eval temp_balance2=if('event.name'="Swap",json_extract(event, "params{4}.value"),json_extract(event, "params{3}.value{1}"))
+ | eval temp_balance2=if('event.name'="Swap",-temp_balance2,temp_balance2)
+ | eval balance1 = if(address1="0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c",temp_balance1,temp_balance2)
+ | eval balance2 = if(address1="0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c",temp_balance2,temp_balance1)
+ | fields _time maturity_date unitSeconds oneYearInSeconds bal* add* event.name test1
+ | eval balance1=balance1/pow(10,18)
+ | eval balance2=balance2/pow(10,18)
+ | reverse
+ | accum balance1 as BaseReserves
+ | accum balance2 as PTReserves
+ | eval balancePoolTotal = BaseReserves + PTReserves
+ | eval aseReservesRatio=BaseReserves/balancePoolTotal
+ | eval PTReservesRatio=PTReserves/balancePoolTotal
+ | eval timeRemainingSeconds = maturity_date - _time
+ | eval t = timeRemainingSeconds/unitSeconds
+ | eval BalPrice = pow(BaseReserves/(PTReserves + balancePoolTotal),t)
+ | eval balTimeRemaining = timeRemainingSeconds/oneYearInSeconds
+ | eval timeStretch = balTimeRemaining/t
+ | eval BalRate = (1-BalPrice)/balTimeRemaining*100
+ 
+ | table _time BalPrice BalRate BaseReserves PTReserves PTReservesRatio aseReservesRation balancePoolTotal 
+ | sort - _time</query>
+          <earliest>$myTime.earliest$</earliest>
+          <latest>$myTime.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>
