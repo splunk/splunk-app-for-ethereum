@@ -14,7 +14,7 @@
       <title>Select a Pool</title>
       <table>
         <search>
-          <query>index=federated:mainnet sourcetype="ethereum:transaction" call.name=create  call.signature="create(address,address,uint256,uint256,uint256,string,string,address)"
+          <query>`ethereum_index` sourcetype="ethereum:transaction" call.name=create  call.signature="create(address,address,uint256,uint256,uint256,string,string,address)"
 | spath call 
 | eval pool_contract_address = json_extract(call,"params{0}.value")
 | eval pool_bond_address     = json_extract(call,"params{1}.value")
@@ -43,7 +43,7 @@
       <title>Pool ID</title>
       <table>
         <search>
-          <query>index=federated:mainnet sourcetype="ethereum:transaction" call.name=swap $contract_address$
+          <query>`ethereum_index` sourcetype="ethereum:transaction" call.name=swap $contract_address$
 | head 1
 | spath call 
 | eval pool_id = json_extract(call,"params{0}.value.poolId")
@@ -72,7 +72,7 @@
       <title>Balance &amp; Rate Timeline for Pool ID: $pool_id$</title>
       <table>
         <search>
-          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $pool_id$
+          <query>i`ethereum_index` sourcetype="ethereum:transaction:event" $pool_id$
  | spath event
  | eval maturity_date = $contract_maturity$
  | eval unitSeconds = $contract_unit_seconds$

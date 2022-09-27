@@ -1,24 +1,24 @@
 <form theme="dark" version="1.1">
-  <label>ETH Address Explorer v3</label>
+  <label>ETH Address Explorer: Detailed</label>
   <description>This is an experimental dashboard and will be changed in future versions.</description>
   <search id="base_search">
-    <query>index=federated:mainnet (   (sourcetype="ethereum:transaction:event" $address_token$)  OR (sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success")   ) | fields *
+    <query>`ethereum_index` (   (sourcetype="ethereum:transaction:event" $address_token$)  OR (sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success")   ) | fields *
     </query>
     <earliest>$field1.earliest$</earliest>
     <latest>$field1.latest$</latest>
     <sampleRatio>1</sampleRatio>
   </search>
   <fieldset submitButton="false">
-    <input type="time" token="field1">
+    <input type="time" token="field1" searchWhenChanged="true">
       <label>Select a time range:</label>
       <default>
-        <earliest>-60m@m</earliest>
+        <earliest>-15m</earliest>
         <latest>now</latest>
       </default>
     </input>
-    <input type="text" token="address_token">
+    <input type="text" token="address_token" searchWhenChanged="true">
       <label>Enter an Address</label>
-      <default>0x165cd37b4c644c2921454429e7f9358d18a45e14</default>
+      <default>0x*</default>
     </input>
     <input type="radio" token="bundle" searchWhenChanged="true">
       <label>Bundle Txn Logs</label>
@@ -35,6 +35,11 @@
         <condition label="">
           <set token="form.address_token">0x165cd37b4c644c2921454429e7f9358d18a45e14</set>
           <set token="form.field1.earliest">-60m@m</set>
+          <set token="form.field1.latest">now</set>
+        </condition>
+        <condition label="All Addresses">
+          <set token="form.address_token">0x*</set>
+          <set token="form.field1.earliest">-5m@m</set>
           <set token="form.field1.latest">now</set>
         </condition>
         <condition label="Scam Example">
@@ -58,13 +63,13 @@
       <search>
         <query>| noop 
 | makeresults 
-| eval address="0x87A9DCF2BA62880d3125A992D4900878f2d688cF", name="Scam Example"
+| eval address="0x*", name="All Addresses" 
+| append [ | makeresults | eval address="0x87A9DCF2BA62880d3125A992D4900878f2d688cF", name="Scam Example" ]
 | append [ | makeresults | eval  address="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D", name="Bored Ape Yacht Club (BYAC)" ]
 | append [ | makeresults | eval  address="0xb26de945b52568f9445013f16fa1203d046ec57a", name="BAYC Bubble Gum Ape Scam" ]
 | append [ | makeresults | eval  address="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB", name="CryptoPunks" ]
 | append [ | makeresults | eval  address="0x06012c8cf97BEaD5deAe237070F9587f8E7A266d", name="CryptoKitties" ]
-| table name address        
-        </query>
+| table name address</query>
       </search>
       <default>0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D</default>
     </input>
@@ -112,13 +117,10 @@
     </panel>
     <panel>
       <chart>
-        <title>Transaction/Token History</title>
+        <title>Transaction Event History</title>
         <search base="base_search">
           <query>| fillnull event.name value="NotDecoded" `erc20_parse` | eval event.name=if(sourcetype="ethereum:transaction","ETH Transfer",'event.name') 
 | timechart count by event.name</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
         </search>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
@@ -156,24 +158,21 @@
       </chart>
     </panel>
     <panel>
-      <viz type="semicircle_donut.semicircle_donut">
-        <title>Transaction/Token History</title>
+      <chart>
+        <title>Transaction Event Distribution</title>
         <search base="base_search">
           <query> | fillnull event.name value="NotDecoded" `erc20_parse` | eval event.name=if(sourcetype="ethereum:transaction","ETH Transfer",'event.name') 
 | stats count by event.name</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
         </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.drilldown">all</option>
         <option name="height">102</option>
         <option name="refresh.display">progressbar</option>
-        <option name="semicircle_donut.semicircle_donut.cutoutPercentage">50</option>
-        <option name="semicircle_donut.semicircle_donut.legendPosition">right</option>
-        <option name="semicircle_donut.semicircle_donut.type">half</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
-      </viz>
+      </chart>
     </panel>
     <panel>
       <single>
@@ -182,9 +181,6 @@
           <query>
 | eval value=value/1000000000000000000 
 | stats sum(value)</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
         </search>
         <option name="colorBy">value</option>
         <option name="colorMode">none</option>
@@ -213,7 +209,7 @@
       <table>
         <title>Last 5 Ethereum Transaction Table for $address_token$</title>
         <search>
-          <query>index=federated:mainnet AND ( (sourcetype="ethereum:transaction"  $address_token$  toInfo.isContract="false" status="success") OR (sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD")   )
+          <query>`ethereum_index` AND ( (sourcetype="ethereum:transaction"  $address_token$  toInfo.isContract="false" status="success") OR (sourcetype="ethereum:chainlinkfeed" watcherName="ETH / USD")   )
 ``` add eth_price based on blockNumber   ```
 | eventstats avg(answer) as eth_price by blockNumber
 
@@ -285,7 +281,7 @@
       <table>
         <title>Last 5 Token/Contract Transaction Table for $address_token$</title>
         <search>
-          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+          <query>`ethereum_index` sourcetype="ethereum:transaction:event" $address_token$ 
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
@@ -355,7 +351,7 @@
       <table>
         <title>Activity by Token/Contract</title>
         <search>
-          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$  
+          <query>`ethereum_index` sourcetype="ethereum:transaction:event" $address_token$  
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
@@ -394,7 +390,7 @@
       <chart>
         <title>Activity by Token/Contract</title>
         <search>
-          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+          <query>`ethereum_index` sourcetype="ethereum:transaction:event" $address_token$ 
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval event_transfer_from=lower(event_transfer_from) 
@@ -446,7 +442,7 @@
         <option name="charting.legend.mode">standard</option>
         <option name="charting.legend.placement">right</option>
         <option name="charting.lineWidth">2</option>
-        <option name="height">408.993</option>
+        <option name="height">409</option>
         <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
@@ -481,8 +477,6 @@
 | eval to_apprSpender_swpTo_omTaker=if(sourcetype="ethereum:transaction",to,if(to_apprSpender_swpTo_omTaker="0x87a9dcf2ba62880d3125a992d4900878f2d688cf",to_apprSpender_swpTo_omTaker,to_apprSpender_swpTo_omTaker." (".'event.name'." - ".contract_owner.")")) 
 | search event.name!="Appro*" 
 | stats count by from_apprOwner_swpFrom_omMaker to_apprSpender_swpTo_omTaker</query>
-          <earliest>0</earliest>
-          <sampleRatio>1</sampleRatio>
         </search>
         <option name="drilldown">none</option>
         <option name="force_directed_viz.force_directed.AttractDistanceMax">300</option>
@@ -539,7 +533,7 @@
       <viz type="sankey_diagram_app.sankey_diagram">
         <title>Ethereum Transferred for $address_token$</title>
         <search>
-          <query>index=federated:mainnet sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success"
+          <query>`ethereum_index` sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success"
 | eval value=value/1000000000000000000 
 | eval from=lower(from), to=lower(to) 
 | lookup crypto_addresses.csv address AS from OUTPUTNEW description AS from_owner 
@@ -566,11 +560,11 @@
         <fieldForLabel>event.name</fieldForLabel>
         <fieldForValue>event.name</fieldForValue>
         <search>
-          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+          <query>`ethereum_index` sourcetype="ethereum:transaction:event" $address_token$ 
 | fillnull event.name value="NotDecoded" 
 | stats count by event.name</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
         </search>
         <choice value="*">All</choice>
         <default>*</default>
@@ -579,7 +573,7 @@
       <viz type="sankey_diagram_app.sankey_diagram">
         <title>Token Activity (count) for $address_token$</title>
         <search>
-          <query>index=federated:mainnet sourcetype="ethereum:transaction:event" $address_token$ 
+          <query>`ethereum_index` sourcetype="ethereum:transaction:event" $address_token$ 
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval from=lower(from) 
@@ -667,7 +661,7 @@
         <option name="event-timeline-viz.event-timeline-viz.tokenLabel">tok_et_label</option>
         <option name="event-timeline-viz.event-timeline-viz.tokenStart">tok_et_start</option>
         <option name="event-timeline-viz.event-timeline-viz.tooltipDateFormat">DD-MMM-YYYY</option>
-        <option name="height">994.991</option>
+        <option name="height">995</option>
         <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>

@@ -1,4 +1,4 @@
-<form theme="dark" verson="1.1">
+<form theme="dark" version="1.1">
   <label>Blockchain Data Explorer</label>
   <description>Explore the data for a specific contract</description>
   <fieldset submitButton="false" autoRun="true">

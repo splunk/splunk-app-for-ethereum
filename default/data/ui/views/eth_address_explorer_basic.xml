@@ -1,5 +1,5 @@
 <form theme="dark" version="1.1">
-  <label>ETH Address Explorer</label>
+  <label>ETH Address Explorer: Basic</label>
   <search id="base_search">
     <query>`ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$)
 | eval value=value/1000000000000000000 
