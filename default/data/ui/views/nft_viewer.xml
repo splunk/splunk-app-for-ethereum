@@ -1,5 +1,6 @@
 <form theme="dark" version="1.1">
   <label>NFT Viewer</label>
+  <description>In order to collect NFT data you must first add the NFT contract you would like to watch to the configuration of Splunk Connect for Ethereum.   You can find more details here:  https://github.com/splunk/splunk-connect-for-ethereum/tree/main/examples/nft-tracking</description>
   <search id="base_search">
     <query>$chain_token$ sourcetype="ethereum:nft"NOT tokenURI="" NOT errorTokenURI.code=3  $contract_id$
 | eval txn_type=if(from="0x0000000000000000000000000000000000000000","mint",if(to="0x0000000000000000000000000000000000000000","burn","transfer"))
@@ -19,19 +20,25 @@
     </input>
     <input type="dropdown" token="chain_token" searchWhenChanged="true">
       <label>Select Chain:</label>
+      <choice value="`ethereum_index`">Ethereum</choice>
       <choice value="`rinkeby_index`">rinkeby</choice>
       <choice value="`xdai_index`">xdai</choice>
-      <choice value="`ethereum_index`">Ethereum</choice>
       <default>`xdai_index`</default>
-      <initialValue>`xdai_index`</initialValue>
+      <initialValue>`ethereum_index`</initialValue>
     </input>
     <input type="dropdown" token="sel_contract" searchWhenChanged="true">
       <label>Contracts</label>
+      <choice value="0x*">Any NFT</choice>
       <choice value="0xbee13ba31178b6a92c8e8d54de64512bc4f52adf">Buttercup NFT</choice>
       <choice value="0x22C1f6050E56d2876009903609a2cC3fEf83B415">Proof of Attendance Protocol (POAP)</choice>
-      <default>0xbee13ba31178b6a92c8e8d54de64512bc4f52adf</default>
-      <initialValue>0xbee13ba31178b6a92c8e8d54de64512bc4f52adf</initialValue>
+      <default>0x*</default>
+      <initialValue>0x*</initialValue>
       <change>
+        <condition label="Any NFT">
+          <set token="form.chain_token">`ethereum_index`</set>
+          <set token="form.contract_id">0x*</set>
+          <set token="form.myTime.earliest">-15m@m</set>
+        </condition>
         <condition label="Buttercup NFT">
           <set token="form.chain_token">`rinkeby_index`</set>
           <set token="form.contract_id">0xbee13ba31178b6a92c8e8d54de64512bc4f52adf</set>
