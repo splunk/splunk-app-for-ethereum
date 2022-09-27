@@ -5,8 +5,7 @@
       <html>
         <h2>Sites</h2>
         <ul>
-          <li><a target="_blank" href="https://www.splunkdlt.com/">What does Splunk do for Blockchain?</a></li>
-          <li><a target="_blank" href="https://unblock.splunkdlt.com">Unblock Blockchain with Splunk</a></li>
+          <li><a target="_blank" href="https://www.splunk.com/en_us/solutions/blockchain.html">What does Splunk do for Blockchain?</a></li>
           <li><a target="_blank" href="https://www.deep-analysis.net/wp-content/uploads/2021/01/DA-V-2101-splunk-no-distribution.pdf">Deep Analysis:  Splunk for Blockchain Report</a></li>   
           <li><a target="_blank" href="https://www.deep-analysis.net/report/innovation-index-2021/">Deep Analysis Innovation Award 2021</a></li>
           <li><a target="_blank" href="https://www.splunk.com/en_us/blog/splunklife/riding-a-rocky-mountain-high-splunk-buidls-at-eth-denver.html">Highest “Wow” Factor Award at EthDenver</a></li>
@@ -16,6 +15,8 @@
         </ul>          
         <h2>Blogs</h2>
         <ul>
+          <li><a target="_blank" href="https://medium.com/splunk-dlt/how-we-powered-buttercup-nfts-at-conf22-c1a575e2aad9">How We Powered Buttercup NFTs at .conf22</a></li>
+          <li><a target="_blank" href="https://medium.com/splunk-dlt/splunking-nfts-in-a-web3-world-ae368570063d">Splunking NFTs in a Web3 World</a></li>
           <li><a target="_blank" href="https://www.splunk.com/en_us/blog/platform/simulating-the-entire-us-pharmaceutical-supply-chain-with-full-stack-analytics.html">Simulating the Entire US Pharmaceutical Supply Chain with Full-Stack Analytics</a></li>
           <li><a target="_blank" href="https://www.splunk.com/en_us/blog/it/how-microsoft-used-splunk-s-ethlogger-to-turn-blockchain-data-into-supply-chain-insight.html">How Microsoft Used Splunk’s Ethlogger to Turn Blockchain Data Into Supply Chain Insight</a></li>
           <li><a target="_blank" href="https://www.splunk.com/en_us/blog/splunk-for-good/euvsvirus-blockchain-logistics-and-plotting-the-spread-of-covid-19.html">EUvsVirus: Blockchain, Logistics and Plotting the Spread of COVID-19</a></li>
@@ -32,10 +33,9 @@
         <ul>
           <li><a target="_blank" href="https://github.com/splunk/splunk-connect-for-ethereum">Splunk Connect for Ethereum</a></li>
           <li><a target="_blank" href="https://splunkbase.splunk.com/app/4612">Splunk Connect for Hyperledger Fabric</a></li>
-          <li><a target="_blank" href="https://github.com/splunk/ethereum-basics">Splunk Ethereum Basics App</a></li>
-          <li><a target="_blank" href="https://splunkbase.splunk.com/app/4605/">Splunk app for Hyperledger Fabric</a></li>
-          <li><a target="_blank" href="https://splunkbase.splunk.com/app/4866/">Splunk app for Quorum</a></li>
-          <li><a target="_blank" href="https://github.com/splunkdlt/splunk-app-for-corda/tree/main/apps/Splunk_App_for_Corda">Splunk app for Corda (beta)</a></li>
+          <li><a target="_blank" href="https://github.com/splunk/ethereum-basics">Splunk App for Ethereum</a></li>
+          <li><a target="_blank" href="https://splunkbase.splunk.com/app/4605/">Splunk App for Hyperledger Fabric</a></li>
+          <li><a target="_blank" href="https://splunkbase.splunk.com/app/4866/">Splunk App for Quorum</a></li>
           <li><a target="_blank" href="https://consensys.net/docs/goquorum/en/latest/tutorials/quorum-dev-quickstart/getting-started/">ConsenSys Quorum Getting Started Guide</a></li>
           <li><a target="_blank" href="https://github.com/ConsenSys/quorum-dev-quickstart">ConsenSys Quorum Quickstart (includes Splunk pre-configured)</a></li>
           <!-- <li><a target="_blank" href=""></a></li>  --> 
