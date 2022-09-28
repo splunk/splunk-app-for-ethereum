@@ -44,6 +44,11 @@
           <set token="form.field1.earliest">-60m@m</set>
           <set token="form.field1.latest">now</set>
         </condition>
+        <condition label="All Addresses">
+          <set token="form.address_token">0x*</set>
+          <set token="form.field1.earliest">-5m@m</set>
+          <set token="form.field1.latest">now</set>
+        </condition>
         <condition label="Scam Example">
           <set token="form.address_token">$value$</set>
           <set token="form.field1.earliest">1648440000</set>
@@ -65,7 +70,8 @@
       <search>
         <query>| noop 
 | makeresults 
-| eval address="0x87A9DCF2BA62880d3125A992D4900878f2d688cF", name="Scam Example"
+| eval address="0x*", name="All Addresses"
+| append [ | makeresults | eval address="0x87A9DCF2BA62880d3125A992D4900878f2d688cF", name="Scam Example" ]
 | append [ | makeresults | eval  address="0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D", name="Bored Ape Yacht Club (BYAC)" ]
 | append [ | makeresults | eval  address="0xb26de945b52568f9445013f16fa1203d046ec57a", name="BAYC Bubble Gum Ape Scam" ]
 | append [ | makeresults | eval  address="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB", name="CryptoPunks" ]
@@ -73,7 +79,7 @@
 | table name address        
         </query>
       </search>
-      <default>0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D</default>
+      <default>0x*</default>
     </input>
   </fieldset>
   <row>
