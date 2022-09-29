@@ -81,14 +81,17 @@
         <search base="base_search">
           <query> | stats count</query>
           <done>
-            <condition match=" $result.count$ &gt; 3000">
+            <condition match=" $result.count$ &gt; 10000">
               <set token="form.sample_token">1000</set>
             </condition>
-            <condition match=" $result.count$ &gt; 300">
+            <condition match=" $result.count$ &gt; 3000">
               <set token="form.sample_token">100</set>
             </condition>
-            <condition match=" $result.count$ &gt; 200">
+            <condition match=" $result.count$ &gt; 300">
               <set token="form.sample_token">10</set>
+            </condition>
+            <condition match=" $result.count$ &gt; 200">
+              <set token="form.sample_token">1</set>
             </condition>
             <condition>
               <set token="form.sample_token">1</set>
@@ -449,11 +452,32 @@
         <option name="trellis.size">medium</option>
       </chart>
     </panel>
+  </row>
+  <row>
     <panel>
+      <html>
+        <center>
+          Note: If you see "No matching visualization" below - download the and install the viz from Splunkbase <a href="https://splunkbase.splunk.com/app/3767/" target="_blank">viz from Splunkbase.</a>  Then you can delete this chart panel by editing the dashboard.
+        </center>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="dropdown" token="sample_token" searchWhenChanged="true">
+        <label>Sample Ratio</label>
+        <choice value="1">1:1</choice>
+        <choice value="10">1:10</choice>
+        <choice value="100">1:100</choice>
+        <choice value="1000">1:1000</choice>
+        <choice value="10000">1:10000</choice>
+        <default>100</default>
+        <initialValue>100</initialValue>
+      </input>
       <viz type="force_directed_viz.force_directed">
         <title>Connections</title>
-        <search base="base_search">
-          <query>
+        <search>
+          <query>`ethereum_index` (   (sourcetype="ethereum:transaction:event" $address_token$)  OR (sourcetype="ethereum:transaction" $address_token$ toInfo.isContract="false" status="success")   ) | fields *
 | fillnull event.name value="NotDecoded" `erc20_parse` 
 | eval contract_address=lower(address) 
 | eval from=lower(from) 
@@ -477,6 +501,9 @@
 | eval to_apprSpender_swpTo_omTaker=if(sourcetype="ethereum:transaction",to,if(to_apprSpender_swpTo_omTaker="0x87a9dcf2ba62880d3125a992d4900878f2d688cf",to_apprSpender_swpTo_omTaker,to_apprSpender_swpTo_omTaker." (".'event.name'." - ".contract_owner.")")) 
 | search event.name!="Appro*" 
 | stats count by from_apprOwner_swpFrom_omMaker to_apprSpender_swpTo_omTaker</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>$sample_token$</sampleRatio>
         </search>
         <option name="drilldown">none</option>
         <option name="force_directed_viz.force_directed.AttractDistanceMax">300</option>
@@ -512,23 +539,12 @@
         <option name="force_directed_viz.force_directed.lowerRange">5</option>
         <option name="force_directed_viz.force_directed.theme">dark</option>
         <option name="force_directed_viz.force_directed.upperRange">5</option>
-        <option name="height">410</option>
+        <option name="height">450</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>
       </viz>
     </panel>
-  </row>
-  <row>
-    <panel>
-      <html>
-        <center>
-          Note: If you see "No matching visualization" below - download the and install the viz from Splunkbase <a href="https://splunkbase.splunk.com/app/3767/" target="_blank">viz from Splunkbase.</a>  Then you can delete this chart panel by editing the dashboard.
-        </center>
-      </html>
-    </panel>
-  </row>
-  <row>
     <panel>
       <viz type="sankey_diagram_app.sankey_diagram">
         <title>Ethereum Transferred for $address_token$</title>
@@ -545,10 +561,21 @@
 | head 40</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
-          <sampleRatio>1</sampleRatio>
+          <sampleRatio>$sample_token$</sampleRatio>
         </search>
         <option name="drilldown">none</option>
         <option name="refresh.display">progressbar</option>
+        <option name="sankey_diagram_app.sankey_diagram.colorMode">categorical</option>
+        <option name="sankey_diagram_app.sankey_diagram.maxColor">#3fc77a</option>
+        <option name="sankey_diagram_app.sankey_diagram.minColor">#d93f3c</option>
+        <option name="sankey_diagram_app.sankey_diagram.numOfBins">6</option>
+        <option name="sankey_diagram_app.sankey_diagram.showBackwards">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLabels">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLegend">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showSelf">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.showTooltip">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.styleBackwards">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.useColors">true</option>
         <option name="trellis.enabled">0</option>
         <option name="trellis.scales.shared">1</option>
         <option name="trellis.size">medium</option>

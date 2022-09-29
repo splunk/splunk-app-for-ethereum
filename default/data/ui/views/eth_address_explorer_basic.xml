@@ -26,16 +26,6 @@
       <default>0x06012c8cf97BEaD5deAe237070F9587f8E7A266d</default>
       <initialValue>0x06012c8cf97BEaD5deAe237070F9587f8E7A266d</initialValue>
     </input>
-    <input type="dropdown" token="sample_token" searchWhenChanged="true">
-      <label>Sample Ratio (for force graph)</label>
-      <choice value="1">1:1</choice>
-      <choice value="10">1:10</choice>
-      <choice value="100">1:100</choice>
-      <choice value="1000">1:1000</choice>
-      <choice value="10000">1:10000</choice>
-      <default>100</default>
-      <initialValue>100</initialValue>
-    </input>
     <input type="dropdown" token="known_addresses">
       <label>Interesting Addresses</label>
       <change>
@@ -89,14 +79,17 @@
         <search base="base_search">
           <query> | stats count</query>
           <done>
-            <condition match=" $result.count$ &gt; 3000">
+            <condition match=" $result.count$ &gt; 10000">
               <set token="form.sample_token">1000</set>
             </condition>
-            <condition match=" $result.count$ &gt; 300">
+            <condition match=" $result.count$ &gt; 3000">
               <set token="form.sample_token">100</set>
             </condition>
-            <condition match=" $result.count$ &gt; 200">
+            <condition match=" $result.count$ &gt; 300">
               <set token="form.sample_token">10</set>
+            </condition>
+            <condition match=" $result.count$ &gt; 200">
+              <set token="form.sample_token">1</set>
             </condition>
             <condition>
               <set token="form.sample_token">1</set>
@@ -249,13 +242,26 @@
   <row>
     <panel>
       <title>Sankey Diagram of successful transactions for:  $address_token$</title>
+      <input type="dropdown" token="sample_token" searchWhenChanged="true">
+        <label>Sample Ratio</label>
+        <choice value="1">1:1</choice>
+        <choice value="10">1:10</choice>
+        <choice value="100">1:100</choice>
+        <choice value="1000">1:1000</choice>
+        <choice value="10000">1:10000</choice>
+        <default>100</default>
+        <initialValue>100</initialValue>
+      </input>
       <viz type="sankey_diagram_app.sankey_diagram">
-        <search base="base_search">
-          <query>| eval from=if(isnull(from_owner),from,from_owner) 
+        <search>
+          <query> `ethereum_index` network::mainnet sourcetype="ethereum:transaction" (from=$address_token$ OR to=$address_token$) | eval from=if(isnull(from_owner),from,from_owner) 
 | eval to=if(isnull(to_owner),to,to_owner) 
 | search status = "success"
 | stats count by to from
 | fields - *owner</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>$sample_token$</sampleRatio>
         </search>
         <option name="drilldown">all</option>
         <option name="refresh.display">progressbar</option>
