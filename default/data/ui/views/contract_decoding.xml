@@ -24,18 +24,18 @@
     <latest>$field1.latest$</latest>
     <sampleRatio>1</sampleRatio>
   </search>
- <fieldset submitButton="false">
+  <fieldset submitButton="false">
     <input type="time" token="field1">
       <label>Select a Time Range:</label>
       <default>
-        <earliest>-60m@m</earliest>
+        <earliest>-15m@m</earliest>
         <latest>now</latest>
       </default>
     </input>
     <input type="text" token="contract_token">
       <label>Enter an Address or TxnHash</label>
-      <default>0xba12222222228d8ba445958a75a0704d566bf2c8</default>
-      <initialValue>0xba12222222228d8ba445958a75a0704d566bf2c8</initialValue>
+      <default>0x*</default>
+      <initialValue>0x*</initialValue>
     </input>
   </fieldset>
   <row>
