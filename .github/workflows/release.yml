@@ -22,7 +22,7 @@ jobs:
       - name: package
         run: |
           touch ${{env.appName}}.tgz
-          tar --transform 's,^\.,${{env.appName}},' --exclude='.git*' --exclude='./screenshots' --exclude='${{env.appName}}.tgz' -cvzf ${{env.appName}}.tgz ./
+          tar --transform 's,^\.,${{env.appName}},' --exclude='.git*' --exclude='./screenshots'  --exclude='./viz_apps' --exclude='${{env.appName}}.tgz' -cvzf ${{env.appName}}.tgz ./
       - name: release
         uses: actions/create-release@v1
         id: create_release
